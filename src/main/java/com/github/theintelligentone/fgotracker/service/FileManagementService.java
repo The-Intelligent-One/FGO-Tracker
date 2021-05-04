@@ -7,6 +7,8 @@ import com.github.theintelligentone.fgotracker.domain.ServantBasicData;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 public class FileManagementService {
@@ -26,34 +28,75 @@ public class FileManagementService {
         }
     }
 
-    public void saveBasicServantData(List<ServantBasicData> servants) throws IOException {
+    public void saveBasicServantData(List<ServantBasicData> servants) {
         File file = new File(BASE_DATA_PATH, BASIC_DATA_FILE);
-        objectMapper.writeValue(file, servants);
+        try {
+            objectMapper.writeValue(file, servants);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void saveFullServantData(List<Servant> servants) throws IOException {
+    public void saveFullServantData(List<Servant> servants) {
         File file = new File(BASE_DATA_PATH, FULL_DATA_FILE);
-        objectMapper.writeValue(file, servants);
+        try {
+            objectMapper.writeValue(file, servants);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public void saveUserServants(List<ServantBasicData> servants) throws IOException {
+    public void saveUserServants(List<ServantBasicData> servants) {
         File file = new File(BASE_DATA_PATH, USER_DATA_FILE);
-        objectMapper.writeValue(file, servants);
+        try {
+            objectMapper.writeValue(file, servants);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    public List<ServantBasicData> loadBasicServantData() throws IOException {
+    public List<ServantBasicData> loadBasicServantData() {
         File file = new File(BASE_DATA_PATH, BASIC_DATA_FILE);
-        return objectMapper.readValue(file, new TypeReference<>() {});
+        List<ServantBasicData> basicDataList = null;
+        try {
+            basicDataList = objectMapper.readValue(file, new TypeReference<>() {});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return basicDataList;
     }
 
-    public List<Servant> loadFullServantData() throws IOException {
+    public List<Servant> loadFullServantData() {
         File file = new File(BASE_DATA_PATH, FULL_DATA_FILE);
-        return objectMapper.readValue(file, new TypeReference<>() {});
+        List<Servant> servantList = null;
+        try {
+            servantList = objectMapper.readValue(file, new TypeReference<>() {});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return servantList;
     }
 
-    public List<ServantBasicData> loadUserData() throws IOException {
+    public List<ServantBasicData> loadUserData() {
         File file = new File(BASE_DATA_PATH, USER_DATA_FILE);
-        return objectMapper.readValue(file, new TypeReference<>() {});
+        List<ServantBasicData> basicDataList = null;
+        try {
+            basicDataList = objectMapper.readValue(file, new TypeReference<>() {});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return basicDataList;
+    }
+
+    public long getCurrentVersion() {
+        long currentTimestamp = 0;
+        try {
+            currentTimestamp = Long.valueOf(Files.readString(Path.of(BASE_DATA_PATH, VERSION_FILE)));
+        } catch (IOException e) {
+            currentTimestamp = Long.MAX_VALUE;
+            e.printStackTrace();
+        }
+        return currentTimestamp;
     }
 
     private void initFileStructure() throws IOException {

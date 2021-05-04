@@ -22,14 +22,12 @@ public class DataRequestService {
     }
 
     public List<ServantBasicData> getAllBasicServantData() throws Exception {
-        List<ServantBasicData> dataList = objectMapper.readValue(new URL(ALL_SERVANT_BASIC_URL), new TypeReference<>() {
-        });
+        List<ServantBasicData> dataList = objectMapper.readValue(new URL(ALL_SERVANT_BASIC_URL), new TypeReference<>() {});
         return dataList.stream().filter(this::isServant).collect(Collectors.toList());
     }
 
     public List<Servant> getAllServantData() throws Exception {
-        List<Servant> dataList = objectMapper.readValue(new URL(ALL_SERVANT_URL), new TypeReference<>() {
-        });
+        List<Servant> dataList = objectMapper.readValue(new URL(ALL_SERVANT_URL), new TypeReference<>() {});
         return dataList.stream().filter(svt -> isServant(svt.getBasicData())).collect(Collectors.toList());
     }
 

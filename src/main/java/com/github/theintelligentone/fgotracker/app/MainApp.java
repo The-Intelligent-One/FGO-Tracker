@@ -1,6 +1,5 @@
 package com.github.theintelligentone.fgotracker.app;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.github.theintelligentone.fgotracker.domain.ServantBasicData;
 import com.github.theintelligentone.fgotracker.service.DataRequestService;
 import javafx.application.Application;
@@ -12,7 +11,7 @@ import java.util.List;
 
 public class MainApp extends Application {
 
-    private DataRequestService requestService = new DataRequestService();
+    private final DataRequestService requestService = new DataRequestService();
 
     public static void main(String[] args) {
         launch();

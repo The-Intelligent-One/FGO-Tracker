@@ -1,7 +1,6 @@
 package com.github.theintelligentone.fgotracker.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.theintelligentone.fgotracker.domain.ServantBasicData;
 
@@ -13,7 +12,6 @@ public class DataRequestService {
     ObjectMapper objectMapper = new ObjectMapper();
 
     public List<ServantBasicData> getAllServantData() throws Exception {
-        List<ServantBasicData> results = objectMapper.readValue(new URL("https://api.atlasacademy.io/export/NA/basic_servant.json"), new TypeReference<List<ServantBasicData>>(){});
-        return results;
+        return objectMapper.readValue(new URL("https://api.atlasacademy.io/export/NA/basic_servant.json"), new TypeReference<>(){});
     }
 }

@@ -8,6 +8,7 @@ import lombok.Data;
 public class ServantBasicData {
     private long id;
     private String name;
+    private String type;
     private String className;
     private String attribute;
     private int rarity;

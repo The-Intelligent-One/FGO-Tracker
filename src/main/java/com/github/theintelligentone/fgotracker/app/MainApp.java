@@ -1,6 +1,6 @@
 package com.github.theintelligentone.fgotracker.app;
 
-import com.github.theintelligentone.fgotracker.domain.ServantBasicData;
+import com.github.theintelligentone.fgotracker.domain.Servant;
 import com.github.theintelligentone.fgotracker.service.DataRequestService;
 import javafx.application.Application;
 import javafx.scene.Group;
@@ -19,7 +19,7 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        List<ServantBasicData> temp = requestService.getAllServantData();
+        List<Servant> temp = requestService.getAllServantData();
         Group group = new Group();
         Scene scene = new Scene(group);
         primaryStage.setScene(scene);

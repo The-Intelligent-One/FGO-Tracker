@@ -1,0 +1,48 @@
+plugins {
+    id "java"
+    id "application"
+    id "org.openjfx.javafxplugin" version "0.0.9"
+    id "edu.sc.seis.launch4j" version "2.5.0"
+    id "io.freefair.lombok" version "6.0.0-m2"
+}
+
+group "com.github.theintelligentone"
+version "1.0-SNAPSHOT"
+sourceCompatibility = "11"
+
+def MAINPATH = "com.github.theintelligentone.fgotracker.Main"
+
+mainClassName = MAINPATH
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.0"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.0"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.11.1"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': MAINPATH
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+javafx {
+    version = "16"
+    modules = ["javafx.fxml", "javafx.controls"]
+}
+
+launch4j {
+    mainClassName MAINPATH
+    copyConfigurable = []
+}

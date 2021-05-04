@@ -1,7 +1,10 @@
 package com.github.theintelligentone.fgotracker.app;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.theintelligentone.fgotracker.domain.Servant;
+import com.github.theintelligentone.fgotracker.domain.ServantBasicData;
 import com.github.theintelligentone.fgotracker.service.DataRequestService;
+import com.github.theintelligentone.fgotracker.service.FileManagementService;
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -11,15 +14,17 @@ import java.util.List;
 
 public class MainApp extends Application {
 
-    private final DataRequestService requestService = new DataRequestService();
-
     public static void main(String[] args) {
         launch();
     }
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        List<Servant> temp = requestService.getAllServantData();
+        ObjectMapper objectMapper = new ObjectMapper();
+        DataRequestService requestService = new DataRequestService(objectMapper);
+        FileManagementService fileService = new FileManagementService(objectMapper);
+        List<ServantBasicData> temp = requestService.getAllBasicServantData();
+        fileService.saveBasicServantData(temp);
         Group group = new Group();
         Scene scene = new Scene(group);
         primaryStage.setScene(scene);

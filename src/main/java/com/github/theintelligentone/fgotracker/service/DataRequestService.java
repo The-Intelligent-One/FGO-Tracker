@@ -15,7 +15,11 @@ public class DataRequestService {
     private static final String[] SERVANT_TYPES = {"normal", "heroine"};
     private static final String ALL_SERVANT_BASIC_URL = "https://api.atlasacademy.io/export/NA/basic_servant.json";
     private static final String ALL_SERVANT_URL = "https://api.atlasacademy.io/export/NA/nice_servant.json";
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper;
+
+    public DataRequestService(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     public List<ServantBasicData> getAllBasicServantData() throws Exception {
         List<ServantBasicData> dataList = objectMapper.readValue(new URL(ALL_SERVANT_BASIC_URL), new TypeReference<>() {

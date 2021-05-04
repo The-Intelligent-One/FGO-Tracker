@@ -19,11 +19,6 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        DataRequestService requestService = new DataRequestService(objectMapper);
-        FileManagementService fileService = new FileManagementService(objectMapper);
-        List<Servant> temp = requestService.getAllServantData();
-        fileService.saveFullServantData(temp);
         Group group = new Group();
         Scene scene = new Scene(group);
         primaryStage.setScene(scene);

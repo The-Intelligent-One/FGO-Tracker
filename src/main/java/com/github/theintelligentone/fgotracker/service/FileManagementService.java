@@ -17,9 +17,13 @@ public class FileManagementService {
     private static final String USER_DATA_FILE = "userdata/servants.json";
     private final ObjectMapper objectMapper;
 
-    public FileManagementService(ObjectMapper objectMapper) throws IOException {
+    public FileManagementService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        initFileStructure();
+        try {
+            initFileStructure();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public void saveBasicServantData(List<ServantBasicData> servants) throws IOException {

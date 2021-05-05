@@ -23,6 +23,14 @@ public class DataManagementService {
         initApp();
     }
 
+    public void tearDown() {
+        fileService.saveUserServants(userServantList);
+    }
+
+    public void saveUserServant(ServantOfUser servant, int index) {
+        userServantList.set(index, servant);
+    }
+
     private void initApp() {
         if (newVersionAvailable()) {
             servantDataList = requestService.getAllServantData();

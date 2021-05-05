@@ -1,9 +1,9 @@
 package com.github.theintelligentone.fgotracker.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.theintelligentone.fgotracker.domain.Servant;
-import com.github.theintelligentone.fgotracker.domain.ServantBasicData;
-import com.github.theintelligentone.fgotracker.domain.ServantOfUser;
+import com.github.theintelligentone.fgotracker.domain.servant.Servant;
+import com.github.theintelligentone.fgotracker.domain.servant.ServantBasicData;
+import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
 
 import java.util.List;
 

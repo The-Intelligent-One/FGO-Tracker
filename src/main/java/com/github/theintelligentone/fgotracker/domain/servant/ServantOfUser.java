@@ -1,4 +1,4 @@
-package com.github.theintelligentone.fgotracker.domain;
+package com.github.theintelligentone.fgotracker.domain.servant;
 
 import com.fasterxml.jackson.annotation.*;
 import lombok.Data;

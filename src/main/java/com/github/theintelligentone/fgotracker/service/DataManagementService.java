@@ -22,7 +22,7 @@ public class DataManagementService {
     }
 
     private void initApp() {
-        if (newVersionAvailable()){
+        if (newVersionAvailable()) {
             servantDataList = requestService.getAllServantData();
             fileService.saveFullServantData(servantDataList);
             basicDataList = requestService.getAllBasicServantData();

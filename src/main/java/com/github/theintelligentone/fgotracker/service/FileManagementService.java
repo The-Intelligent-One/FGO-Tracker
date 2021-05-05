@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FileManagementService {
@@ -57,33 +58,39 @@ public class FileManagementService {
 
     public List<ServantBasicData> loadBasicServantData() {
         File file = new File(BASE_DATA_PATH, BASIC_DATA_FILE);
-        List<ServantBasicData> basicDataList = null;
-        try {
-            basicDataList = objectMapper.readValue(file, new TypeReference<>() {});
-        } catch (IOException e) {
-            e.printStackTrace();
+        List<ServantBasicData> basicDataList = new ArrayList<>();
+        if (file.length() != 0) {
+            try {
+                basicDataList = objectMapper.readValue(file, new TypeReference<>() {});
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return basicDataList;
     }
 
     public List<Servant> loadFullServantData() {
         File file = new File(BASE_DATA_PATH, FULL_DATA_FILE);
-        List<Servant> servantList = null;
-        try {
-            servantList = objectMapper.readValue(file, new TypeReference<>() {});
-        } catch (IOException e) {
-            e.printStackTrace();
+        List<Servant> servantList = new ArrayList<>();
+        if (file.length() != 0) {
+            try {
+                servantList = objectMapper.readValue(file, new TypeReference<>() {});
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return servantList;
     }
 
     public List<ServantBasicData> loadUserData() {
         File file = new File(BASE_DATA_PATH, USER_DATA_FILE);
-        List<ServantBasicData> basicDataList = null;
-        try {
-            basicDataList = objectMapper.readValue(file, new TypeReference<>() {});
-        } catch (IOException e) {
-            e.printStackTrace();
+        List<ServantBasicData> basicDataList = new ArrayList<>();
+        if (file.length() != 0) {
+            try {
+                basicDataList = objectMapper.readValue(file, new TypeReference<>() {});
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return basicDataList;
     }
@@ -95,7 +102,7 @@ public class FileManagementService {
         } catch (IOException e) {
             currentTimestamp = Long.MAX_VALUE;
             e.printStackTrace();
-        }
+        } catch (NumberFormatException e) {}
         return currentTimestamp;
     }
 

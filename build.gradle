@@ -8,7 +8,6 @@ plugins {
 
 group "com.github.theintelligentone"
 version "1.0-SNAPSHOT"
-sourceCompatibility = "11"
 
 def MAINPATH = "com.github.theintelligentone.fgotracker.Main"
 

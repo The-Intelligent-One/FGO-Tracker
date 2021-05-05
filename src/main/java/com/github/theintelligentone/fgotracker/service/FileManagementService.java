@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.theintelligentone.fgotracker.domain.Servant;
 import com.github.theintelligentone.fgotracker.domain.ServantBasicData;
+import com.github.theintelligentone.fgotracker.domain.ServantOfUser;
 
 import java.io.File;
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class FileManagementService {
         }
     }
 
-    public void saveUserServants(List<ServantBasicData> servants) {
+    public void saveUserServants(List<ServantOfUser> servants) {
         File file = new File(BASE_DATA_PATH, USER_DATA_FILE);
         try {
             objectMapper.writeValue(file, servants);
@@ -82,9 +83,9 @@ public class FileManagementService {
         return servantList;
     }
 
-    public List<ServantBasicData> loadUserData() {
+    public List<ServantOfUser> loadUserData() {
         File file = new File(BASE_DATA_PATH, USER_DATA_FILE);
-        List<ServantBasicData> basicDataList = new ArrayList<>();
+        List<ServantOfUser> basicDataList = new ArrayList<>();
         if (file.length() != 0) {
             try {
                 basicDataList = objectMapper.readValue(file, new TypeReference<>() {});
@@ -104,6 +105,14 @@ public class FileManagementService {
             e.printStackTrace();
         } catch (NumberFormatException e) {}
         return currentTimestamp;
+    }
+
+    public void saveNewVersion(long timestamp) {
+        try {
+            Files.writeString(Path.of(BASE_DATA_PATH,VERSION_FILE), String.valueOf(timestamp));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void initFileStructure() throws IOException {

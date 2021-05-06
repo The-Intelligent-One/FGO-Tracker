@@ -6,6 +6,7 @@ import com.github.theintelligentone.fgotracker.domain.servant.ServantBasicData;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class DataManagementService {
     private final DataRequestService requestService;
@@ -28,6 +29,14 @@ public class DataManagementService {
     }
 
     public void saveUserServant(ServantOfUser servant, int index) {
+        insertIntoUserServantListAtPosition(servant, index);
+        mainWindowController.getUserServants().add(servant);
+    }
+
+    private void insertIntoUserServantListAtPosition(ServantOfUser servant, int index) {
+        while (userServantList.size() <= index) {
+            userServantList.add(null);
+        }
         userServantList.set(index, servant);
     }
 
@@ -54,5 +63,9 @@ public class DataManagementService {
             currentVersion = onlineVersion;
         }
         return needUpdate;
+    }
+
+    public List<String> getAllServantNames() {
+        return basicDataList.stream().map(ServantBasicData::getName).collect(Collectors.toList());
     }
 }

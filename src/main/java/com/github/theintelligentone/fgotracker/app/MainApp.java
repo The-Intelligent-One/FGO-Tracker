@@ -5,6 +5,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
 import javafx.stage.Stage;
 
 public class MainApp extends Application {
@@ -20,7 +21,9 @@ public class MainApp extends Application {
         FXMLLoader loader = new FXMLLoader(getClass().getResource(MAIN_WINDOW_FXML));
         Parent root = loader.load();
         dataManagementService = new DataManagementService(loader.getController());
-        primaryStage.setScene(new Scene(root));
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add("/tablestyle.css");
+        primaryStage.setScene(scene);
         primaryStage.setTitle("FGO Tracker");
         primaryStage.show();
     }

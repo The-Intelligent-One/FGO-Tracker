@@ -8,6 +8,7 @@ import javafx.scene.control.TableView;
 import lombok.Getter;
 
 public class MainWindow {
+
     @FXML
     private TableView<ServantOfUser> rosterTable;
 

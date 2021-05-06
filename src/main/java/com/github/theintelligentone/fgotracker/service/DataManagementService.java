@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantBasicData;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
+import com.github.theintelligentone.fgotracker.ui.MainWindow;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,16 +12,18 @@ import java.util.stream.Collectors;
 public class DataManagementService {
     private final DataRequestService requestService;
     private final FileManagementService fileService;
+    private final MainWindow mainWindowController;
 
     private List<ServantBasicData> basicDataList;
     private List<ServantOfUser> userServantList;
     private List<Servant> servantDataList;
     private long currentVersion;
 
-    public DataManagementService() {
+    public DataManagementService(MainWindow mainWindowController) {
         ObjectMapper objectMapper = new ObjectMapper();
         this.requestService = new DataRequestService(objectMapper);
         this.fileService = new FileManagementService(objectMapper);
+        this.mainWindowController = mainWindowController;
         initApp();
     }
 

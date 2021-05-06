@@ -3,7 +3,6 @@ package com.github.theintelligentone.fgotracker.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
-import com.github.theintelligentone.fgotracker.domain.servant.ServantBasicData;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
 
 import java.io.File;
@@ -30,15 +29,6 @@ public class FileManagementService {
         }
     }
 
-    public void saveBasicServantData(List<ServantBasicData> servants) {
-        File file = new File(BASE_DATA_PATH, BASIC_DATA_FILE);
-        try {
-            objectMapper.writeValue(file, servants);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void saveFullServantData(List<Servant> servants) {
         File file = new File(BASE_DATA_PATH, FULL_DATA_FILE);
         try {
@@ -55,19 +45,6 @@ public class FileManagementService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public List<ServantBasicData> loadBasicServantData() {
-        File file = new File(BASE_DATA_PATH, BASIC_DATA_FILE);
-        List<ServantBasicData> basicDataList = new ArrayList<>();
-        if (file.length() != 0) {
-            try {
-                basicDataList = objectMapper.readValue(file, new TypeReference<>() {});
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return basicDataList;
     }
 
     public List<Servant> loadFullServantData() {
@@ -97,19 +74,19 @@ public class FileManagementService {
     }
 
     public long getCurrentVersion() {
-        long currentTimestamp = 0;
+        String versionAsString = "";
         try {
-            currentTimestamp = Long.valueOf(Files.readString(Path.of(BASE_DATA_PATH, VERSION_FILE)));
+            versionAsString = Files.readString(Path.of(BASE_DATA_PATH, VERSION_FILE));
         } catch (IOException e) {
-            currentTimestamp = Long.MAX_VALUE;
             e.printStackTrace();
-        } catch (NumberFormatException e) {}
+        }
+        long currentTimestamp = versionAsString.isEmpty() ? 0 : Long.parseLong(versionAsString);
         return currentTimestamp;
     }
 
     public void saveNewVersion(long timestamp) {
         try {
-            Files.writeString(Path.of(BASE_DATA_PATH,VERSION_FILE), String.valueOf(timestamp));
+            Files.writeString(Path.of(BASE_DATA_PATH, VERSION_FILE), String.valueOf(timestamp));
         } catch (IOException e) {
             e.printStackTrace();
         }

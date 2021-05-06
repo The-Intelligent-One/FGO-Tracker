@@ -4,18 +4,18 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
-import com.github.theintelligentone.fgotracker.domain.servant.ServantBasicData;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class DataRequestService {
 
     private static final String[] SERVANT_TYPES = {"normal", "heroine"};
-    private static final String ALL_SERVANT_BASIC_URL = "https://api.atlasacademy.io/export/NA/basic_servant.json";
     private static final String ALL_SERVANT_URL = "https://api.atlasacademy.io/export/NA/nice_servant.json";
     private static final String VERSION_URL = "https://api.atlasacademy.io/info";
     private final ObjectMapper objectMapper;
@@ -24,24 +24,14 @@ public class DataRequestService {
         this.objectMapper = objectMapper;
     }
 
-    public List<ServantBasicData> getAllBasicServantData() {
-        List<ServantBasicData> dataList = null;
-        try {
-            dataList = objectMapper.readValue(new URL(ALL_SERVANT_BASIC_URL), new TypeReference<>() {});
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return dataList.stream().filter(this::isServant).collect(Collectors.toList());
-    }
-
     public List<Servant> getAllServantData() {
-        List<Servant> dataList = null;
+        List<Servant> dataList = new ArrayList<>();
         try {
             dataList = objectMapper.readValue(new URL(ALL_SERVANT_URL), new TypeReference<>() {});
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return dataList.stream().filter(svt -> isServant(svt.getBasicData())).collect(Collectors.toList());
+        return dataList.stream().filter(this::isServant).collect(Collectors.toList());
     }
 
     public long getOnlineVersion() {
@@ -51,10 +41,10 @@ public class DataRequestService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return response.get("NA").get("timestamp").asInt();
+        return Objects.requireNonNull(response).get("NA").get("timestamp").asInt();
     }
 
-    private boolean isServant(ServantBasicData svt) {
+    private boolean isServant(Servant svt) {
         return Arrays.asList(SERVANT_TYPES).contains(svt.getType());
     }
 }

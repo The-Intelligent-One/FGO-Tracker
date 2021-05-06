@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.github.theintelligentone.fgotracker.ui.valuefactory.BasicServantNameFactory?>
-<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import javafx.scene.control.cell.*?>
 <?import javafx.scene.control.*?>
 <TabPane xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
@@ -10,12 +9,71 @@
     <Tab text="Servants">
         <TableView fx:id="rosterTable">
             <columns>
-                <TableColumn text="name">
+                <TableColumn text="General Info">
+                    <columns>
+                        <TableColumn text="Name">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="name"/>
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn text="R">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="rarity"/>
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn text="Class">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="className"/>
+                            </cellValueFactory>
+                        </TableColumn>
+                        <TableColumn text="Attr.">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="attribute"/>
+                            </cellValueFactory>
+                        </TableColumn>
+                    </columns>
+                </TableColumn>
+                <TableColumn text="NP">
                     <cellValueFactory>
-                        <BasicServantNameFactory/>
+                        <PropertyValueFactory property="level"/>
                     </cellValueFactory>
                 </TableColumn>
-                <TableColumn text="level">
+                <TableColumn text="Lvl">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="level"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn text="Asc">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="level"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn text="S1">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="level"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn text="S2">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="level"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn text="S3">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="level"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn text="Bond Lvl">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="level"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn text="Fou ATK">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="level"/>
+                    </cellValueFactory>
+                </TableColumn>
+                <TableColumn text="Fou HP">
                     <cellValueFactory>
                         <PropertyValueFactory property="level"/>
                     </cellValueFactory>

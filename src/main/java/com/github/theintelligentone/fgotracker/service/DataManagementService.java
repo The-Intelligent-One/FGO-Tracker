@@ -2,7 +2,6 @@ package com.github.theintelligentone.fgotracker.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
-import com.github.theintelligentone.fgotracker.domain.servant.ServantBasicData;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
 import com.github.theintelligentone.fgotracker.ui.MainWindow;
 
@@ -14,7 +13,7 @@ public class DataManagementService {
     private final FileManagementService fileService;
     private final MainWindow mainWindowController;
 
-    private List<ServantBasicData> basicDataList;
+    private List<String> servantNameList;
     private List<Servant> servantDataList;
     private long currentVersion;
 
@@ -41,24 +40,12 @@ public class DataManagementService {
         if (newVersionAvailable()) {
             servantDataList = requestService.getAllServantData();
             fileService.saveFullServantData(servantDataList);
-            basicDataList = requestService.getAllBasicServantData();
-            fileService.saveBasicServantData(basicDataList);
             fileService.saveNewVersion(currentVersion);
         } else {
             servantDataList = fileService.loadFullServantData();
-            basicDataList = fileService.loadBasicServantData();
         }
-        mainWindowController.getUserServants().addAll(createUserServantList());
-    }
-
-    private List<ServantOfUser> createUserServantList() {
-        List<ServantOfUser> servantsOfUser = fileService.loadUserData();
-        servantsOfUser.forEach(svt -> {
-            svt.setServant(basicDataList.stream()
-                    .filter(basicData -> basicData.getId() == svt.getSvtId())
-                    .findFirst().get());
-        });
-        return servantsOfUser;
+        servantNameList = servantDataList.stream().map(Servant::getName).collect(Collectors.toList());
+        mainWindowController.getUserServants().addAll(fileService.loadUserData());
     }
 
     private boolean newVersionAvailable() {
@@ -73,6 +60,6 @@ public class DataManagementService {
     }
 
     public List<String> getAllServantNames() {
-        return basicDataList.stream().map(ServantBasicData::getName).collect(Collectors.toList());
+        return servantNameList;
     }
 }

@@ -8,8 +8,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @JsonIgnoreProperties(value = {"servant"}, ignoreUnknown = true)
 public class ServantOfUser {
-    private ServantBasicData servant;
     private long svtId;
+    private String name;
+    private String className;
+    private String attribute;
+    private int rarity;
     private int fouAtk;
     private int fouHp;
     private int level;
@@ -20,8 +23,9 @@ public class ServantOfUser {
     private int skillLevel2;
     private int skillLevel3;
 
-    public ServantOfUser(ServantBasicData baseServant) {
-        servant = baseServant;
-        svtId = baseServant.getId();
+    public ServantOfUser(Servant baseServant) {
+
     }
+
+
 }

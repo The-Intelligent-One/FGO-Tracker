@@ -1,14 +1,13 @@
 package com.github.theintelligentone.fgotracker.domain.servant;
 
-import com.fasterxml.jackson.annotation.*;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(value = {"servant"}, ignoreUnknown = true)
 public class ServantOfUser {
-    @JsonIgnoreProperties
     private ServantBasicData servant;
     private long svtId;
     private int fouAtk;

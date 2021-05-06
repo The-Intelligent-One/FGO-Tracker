@@ -48,3 +48,7 @@ launch4j {
     mainClassName MAINPATH
     copyConfigurable = []
 }
+
+clean {
+    delete 'data'
+}

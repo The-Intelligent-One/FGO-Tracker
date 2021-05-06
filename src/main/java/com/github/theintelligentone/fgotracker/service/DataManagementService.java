@@ -15,7 +15,6 @@ public class DataManagementService {
     private final MainWindow mainWindowController;
 
     private List<ServantBasicData> basicDataList;
-    private List<ServantOfUser> userServantList;
     private List<Servant> servantDataList;
     private long currentVersion;
 
@@ -28,19 +27,14 @@ public class DataManagementService {
     }
 
     public void tearDown() {
-        fileService.saveUserServants(userServantList);
+        fileService.saveUserServants(mainWindowController.getUserServants());
     }
 
     public void saveUserServant(ServantOfUser servant, int index) {
-        insertIntoUserServantListAtPosition(servant, index);
-        mainWindowController.getUserServants().add(servant);
-    }
-
-    private void insertIntoUserServantListAtPosition(ServantOfUser servant, int index) {
-        while (userServantList.size() <= index) {
-            userServantList.add(null);
+        while (mainWindowController.getUserServants().size() <= index) {
+            mainWindowController.getUserServants().add(null);
         }
-        userServantList.set(index, servant);
+        mainWindowController.getUserServants().set(index, servant);
     }
 
     private void initApp() {
@@ -54,7 +48,17 @@ public class DataManagementService {
             servantDataList = fileService.loadFullServantData();
             basicDataList = fileService.loadBasicServantData();
         }
-        userServantList = fileService.loadUserData();
+        mainWindowController.getUserServants().addAll(createUserServantList());
+    }
+
+    private List<ServantOfUser> createUserServantList() {
+        List<ServantOfUser> servantsOfUser = fileService.loadUserData();
+        servantsOfUser.forEach(svt -> {
+            svt.setServant(basicDataList.stream()
+                    .filter(basicData -> basicData.getId() == svt.getSvtId())
+                    .findFirst().get());
+        });
+        return servantsOfUser;
     }
 
     private boolean newVersionAvailable() {

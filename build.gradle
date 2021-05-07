@@ -4,6 +4,7 @@ plugins {
     id "org.openjfx.javafxplugin" version "0.0.9"
     id "edu.sc.seis.launch4j" version "2.5.0"
     id "io.freefair.lombok" version "6.0.0-m2"
+    id "org.beryx.runtime" version "1.12.4"
 }
 
 group "com.github.theintelligentone"
@@ -23,6 +24,11 @@ dependencies {
     runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:win"
     runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:linux"
     runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:mac"
+}
+
+application {
+    mainClassName MAINPATH
+    applicationName = "FGO Tracker"
 }
 
 test {
@@ -46,8 +52,32 @@ javafx {
 launch4j {
     mainClassName MAINPATH
     copyConfigurable = []
+    bundledJrePath = "./jre"
+    bundledJre64Bit = true
+    jdkPreference = "jdkOnly"
+}
+
+task embedJre {
+    dependsOn("createExe")
+    copy {
+        from System.getenv("JAVA_HOME") + "/bin"
+        into "${buildDir}/launch4j/jre/bin"
+    }
+    copy {
+        from System.getenv("JAVA_HOME") + "/lib"
+        into "${buildDir}/launch4j/jre/lib"
+    }
+    copy {
+        from System.getenv("JAVA_HOME") + "/conf"
+        into "${buildDir}/launch4j/jre/conf"
+    }
+}
+
+runtime {
+    options = ["--strip-debug", "--no-header-files", "--no-man-pages"]
 }
 
 clean {
     delete 'data'
 }
+

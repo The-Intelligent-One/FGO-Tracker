@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.github.theintelligentone.fgotracker.ui.valuefactory.*?>
 <?import javafx.scene.control.cell.*?>
 <?import javafx.scene.control.*?>
-<?import java.lang.Integer?>
+<?import java.lang.*?>
 <TabPane xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
-         fx:controller="com.github.theintelligentone.fgotracker.ui.MainWindow"
-         prefHeight="400.0" prefWidth="600.0">
+         fx:controller="com.github.theintelligentone.fgotracker.ui.MainWindow">
     <Tab text="Servants">
         <fx:define>
             <Integer fx:id="NAME_CELL_WIDTH" fx:value="200"/>
             <Integer fx:id="LONG_CELL_WIDTH" fx:value="100"/>
-            <Integer fx:id="MID_CELL_WIDTH" fx:value="50"/>
+            <Integer fx:id="MID_CELL_WIDTH" fx:value="60"/>
             <Integer fx:id="SHORT_CELL_WIDTH" fx:value="40"/>
             <Integer fx:id="CHAR_CELL_WIDTH" fx:value="20"/>
         </fx:define>
@@ -45,27 +45,27 @@
                     <columns>
                         <TableColumn text="C1" prefWidth="$CHAR_CELL_WIDTH">
                             <cellValueFactory>
-                                <PropertyValueFactory property="rarity"/>
+                                <DeckColumnValueFactory fx:value="1"/>
                             </cellValueFactory>
                         </TableColumn>
                         <TableColumn text="C2" prefWidth="$CHAR_CELL_WIDTH">
                             <cellValueFactory>
-                                <PropertyValueFactory property="rarity"/>
+                                <DeckColumnValueFactory fx:value="2"/>
                             </cellValueFactory>
                         </TableColumn>
                         <TableColumn text="C3" prefWidth="$CHAR_CELL_WIDTH">
                             <cellValueFactory>
-                                <PropertyValueFactory property="rarity"/>
+                                <DeckColumnValueFactory fx:value="3"/>
                             </cellValueFactory>
                         </TableColumn>
                         <TableColumn text="C4" prefWidth="$CHAR_CELL_WIDTH">
                             <cellValueFactory>
-                                <PropertyValueFactory property="rarity"/>
+                                <DeckColumnValueFactory fx:value="4"/>
                             </cellValueFactory>
                         </TableColumn>
                         <TableColumn text="C5" prefWidth="$CHAR_CELL_WIDTH">
                             <cellValueFactory>
-                                <PropertyValueFactory property="rarity"/>
+                                <DeckColumnValueFactory fx:value="5"/>
                             </cellValueFactory>
                         </TableColumn>
                     </columns>
@@ -106,6 +106,11 @@
                                 <PropertyValueFactory property="ascension"/>
                             </cellValueFactory>
                         </TableColumn>
+                        <TableColumn text="B" prefWidth="$CHAR_CELL_WIDTH">
+                            <cellValueFactory>
+                                <PropertyValueFactory property="bondLevel"/>
+                            </cellValueFactory>
+                        </TableColumn>
                         <TableColumn text="S1" prefWidth="$CHAR_CELL_WIDTH">
                             <cellValueFactory>
                                 <PropertyValueFactory property="skillLevel1"/>
@@ -119,11 +124,6 @@
                         <TableColumn text="S3" prefWidth="$CHAR_CELL_WIDTH">
                             <cellValueFactory>
                                 <PropertyValueFactory property="skillLevel3"/>
-                            </cellValueFactory>
-                        </TableColumn>
-                        <TableColumn text="B" prefWidth="$CHAR_CELL_WIDTH">
-                            <cellValueFactory>
-                                <PropertyValueFactory property="bondLevel"/>
                             </cellValueFactory>
                         </TableColumn>
                     </columns>

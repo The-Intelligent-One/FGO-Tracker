@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @JsonIgnoreProperties(value = {"servant"}, ignoreUnknown = true)
@@ -12,6 +14,7 @@ public class ServantOfUser {
     private String name;
     private String className;
     private String attribute;
+    private List<String> cards;
     private int rarity;
     private int fouAtk;
     private int fouHp;
@@ -32,6 +35,7 @@ public class ServantOfUser {
         className = baseServant.getClassName().substring(0,1) + baseServant.getClassName().substring(1);
         attribute = baseServant.getAttribute().substring(0,1) + baseServant.getAttribute().substring(1);
         rarity = baseServant.getRarity();
+        cards = List.copyOf(baseServant.getCards());
         fouAtk = 0;
         fouHp = 0;
         level = 1;

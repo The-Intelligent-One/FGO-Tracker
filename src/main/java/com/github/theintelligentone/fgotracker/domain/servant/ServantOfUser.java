@@ -32,8 +32,8 @@ public class ServantOfUser {
     public ServantOfUser(Servant baseServant) {
         svtId = baseServant.getId();
         name = baseServant.getName();
-        className = baseServant.getClassName().substring(0,1) + baseServant.getClassName().substring(1);
-        attribute = baseServant.getAttribute().substring(0,1) + baseServant.getAttribute().substring(1);
+        className = baseServant.getClassName().substring(0,1).toUpperCase() + baseServant.getClassName().substring(1);
+        attribute = baseServant.getAttribute().substring(0,1).toUpperCase() + baseServant.getAttribute().substring(1);
         rarity = baseServant.getRarity();
         cards = List.copyOf(baseServant.getCards());
         fouAtk = 0;

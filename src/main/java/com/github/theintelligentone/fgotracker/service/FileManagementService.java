@@ -15,7 +15,6 @@ import java.util.List;
 public class FileManagementService {
     private static final String BASE_DATA_PATH = "data/";
     private static final String VERSION_FILE = "dbVersion.json";
-    private static final String BASIC_DATA_FILE = "cache/servant/basic.json";
     private static final String FULL_DATA_FILE = "cache/servant/full.json";
     private static final String USER_DATA_FILE = "userdata/servants.json";
     private final ObjectMapper objectMapper;
@@ -93,7 +92,6 @@ public class FileManagementService {
     }
 
     private void initFileStructure() throws IOException {
-        createFileIfDoesNotExist(BASIC_DATA_FILE);
         createFileIfDoesNotExist(FULL_DATA_FILE);
         createFileIfDoesNotExist(USER_DATA_FILE);
         createFileIfDoesNotExist(VERSION_FILE);

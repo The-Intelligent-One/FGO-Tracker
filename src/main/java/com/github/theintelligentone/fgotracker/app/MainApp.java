@@ -27,6 +27,8 @@ public class MainApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.setTitle("FGO Tracker");
         primaryStage.show();
+        primaryStage.setMinHeight(primaryStage.getHeight());
+        primaryStage.setMinWidth(primaryStage.getWidth());
     }
 
     @Override

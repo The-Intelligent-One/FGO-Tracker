@@ -45,7 +45,17 @@ public class DataManagementService {
     }
 
     public void saveUserState() {
+        clearUnnecessaryEmptyRows();
         fileService.saveUserServants(userServantList);
+    }
+
+    private void clearUnnecessaryEmptyRows() {
+        int index = userServantList.size() - 1;
+        if (userServantList.get(index) == null) {
+            while (userServantList.get(index) == null) {
+                userServantList.remove(index--);
+            }
+        }
     }
 
     public ServantOfUser tempLoad() {

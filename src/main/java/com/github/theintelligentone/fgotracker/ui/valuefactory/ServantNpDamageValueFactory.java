@@ -12,6 +12,7 @@ import javafx.util.Callback;
 public class ServantNpDamageValueFactory implements Callback<TableColumn.CellDataFeatures<ServantOfUser, Number>, ObservableValue<Number>> {
 
     private static final int PERCANTAGE_SCALE = 1000;
+    private static final double BASE_DAMAGE_MULTIPLIER = 0.23;
 
     @Override
     public ObservableValue<Number> call(TableColumn.CellDataFeatures<ServantOfUser, Number> param) {
@@ -19,11 +20,11 @@ public class ServantNpDamageValueFactory implements Callback<TableColumn.CellDat
         if (param.getValue() != null) {
             damage.set(calculateNpDamage(param.getValue()));
         }
-        return damage;
+        return damage.getValue() > 0 ? damage : null;
     }
 
-    private long calculateNpDamage(ServantOfUser servant) {
-        long damage = 0;
+    private Long calculateNpDamage(ServantOfUser servant) {
+        Long damage = null;
         NoblePhantasm np = servant.getBaseServant().getNoblePhantasms().get(servant.getBaseServant().getNoblePhantasms().size() - 1);
         FgoFunction dmgFnc = findDamagingNpFunction(np);
         if (dmgFnc != null) {
@@ -34,7 +35,7 @@ public class ServantNpDamageValueFactory implements Callback<TableColumn.CellDat
 
     private long calculateDamage(ServantOfUser servant, FgoFunction np, String card) {
         int svtAtk = calculateBaseAtk(servant);
-        return Math.round(svtAtk * getNpMultiplier(servant.getNpLevel(), np) * getCardMultiplier(card));
+        return Math.round(svtAtk * getNpMultiplier(servant.getNpLevel(), np) * getCardMultiplier(card) * BASE_DAMAGE_MULTIPLIER);
     }
 
     private double getCardMultiplier(String card) {
@@ -42,7 +43,7 @@ public class ServantNpDamageValueFactory implements Callback<TableColumn.CellDat
     }
 
     private double getNpMultiplier(int npLevel, FgoFunction np) {
-        return np.getSvals().get(npLevel).getValue() / PERCANTAGE_SCALE;
+        return np.getSvals().get(npLevel - 1).getValue() / PERCANTAGE_SCALE;
     }
 
     private int calculateBaseAtk(ServantOfUser servant) {

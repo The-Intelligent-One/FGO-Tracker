@@ -22,6 +22,22 @@ public class UserServantFactory {
                 .build();
     }
 
+    public ServantOfUser replaceBaseServant(ServantOfUser servant, Servant newBaseServant) {
+        ServantOfUser modifiedServant = servant;
+        if (servant != null) {
+            if (newBaseServant != null) {
+                modifiedServant.setBaseServant(newBaseServant);
+                modifiedServant.setSvtId(newBaseServant.getId());
+                modifiedServant.setRarity(newBaseServant.getRarity());
+                modifiedServant.setNpType(determineNpCard(newBaseServant));
+                modifiedServant.setNpTarget(determineNpTarget(newBaseServant));
+            }
+        } else {
+            modifiedServant = createUserServantFromBaseServant(newBaseServant);
+        }
+        return modifiedServant;
+    }
+
     private String determineNpCard(Servant baseServant) {
         String card = baseServant.getNoblePhantasms().get(baseServant.getNoblePhantasms().size() - 1).getCard();
         return card.substring(0, 1).toUpperCase() + card.substring(1);

@@ -45,7 +45,7 @@ public class DataManagementService {
     }
 
     public ServantOfUser tempLoad() {
-        Servant baseServant = servantDataList.stream().sorted((svt1, svt2) -> Comparator.<Integer>reverseOrder().compare(svt2.getName().length(), svt1.getName().length())).findFirst().get();
+        Servant baseServant = servantDataList.stream().sorted((svt1, svt2) -> Comparator.<Integer>reverseOrder().compare(svt1.getName().length(), svt2.getName().length())).findFirst().get();
         return new UserServantFactory().createUserServantFromBaseServant(baseServant);
     }
 
@@ -108,5 +108,9 @@ public class DataManagementService {
 
     public List<String> getAllServantNames() {
         return servantNameList;
+    }
+
+    public Servant getServantByName(String name) {
+        return servantDataList.stream().filter(svt -> name.equalsIgnoreCase(svt.getName())).findFirst().orElse(null);
     }
 }

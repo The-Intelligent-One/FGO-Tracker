@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.cell.*?>
+<?import com.github.theintelligentone.fgotracker.ui.valuefactory.ServantNpDamageValueFactory?>
+<?import com.github.theintelligentone.fgotracker.ui.valuefactory.DeckColumnValueFactory?>
+<?import com.github.theintelligentone.fgotracker.ui.valuefactory.ServantAttributeValueFactory?>
+<?import com.github.theintelligentone.fgotracker.ui.valuefactory.ServantClassValueFactory?>
+<?import com.github.theintelligentone.fgotracker.ui.valuefactory.ServantNameValueFactory?>
+<?import java.lang.Integer?>
+<Tab xmlns="http://javafx.com/javafx"
+     xmlns:fx="http://javafx.com/fxml"
+     fx:controller="com.github.theintelligentone.fgotracker.ui.RosterController"
+     text="Servants"
+     closable="false">
+    <fx:define>
+        <Integer fx:id="NAME_CELL_WIDTH" fx:value="200"/>
+        <Integer fx:id="LONG_CELL_WIDTH" fx:value="100"/>
+        <Integer fx:id="MID_CELL_WIDTH" fx:value="60"/>
+        <Integer fx:id="SHORT_CELL_WIDTH" fx:value="40"/>
+        <Integer fx:id="CHAR_CELL_WIDTH" fx:value="20"/>
+    </fx:define>
+    <TableView fx:id="rosterTable" editable="true">
+        <columns>
+            <TableColumn text="General Info">
+                <columns>
+                    <TableColumn text="Name" prefWidth="$NAME_CELL_WIDTH" fx:id="nameColumn">
+                        <cellValueFactory>
+                            <ServantNameValueFactory/>
+                        </cellValueFactory>
+                        <cellFactory>
+                            <TextFieldTableCell fx:factory="forTableColumn"/>
+                        </cellFactory>
+                    </TableColumn>
+                    <TableColumn text="R" prefWidth="$CHAR_CELL_WIDTH">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="rarity"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="Class" prefWidth="$LONG_CELL_WIDTH">
+                        <cellValueFactory>
+                            <ServantClassValueFactory/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="Attr." prefWidth="$MID_CELL_WIDTH">
+                        <cellValueFactory>
+                            <ServantAttributeValueFactory/>
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+            </TableColumn>
+            <TableColumn text="Deck">
+                <columns>
+                    <TableColumn text="C1" prefWidth="$CHAR_CELL_WIDTH">
+                        <cellValueFactory>
+                            <DeckColumnValueFactory fx:value="1"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="C2" prefWidth="$CHAR_CELL_WIDTH">
+                        <cellValueFactory>
+                            <DeckColumnValueFactory fx:value="2"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="C3" prefWidth="$CHAR_CELL_WIDTH">
+                        <cellValueFactory>
+                            <DeckColumnValueFactory fx:value="3"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="C4" prefWidth="$CHAR_CELL_WIDTH">
+                        <cellValueFactory>
+                            <DeckColumnValueFactory fx:value="4"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="C5" prefWidth="$CHAR_CELL_WIDTH">
+                        <cellValueFactory>
+                            <DeckColumnValueFactory fx:value="5"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+            </TableColumn>
+            <TableColumn text="NP">
+                <columns>
+                    <TableColumn text="Type" prefWidth="$MID_CELL_WIDTH">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="npType"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="Target" prefWidth="$MID_CELL_WIDTH">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="npTarget"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="Damage" prefWidth="$MID_CELL_WIDTH">
+                        <cellValueFactory>
+                            <ServantNpDamageValueFactory/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="Lvl" prefWidth="$MID_CELL_WIDTH">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="npLevel"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+            </TableColumn>
+            <TableColumn text="Levels">
+                <columns>
+                    <TableColumn text="Lvl" prefWidth="$SHORT_CELL_WIDTH">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="level"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="Asc" prefWidth="$SHORT_CELL_WIDTH">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="ascension"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="B" prefWidth="$CHAR_CELL_WIDTH">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="bondLevel"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="S1" prefWidth="$CHAR_CELL_WIDTH">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="skillLevel1"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="S2" prefWidth="$CHAR_CELL_WIDTH">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="skillLevel2"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="S3" prefWidth="$CHAR_CELL_WIDTH">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="skillLevel3"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+            </TableColumn>
+            <TableColumn text="Fou">
+                <columns>
+                    <TableColumn text="ATK" prefWidth="$MID_CELL_WIDTH">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="fouAtk"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="HP" prefWidth="$MID_CELL_WIDTH">
+                        <cellValueFactory>
+                            <PropertyValueFactory property="fouHp"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+            </TableColumn>
+        </columns>
+    </TableView>
+</Tab>

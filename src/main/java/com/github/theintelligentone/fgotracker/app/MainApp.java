@@ -1,20 +1,21 @@
 package com.github.theintelligentone.fgotracker.app;
 
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
-import com.github.theintelligentone.fgotracker.ui.MainWindow;
+import com.github.theintelligentone.fgotracker.ui.MainController;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.controlsfx.control.textfield.TextFields;
+import lombok.Getter;
 
 public class MainApp extends Application {
     private static final String MAIN_WINDOW_FXML = "/mainWindow.fxml";
     private static final double AUTO_WIDTH = 1016;
     private static final double AUTO_HEIGHT = 468;
     private FXMLLoader loader;
+    @Getter
+    private static DataManagementService dataManagementService;
 
     public static void main(String[] args) {
         launch();
@@ -22,6 +23,7 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        dataManagementService = new DataManagementService();
         loader = new FXMLLoader(getClass().getResource(MAIN_WINDOW_FXML));
         Parent root = loader.load();
         Scene scene = new Scene(root);
@@ -35,7 +37,7 @@ public class MainApp extends Application {
 
     @Override
     public void stop() {
-        MainWindow controller = loader.getController();
+        MainController controller = loader.getController();
         controller.tearDown();
     }
 }

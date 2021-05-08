@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TableColumn?>
+<?import com.github.theintelligentone.fgotracker.ui.valuefactory.*?>
 <?import javafx.scene.control.cell.*?>
-<?import com.github.theintelligentone.fgotracker.ui.valuefactory.ServantNpDamageValueFactory?>
-<?import com.github.theintelligentone.fgotracker.ui.valuefactory.DeckColumnValueFactory?>
-<?import com.github.theintelligentone.fgotracker.ui.valuefactory.ServantAttributeValueFactory?>
-<?import com.github.theintelligentone.fgotracker.ui.valuefactory.ServantClassValueFactory?>
-<?import com.github.theintelligentone.fgotracker.ui.valuefactory.ServantNameValueFactory?>
-<?import java.lang.Integer?>
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
 <Tab xmlns="http://javafx.com/javafx"
      xmlns:fx="http://javafx.com/fxml"
      fx:controller="com.github.theintelligentone.fgotracker.ui.RosterController"

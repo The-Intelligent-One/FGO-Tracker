@@ -13,9 +13,9 @@ public class MainApp extends Application {
     private static final String MAIN_WINDOW_FXML = "/mainWindow.fxml";
     private static final double AUTO_WIDTH = 1016;
     private static final double AUTO_HEIGHT = 468;
-    private FXMLLoader loader;
     @Getter
     private static DataManagementService dataManagementService;
+    private FXMLLoader loader;
 
     public static void main(String[] args) {
         launch();

@@ -22,6 +22,11 @@ public class DeckColumnValueFactory implements Callback<TableColumn.CellDataFeat
 
     @Override
     public ObservableValue<String> call(TableColumn.CellDataFeatures<ServantOfUser, String> param) {
-        return new SimpleStringProperty(param.getValue().getCards().get(cardNo - 1).substring(0, 1).toUpperCase());
+        SimpleStringProperty card = new SimpleStringProperty();
+        if (param.getValue() != null && param.getValue().getCards().size() > 0) {
+            String cardValue = param.getValue().getCards().get(cardNo - 1).substring(0, 1).toUpperCase();
+            card.set(cardValue);
+        }
+        return card;
     }
 }

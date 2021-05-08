@@ -12,6 +12,8 @@ import org.controlsfx.control.textfield.TextFields;
 
 public class MainApp extends Application {
     private static final String MAIN_WINDOW_FXML = "/mainWindow.fxml";
+    private static final double AUTO_WIDTH = 1016;
+    private static final double AUTO_HEIGHT = 468;
     private FXMLLoader loader;
 
     public static void main(String[] args) {
@@ -26,9 +28,9 @@ public class MainApp extends Application {
         scene.getStylesheets().add("tableStyle.css");
         primaryStage.setScene(scene);
         primaryStage.setTitle("FGO Tracker");
+        primaryStage.setMinHeight(AUTO_HEIGHT);
+        primaryStage.setMinWidth(AUTO_WIDTH);
         primaryStage.show();
-        primaryStage.setMinHeight(primaryStage.getHeight());
-        primaryStage.setMinWidth(primaryStage.getWidth());
     }
 
     @Override

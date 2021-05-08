@@ -10,4 +10,5 @@ import java.util.List;
 public class FgoFunction {
     private String funcType;
     private List<Multiplier> svals;
+    private String funcTargetType;
 }

@@ -7,7 +7,7 @@
 <TabPane xmlns="http://javafx.com/javafx"
          xmlns:fx="http://javafx.com/fxml"
          fx:controller="com.github.theintelligentone.fgotracker.ui.MainWindow">
-    <Tab text="Servants">
+    <Tab text="Servants" closable="false">
         <fx:define>
             <Integer fx:id="NAME_CELL_WIDTH" fx:value="200"/>
             <Integer fx:id="LONG_CELL_WIDTH" fx:value="100"/>
@@ -15,14 +15,17 @@
             <Integer fx:id="SHORT_CELL_WIDTH" fx:value="40"/>
             <Integer fx:id="CHAR_CELL_WIDTH" fx:value="20"/>
         </fx:define>
-        <TableView fx:id="rosterTable">
+        <TableView fx:id="rosterTable" editable="true">
             <columns>
                 <TableColumn text="General Info">
                     <columns>
-                        <TableColumn text="Name" prefWidth="$NAME_CELL_WIDTH">
+                        <TableColumn text="Name" prefWidth="$NAME_CELL_WIDTH" fx:id="nameColumn">
                             <cellValueFactory>
-                                <PropertyValueFactory property="name"/>
+                                <ServantNameValueFactory/>
                             </cellValueFactory>
+                            <cellFactory>
+                                <TextFieldTableCell fx:factory="forTableColumn"/>
+                            </cellFactory>
                         </TableColumn>
                         <TableColumn text="R" prefWidth="$CHAR_CELL_WIDTH">
                             <cellValueFactory>
@@ -31,12 +34,12 @@
                         </TableColumn>
                         <TableColumn text="Class" prefWidth="$LONG_CELL_WIDTH">
                             <cellValueFactory>
-                                <PropertyValueFactory property="className"/>
+                                <ServantClassValueFactory/>
                             </cellValueFactory>
                         </TableColumn>
                         <TableColumn text="Attr." prefWidth="$MID_CELL_WIDTH">
                             <cellValueFactory>
-                                <PropertyValueFactory property="attribute"/>
+                                <ServantAttributeValueFactory/>
                             </cellValueFactory>
                         </TableColumn>
                     </columns>
@@ -84,7 +87,7 @@
                         </TableColumn>
                         <TableColumn text="Damage" prefWidth="$MID_CELL_WIDTH">
                             <cellValueFactory>
-                                <PropertyValueFactory property="npDamage"/>
+                                <ServantNpDamageValueFactory/>
                             </cellValueFactory>
                         </TableColumn>
                         <TableColumn text="Lvl" prefWidth="$MID_CELL_WIDTH">

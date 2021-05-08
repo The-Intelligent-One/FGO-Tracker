@@ -1,54 +1,84 @@
 package com.github.theintelligentone.fgotracker.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
-import com.github.theintelligentone.fgotracker.ui.MainWindow;
+import com.github.theintelligentone.fgotracker.domain.servant.UserServantFactory;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import lombok.Getter;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class DataManagementService {
+    public static Map<String, Integer> CLASS_ATTACK_MULTIPLIER;
+    public static Map<String, Map<Integer, CardPlacementData>> CARD_DATA;
     private final DataRequestService requestService;
     private final FileManagementService fileService;
-    private final MainWindow mainWindowController;
 
     private List<String> servantNameList;
     private List<Servant> servantDataList;
+    @Getter
+    private ObservableList<ServantOfUser> userServantList = FXCollections.observableArrayList();
     private long currentVersion;
 
-    public DataManagementService(MainWindow mainWindowController) {
+    public DataManagementService() {
         ObjectMapper objectMapper = new ObjectMapper();
         this.requestService = new DataRequestService(objectMapper);
         this.fileService = new FileManagementService(objectMapper);
-        this.mainWindowController = mainWindowController;
         initApp();
     }
 
-    public void tearDown() {
-        fileService.saveUserServants(mainWindowController.getUserServants());
+    public void saveUserServant(ServantOfUser servant, int index) {
+        while (userServantList.size() <= index) {
+            userServantList.add(null);
+        }
+        userServantList.set(index, servant);
     }
 
-    public void saveUserServant(ServantOfUser servant, int index) {
-        while (mainWindowController.getUserServants().size() <= index) {
-            mainWindowController.getUserServants().add(null);
-        }
-        mainWindowController.getUserServants().set(index, servant);
+    public void saveUserState() {
+        fileService.saveUserServants(userServantList);
+    }
+
+    public ServantOfUser tempLoad() {
+        Servant baseServant = servantDataList.stream().sorted((svt1, svt2) -> Comparator.<Integer>reverseOrder().compare(svt2.getName().length(), svt1.getName().length())).findFirst().get();
+        return new UserServantFactory().createUserServantFromBaseServant(baseServant);
     }
 
     private void initApp() {
+        refreshAllData();
+        FXCollections.observableArrayList(fileService.loadUserData());
+    }
+
+    public void refreshAllData() {
         if (newVersionAvailable()) {
-            servantDataList = requestService.getAllServantData();
-            if (!servantDataList.isEmpty()) {
-                fileService.saveFullServantData(servantDataList);
-                fileService.saveNewVersion(currentVersion);
-            }
+            refreshCache();
         } else {
-            servantDataList = fileService.loadFullServantData();
+            loadFromCache();
         }
         servantNameList = servantDataList.stream().map(Servant::getName).collect(Collectors.toList());
-        mainWindowController.getUserServants().addAll(fileService.loadUserData());
+    }
+
+    private void loadFromCache() {
+        servantDataList = fileService.loadFullServantData();
+        CLASS_ATTACK_MULTIPLIER = fileService.getClassAttackRate();
+        CARD_DATA = fileService.getCardData();
+    }
+
+    private void refreshCache() {
+        servantDataList = requestService.getAllServantData();
+        if (!servantDataList.isEmpty()) {
+            fileService.saveFullServantData(servantDataList);
+            fileService.saveNewVersion(currentVersion);
+        }
+        CLASS_ATTACK_MULTIPLIER = requestService.getClassAttackRate();
+        CARD_DATA = requestService.getCardDetails();
+        fileService.saveClassAttackRate(CLASS_ATTACK_MULTIPLIER);
+        fileService.saveCardData(CARD_DATA);
     }
 
     private boolean newVersionAvailable() {

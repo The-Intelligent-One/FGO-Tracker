@@ -44,7 +44,7 @@ public class FileManagementService {
     }
 
     public void saveCardData(Map<String, Map<Integer, CardPlacementData>> cardData) {
-        File file = new File(BASE_DATA_PATH, CLASS_ATTACK_FILE);
+        File file = new File(BASE_DATA_PATH, CARD_DATA_FILE);
         saveDataToFile(cardData, file);
     }
 

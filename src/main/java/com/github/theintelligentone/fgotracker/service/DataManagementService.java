@@ -51,7 +51,6 @@ public class DataManagementService {
 
     private void initApp() {
         refreshAllData();
-        FXCollections.observableArrayList(fileService.loadUserData());
     }
 
     public void refreshAllData() {
@@ -60,7 +59,22 @@ public class DataManagementService {
         } else {
             loadFromCache();
         }
+        userServantList = FXCollections.observableList(createAssociatedUserServantList());
         servantNameList = servantDataList.stream().map(Servant::getName).collect(Collectors.toList());
+    }
+
+    private List<ServantOfUser> createAssociatedUserServantList() {
+        List<ServantOfUser> userServants = fileService.loadUserData();
+        userServants.forEach(svt -> {
+            if (svt != null) {
+                svt.setBaseServant(findServantById(svt.getSvtId()));
+            }
+        });
+        return userServants;
+    }
+
+    private Servant findServantById(long svtId) {
+        return servantDataList.stream().filter(svt -> svtId == svt.getId()).findFirst().get();
     }
 
     private void loadFromCache() {

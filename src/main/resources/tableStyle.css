@@ -1,3 +1,8 @@
 .table-column {
     -fx-alignment: center
 }
+
+.table-row-cell:last-row {
+    -fx-border-width: 0 0 2px 0;
+    -fx-border-style: solid
+}

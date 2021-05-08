@@ -1,4 +1,4 @@
-.table-column {
+.table-column, .text-field {
     -fx-alignment: center
 }
 

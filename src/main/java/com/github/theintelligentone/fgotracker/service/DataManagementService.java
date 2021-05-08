@@ -40,6 +40,10 @@ public class DataManagementService {
         userServantList.set(index, servant);
     }
 
+    public void saveUserServant(ServantOfUser servant) {
+        userServantList.add(servant);
+    }
+
     public void saveUserState() {
         fileService.saveUserServants(userServantList);
     }
@@ -50,7 +54,12 @@ public class DataManagementService {
     }
 
     private void initApp() {
-        refreshAllData();
+        userServantList = FXCollections.observableArrayList();
+        Thread loadThread = new Thread(() -> {
+            refreshAllData();
+//            saveUserServant(tempLoad(),3);
+        });
+        loadThread.start();
     }
 
     public void refreshAllData() {
@@ -59,7 +68,7 @@ public class DataManagementService {
         } else {
             loadFromCache();
         }
-        userServantList = FXCollections.observableList(createAssociatedUserServantList());
+        userServantList.addAll(createAssociatedUserServantList());
         servantNameList = servantDataList.stream().map(Servant::getName).collect(Collectors.toList());
     }
 

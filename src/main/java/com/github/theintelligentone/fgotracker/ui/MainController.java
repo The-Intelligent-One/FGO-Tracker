@@ -25,6 +25,10 @@ public class MainController {
         dataManagementService.saveUserServant(null);
     }
 
+    public void rosterTableSetup() {
+        rosterTabController.tableSetup();
+    }
+
     public void importFromCsv() {
         if (dataManagementService.isDataLoaded()) {
             FileChooser fileChooser = new FileChooser();

@@ -33,7 +33,6 @@ public class DataManagementService {
         ObjectMapper objectMapper = new ObjectMapper();
         this.requestService = new DataRequestService(objectMapper);
         this.fileService = new FileManagementService(objectMapper);
-        initApp();
     }
 
     public ObservableList<String> getServantNameList() {
@@ -141,13 +140,10 @@ public class DataManagementService {
         return new UserServantFactory().createUserServantFromBaseServant(baseServant);
     }
 
-    private void initApp() {
+    public void initApp() {
         userServantList = FXCollections.observableArrayList();
-        Thread loadThread = new Thread(() -> {
-            refreshAllData();
+        refreshAllData();
 //            saveUserServant(tempLoad(),3);
-        });
-        loadThread.start();
     }
 
     public void refreshAllData() {

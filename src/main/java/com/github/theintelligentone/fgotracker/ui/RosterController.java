@@ -57,14 +57,12 @@ public class RosterController {
 
     public void initialize() {
         dataManagementService = MainApp.getDataManagementService();
-        tableSetup();
 
     }
 
-    private void tableSetup() {
+    public void tableSetup() {
         rosterTable.setItems(getUserServants());
         rosterTable.getSelectionModel().setCellSelectionEnabled(true);
-        rosterTable.getColumns().forEach(column -> column.setResizable(false));
         nameColumnSetup();
         npColumnSetup();
         levelColumnSetup();

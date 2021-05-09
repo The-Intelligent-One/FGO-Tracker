@@ -11,9 +11,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-
-import java.util.List;
-import java.util.TreeSet;
+import javafx.scene.control.cell.ComboBoxTableCell;
 
 public class RosterController {
     private DataManagementService dataManagementService;
@@ -24,13 +22,24 @@ public class RosterController {
     @FXML
     private TableColumn<ServantOfUser, String> nameColumn;
 
+    @FXML
+    private TableColumn<ServantOfUser, String> levelColumn;
+
+    @FXML
+    private TableColumn<ServantOfUser, String> npColumn;
+
     public void initialize() {
         dataManagementService = MainApp.getDataManagementService();
         rosterTable.setItems(getUserServants());
         nameColumn.setOnEditCommit(event -> {
-            getUserServants().set(event.getTablePosition().getRow(), new UserServantFactory().replaceBaseServant(event.getRowValue(), dataManagementService.getServantByName(event.getNewValue())));
+            if (event.getNewValue().isEmpty()) {
+                event.getTableView().getItems().set(event.getTableView().getItems().indexOf(event.getRowValue()), null);
+            } else {
+                getUserServants().set(event.getTablePosition().getRow(), new UserServantFactory().replaceBaseServant(event.getRowValue(), dataManagementService.getServantByName(event.getNewValue())));
+            }
         });
-        nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(new TreeSet<>(List.of("Euryale", "Penthesilea"))));
+        nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementService.getServantNameList()));
+        npColumn.setCellFactory(ComboBoxTableCell.<ServantOfUser, String>forTableColumn("1", "2", "3", "4", "5"));
         PseudoClass lastRow = PseudoClass.getPseudoClass("last-row");
         rosterTable.setRowFactory(tv -> new TableRow<>() {
             @Override

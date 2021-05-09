@@ -20,15 +20,13 @@ import javafx.util.converter.DefaultStringConverter;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, T> {
 
     private final ObjectProperty<T> lastSelectedItem = new SimpleObjectProperty<>();
-    private final SortedSet<T> entries;
+    private final ObservableList<T> entries;
     private ObservableList<T> filteredEntries = FXCollections.observableArrayList();
     private ContextMenu entriesPopup;
     private boolean caseSensitive = false;
@@ -37,11 +35,11 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
     private int maxEntries = 10;
     private TextField text;
 
-    public AutoCompleteTextFieldTableCell(StringConverter<T> converter, SortedSet<T> entrySet) {
+    public AutoCompleteTextFieldTableCell(StringConverter<T> converter, ObservableList<T> entrySet) {
         super();
         getStyleClass().add("text-field-table-cell");
         setConverter(converter);
-        this.entries = (entrySet == null ? new TreeSet<>() : entrySet);
+        this.entries = (entrySet == null ? FXCollections.observableArrayList() : entrySet);
         this.filteredEntries.addAll(entries);
 
         entriesPopup = new ContextMenu();
@@ -99,7 +97,7 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
 
     }
 
-    public static <S> Callback<TableColumn<S, String>, TableCell<S, String>> forTableColumn(SortedSet<String> entries) {
+    public static <S> Callback<TableColumn<S, String>, TableCell<S, String>> forTableColumn(ObservableList<String> entries) {
         return list -> {
             AutoCompleteTextFieldTableCell<S, String> tableCell = new AutoCompleteTextFieldTableCell(new DefaultStringConverter(), entries);
             tableCell.getEntryMenu().setOnAction(e -> {
@@ -114,7 +112,7 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
         };
     }
 
-    public SortedSet<T> getEntries() {
+    public ObservableList<T> getEntries() {
         return entries;
     }
 

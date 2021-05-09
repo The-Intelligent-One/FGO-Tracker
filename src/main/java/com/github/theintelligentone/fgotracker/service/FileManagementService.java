@@ -29,6 +29,7 @@ public class FileManagementService {
     private static final String CLASS_ATTACK_FILE = "cache/classAttack.json";
     private static final String CARD_DATA_FILE = "cache/cardData.json";
     private static final String USER_DATA_FILE = "userdata/servants.json";
+    private static final String MANAGER_DB_PATH = "src/main/resources/managerDB-v1.3.2.csv";
     private final ObjectMapper objectMapper;
 
     public FileManagementService(ObjectMapper objectMapper) {
@@ -173,7 +174,7 @@ public class FileManagementService {
     public List<ServantFromManager> loadManagerLookupTable() {
         FileReader fileReader = null;
         try {
-            fileReader = new FileReader("src/main/resources/managerDB-v1.3.2.csv");
+            fileReader = new FileReader(MANAGER_DB_PATH);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }

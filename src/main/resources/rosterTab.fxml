@@ -88,7 +88,7 @@
                             <ServantNpDamageValueFactory/>
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn text="Lvl" prefWidth="$MID_CELL_WIDTH">
+                    <TableColumn fx:id="npColumn" text="Lvl" prefWidth="$MID_CELL_WIDTH">
                         <cellValueFactory>
                             <PropertyValueFactory property="npLevel"/>
                         </cellValueFactory>
@@ -97,7 +97,7 @@
             </TableColumn>
             <TableColumn text="Levels">
                 <columns>
-                    <TableColumn text="Lvl" prefWidth="$SHORT_CELL_WIDTH">
+                    <TableColumn fx:id="levelColumn" text="Lvl" prefWidth="$SHORT_CELL_WIDTH">
                         <cellValueFactory>
                             <PropertyValueFactory property="level"/>
                         </cellValueFactory>

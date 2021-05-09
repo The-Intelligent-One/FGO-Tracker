@@ -22,19 +22,21 @@ public class DataManagementService {
     public static Map<String, Map<Integer, CardPlacementData>> CARD_DATA;
     private final DataRequestService requestService;
     private final FileManagementService fileService;
-
     private ObservableList<String> servantNameList = FXCollections.observableArrayList();
     private List<Servant> servantDataList;
     private List<ServantFromManager> managerLookup;
     @Getter
     private ObservableList<ServantOfUser> userServantList = FXCollections.observableArrayList();
     private long currentVersion;
-
     public DataManagementService() {
         ObjectMapper objectMapper = new ObjectMapper();
         this.requestService = new DataRequestService(objectMapper);
         this.fileService = new FileManagementService(objectMapper);
         initApp();
+    }
+
+    public ObservableList<String> getServantNameList() {
+        return servantNameList;
     }
 
     public List<String> importFromCsv(File sourceFile) {
@@ -116,7 +118,7 @@ public class DataManagementService {
 
     private void clearUnnecessaryEmptyRows() {
         int index = userServantList.size() - 1;
-        while (!userServantList.isEmpty() && userServantList.get(index) == null){
+        while (!userServantList.isEmpty() && userServantList.get(index) == null) {
             userServantList.remove(index--);
         }
     }

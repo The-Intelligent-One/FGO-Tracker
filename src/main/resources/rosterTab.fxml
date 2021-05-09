@@ -24,9 +24,6 @@
                         <cellValueFactory>
                             <ServantNameValueFactory/>
                         </cellValueFactory>
-                        <cellFactory>
-                            <TextFieldTableCell fx:factory="forTableColumn"/>
-                        </cellFactory>
                     </TableColumn>
                     <TableColumn text="R" prefWidth="$CHAR_CELL_WIDTH">
                         <cellValueFactory>

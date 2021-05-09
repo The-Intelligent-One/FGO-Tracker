@@ -1,6 +1,7 @@
 package com.github.theintelligentone.fgotracker.ui;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
+import com.github.theintelligentone.fgotracker.domain.AutoCompleteTextFieldTableCell;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServantFactory;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
@@ -10,6 +11,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
+
+import java.util.List;
+import java.util.TreeSet;
 
 public class RosterController {
     private DataManagementService dataManagementService;
@@ -26,6 +30,7 @@ public class RosterController {
         nameColumn.setOnEditCommit(event -> {
             getUserServants().set(event.getTablePosition().getRow(), new UserServantFactory().replaceBaseServant(event.getRowValue(), dataManagementService.getServantByName(event.getNewValue())));
         });
+        nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(new TreeSet<>(List.of("Euryale", "Penthesilea"))));
         PseudoClass lastRow = PseudoClass.getPseudoClass("last-row");
         rosterTable.setRowFactory(tv -> new TableRow<>() {
             @Override
@@ -35,6 +40,7 @@ public class RosterController {
                         index >= 0 && index == rosterTable.getItems().size() - 1);
             }
         });
+
     }
 
     public ObservableList<ServantOfUser> getUserServants() {

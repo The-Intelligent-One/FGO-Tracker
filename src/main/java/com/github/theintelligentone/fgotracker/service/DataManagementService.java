@@ -50,10 +50,12 @@ public class DataManagementService {
     }
 
     private void clearUnnecessaryEmptyRows() {
-        int index = userServantList.size() - 1;
-        if (userServantList.get(index) == null) {
-            while (userServantList.get(index) == null) {
-                userServantList.remove(index--);
+        if (!userServantList.isEmpty()){
+            int index = userServantList.size() - 1;
+            if (userServantList.get(index) == null) {
+                while (userServantList.get(index) == null) {
+                    userServantList.remove(index--);
+                }
             }
         }
     }

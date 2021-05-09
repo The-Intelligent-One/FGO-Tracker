@@ -16,11 +16,16 @@
         </Menu>
         <Menu>
             <graphic>
+                <Label onMouseClicked="#add10NewRow" text="Add 10 New Rows"/>
+            </graphic>
+        </Menu>
+        <Menu>
+            <graphic>
                 <Label onMouseClicked="#importFromCsv" text="Import"/>
             </graphic>
         </Menu>
     </MenuBar>
     <TabPane>
-        <fx:include source="rosterTab.fxml"/>
+        <fx:include fx:id="rosterTab" source="rosterTab.fxml"/>
     </TabPane>
 </VBox>

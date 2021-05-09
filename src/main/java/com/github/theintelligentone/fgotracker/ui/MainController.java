@@ -2,13 +2,19 @@ package com.github.theintelligentone.fgotracker.ui;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class MainController {
+    @FXML
+    private RosterController rosterTabController;
+
     private DataManagementService dataManagementService;
 
     public void initialize() {
@@ -37,5 +43,9 @@ public class MainController {
 
     public void tearDown() {
         dataManagementService.saveUserState();
+    }
+
+    public void add10NewRow() {
+        IntStream.range(0, 10).forEach(number -> this.addNewRow());
     }
 }

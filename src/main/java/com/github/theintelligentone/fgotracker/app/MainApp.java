@@ -11,11 +11,12 @@ import lombok.Getter;
 
 public class MainApp extends Application {
     private static final String MAIN_WINDOW_FXML = "/mainWindow.fxml";
-    private static final double AUTO_WIDTH = 1016;
-    private static final double AUTO_HEIGHT = 468;
+    private static final double AUTO_WIDTH = 1030;
+    private static final double AUTO_HEIGHT = 480;
     @Getter
     private static DataManagementService dataManagementService;
     private FXMLLoader loader;
+    private MainController mainController;
 
     public static void main(String[] args) {
         launch();
@@ -26,9 +27,11 @@ public class MainApp extends Application {
         dataManagementService = new DataManagementService();
         loader = new FXMLLoader(getClass().getResource(MAIN_WINDOW_FXML));
         Parent root = loader.load();
+        mainController = loader.getController();
         Scene scene = new Scene(root);
         scene.getStylesheets().add("tableStyle.css");
         primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
         primaryStage.setTitle("FGO Tracker");
         primaryStage.setMinHeight(AUTO_HEIGHT);
         primaryStage.setMinWidth(AUTO_WIDTH);
@@ -37,7 +40,6 @@ public class MainApp extends Application {
 
     @Override
     public void stop() {
-        MainController controller = loader.getController();
-        controller.tearDown();
+        mainController.tearDown();
     }
 }

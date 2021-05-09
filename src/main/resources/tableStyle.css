@@ -6,3 +6,7 @@
     -fx-border-width: 0 0 2px 0;
     -fx-border-style: solid
 }
+
+.table-row-cell {
+    -fx-cell-size: 35px
+}

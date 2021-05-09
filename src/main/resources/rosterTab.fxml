@@ -88,7 +88,7 @@
                             <ServantNpDamageValueFactory/>
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn fx:id="npColumn" text="Lvl" prefWidth="$MID_CELL_WIDTH">
+                    <TableColumn editable="true" fx:id="npColumn" text="Lvl" prefWidth="$MID_CELL_WIDTH">
                         <cellValueFactory>
                             <PropertyValueFactory property="npLevel"/>
                         </cellValueFactory>
@@ -102,27 +102,27 @@
                             <PropertyValueFactory property="level"/>
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn text="Asc" prefWidth="$SHORT_CELL_WIDTH">
+                    <TableColumn fx:id="ascColumn" text="Asc" prefWidth="$SHORT_CELL_WIDTH">
                         <cellValueFactory>
                             <PropertyValueFactory property="ascension"/>
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn text="B" prefWidth="$CHAR_CELL_WIDTH">
+                    <TableColumn fx:id="bondColumn" text="B" prefWidth="$CHAR_CELL_WIDTH">
                         <cellValueFactory>
                             <PropertyValueFactory property="bondLevel"/>
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn text="S1" prefWidth="$CHAR_CELL_WIDTH">
+                    <TableColumn fx:id="skill1Column" text="S1" prefWidth="$CHAR_CELL_WIDTH">
                         <cellValueFactory>
                             <PropertyValueFactory property="skillLevel1"/>
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn text="S2" prefWidth="$CHAR_CELL_WIDTH">
+                    <TableColumn fx:id="skill2Column" text="S2" prefWidth="$CHAR_CELL_WIDTH">
                         <cellValueFactory>
                             <PropertyValueFactory property="skillLevel2"/>
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn text="S3" prefWidth="$CHAR_CELL_WIDTH">
+                    <TableColumn fx:id="skill3Column" text="S3" prefWidth="$CHAR_CELL_WIDTH">
                         <cellValueFactory>
                             <PropertyValueFactory property="skillLevel3"/>
                         </cellValueFactory>
@@ -131,12 +131,12 @@
             </TableColumn>
             <TableColumn text="Fou">
                 <columns>
-                    <TableColumn text="ATK" prefWidth="$MID_CELL_WIDTH">
+                    <TableColumn fx:id="atkColumn" text="ATK" prefWidth="$MID_CELL_WIDTH">
                         <cellValueFactory>
                             <PropertyValueFactory property="fouAtk"/>
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn text="HP" prefWidth="$MID_CELL_WIDTH">
+                    <TableColumn fx:id="hpColumn" text="HP" prefWidth="$MID_CELL_WIDTH">
                         <cellValueFactory>
                             <PropertyValueFactory property="fouHp"/>
                         </cellValueFactory>

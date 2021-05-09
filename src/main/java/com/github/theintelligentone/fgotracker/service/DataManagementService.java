@@ -58,16 +58,20 @@ public class DataManagementService {
         ServantOfUser servant = null;
         if (!filteredData.get("name").isEmpty()) {
             Servant baseServant = findServantFromManager(filteredData.get("name"));
-            if (baseServant.getName() != null && !dataMissing(filteredData)) {
+            if (baseServant.getName() != null && !baseServant.getName().isEmpty()) {
                 servant = new UserServantFactory().createUserServantFromBaseServant(baseServant);
-                servant.setNpLevel(Integer.parseInt(filteredData.get("npLevel").substring(2)));
-                servant.setLevel(Integer.parseInt(filteredData.get("level").substring(4)));
-                servant.setSkillLevel1(Integer.parseInt(filteredData.get("skill1")));
-                servant.setSkillLevel2(Integer.parseInt(filteredData.get("skill2")));
-                servant.setSkillLevel3(Integer.parseInt(filteredData.get("skill3")));
-                servant.setFouHp(Integer.parseInt(filteredData.get("fouHp")));
-                servant.setFouAtk(Integer.parseInt(filteredData.get("fouAtk")));
-                servant.setBondLevel(Integer.parseInt(filteredData.get("bond")));
+                if (!filteredData.get("npLevel").isEmpty()) {
+                    servant.setNpLevel(convertToInt(filteredData.get("npLevel").substring(2)));
+                }
+                if (!filteredData.get("level").isEmpty()) {
+                    servant.setLevel(convertToInt(filteredData.get("level").substring(4)));
+                }
+                servant.setSkillLevel1(convertToInt(filteredData.get("skill1")));
+                servant.setSkillLevel2(convertToInt(filteredData.get("skill2")));
+                servant.setSkillLevel3(convertToInt(filteredData.get("skill3")));
+                servant.setFouHp(convertToInt(filteredData.get("fouHp")));
+                servant.setFouAtk(convertToInt(filteredData.get("fouAtk")));
+                servant.setBondLevel(convertToInt(filteredData.get("bond")));
             } else {
                 baseServant = new Servant();
                 baseServant.setName(importedData[0]);
@@ -76,6 +80,14 @@ public class DataManagementService {
             }
         }
         return servant;
+    }
+
+    private int convertToInt(String data) {
+        int result = 0;
+        if (data != null && !data.isEmpty()) {
+            result = Integer.parseInt(data);
+        }
+        return result;
     }
 
     private Servant findServantFromManager(String name) {
@@ -99,10 +111,6 @@ public class DataManagementService {
         filteredData.put("fouAtk", importedData[20]);
         filteredData.put("bond", importedData[21]);
         return filteredData;
-    }
-
-    private boolean dataMissing(Map<String, String> importedData) {
-        return importedData.values().stream().anyMatch(String::isBlank);
     }
 
     public void saveUserServant(ServantOfUser servant, int index) {

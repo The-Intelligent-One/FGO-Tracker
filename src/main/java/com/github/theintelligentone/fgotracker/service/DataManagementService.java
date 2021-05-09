@@ -28,6 +28,7 @@ public class DataManagementService {
     @Getter
     private ObservableList<ServantOfUser> userServantList = FXCollections.observableArrayList();
     private long currentVersion;
+
     public DataManagementService() {
         ObjectMapper objectMapper = new ObjectMapper();
         this.requestService = new DataRequestService(objectMapper);
@@ -80,6 +81,10 @@ public class DataManagementService {
     private Servant findServantFromManager(String name) {
         ServantFromManager servantFromManager = managerLookup.stream().filter(svt -> name.equalsIgnoreCase(svt.getName())).findFirst().get();
         return servantDataList.stream().filter(svt -> svt.getCollectionNo() == servantFromManager.getCollectionNo()).findFirst().orElse(new Servant());
+    }
+
+    public boolean isDataLoaded() {
+        return servantDataList != null && !servantDataList.isEmpty();
     }
 
     private Map<String, String> filterData(String[] importedData) {

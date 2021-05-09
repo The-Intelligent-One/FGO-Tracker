@@ -24,7 +24,7 @@ public class ServantNpDamageValueFactory implements Callback<TableColumn.CellDat
     }
 
     private Long calculateNpDamage(ServantOfUser servant) {
-        Long damage = null;
+        Long damage = 0l;
         NoblePhantasm np = servant.getBaseServant().getNoblePhantasms().get(servant.getBaseServant().getNoblePhantasms().size() - 1);
         FgoFunction dmgFnc = findDamagingNpFunction(np);
         if (dmgFnc != null) {

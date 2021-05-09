@@ -1,6 +1,7 @@
 package com.github.theintelligentone.fgotracker.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.theintelligentone.fgotracker.domain.ServantFromManager;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
@@ -9,7 +10,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
 
+import java.io.File;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -20,8 +23,9 @@ public class DataManagementService {
     private final DataRequestService requestService;
     private final FileManagementService fileService;
 
-    private List<String> servantNameList;
+    private ObservableList<String> servantNameList = FXCollections.observableArrayList();
     private List<Servant> servantDataList;
+    private List<ServantFromManager> managerLookup;
     @Getter
     private ObservableList<ServantOfUser> userServantList = FXCollections.observableArrayList();
     private long currentVersion;
@@ -31,6 +35,67 @@ public class DataManagementService {
         this.requestService = new DataRequestService(objectMapper);
         this.fileService = new FileManagementService(objectMapper);
         initApp();
+    }
+
+    public List<String> importFromCsv(File sourceFile) {
+        managerLookup = fileService.loadManagerLookupTable();
+        List<String[]> importedData = fileService.importCsv(sourceFile);
+        List<ServantOfUser> importedServants = importedData.stream().map(this::buildUserServantFromStringArray).collect(Collectors.toList());
+        List<String> notFoundNames = importedServants.stream()
+                .filter(svt -> svt != null && svt.getNpTarget() == null)
+                .map(svt -> svt.getBaseServant().getName())
+                .collect(Collectors.toList());
+        importedServants = importedServants.stream().filter(svt -> svt == null || svt.getNpTarget() != null).collect(Collectors.toList());
+        userServantList.addAll(importedServants);
+        return notFoundNames;
+    }
+
+    private ServantOfUser buildUserServantFromStringArray(String[] importedData) {
+        Map<String, String> filteredData = filterData(importedData);
+        ServantOfUser servant = null;
+        if (!filteredData.get("name").isEmpty()) {
+            Servant baseServant = findServantFromManager(filteredData.get("name"));
+            if (baseServant.getName() != null && !dataMissing(filteredData)) {
+                servant = new UserServantFactory().createUserServantFromBaseServant(baseServant);
+                servant.setNpLevel(Integer.parseInt(filteredData.get("npLevel").substring(2)));
+                servant.setLevel(Integer.parseInt(filteredData.get("level").substring(4)));
+                servant.setSkillLevel1(Integer.parseInt(filteredData.get("skill1")));
+                servant.setSkillLevel2(Integer.parseInt(filteredData.get("skill2")));
+                servant.setSkillLevel3(Integer.parseInt(filteredData.get("skill3")));
+                servant.setFouHp(Integer.parseInt(filteredData.get("fouHp")));
+                servant.setFouAtk(Integer.parseInt(filteredData.get("fouAtk")));
+                servant.setBondLevel(Integer.parseInt(filteredData.get("bond")));
+            } else {
+                baseServant = new Servant();
+                baseServant.setName(importedData[0]);
+                servant = new ServantOfUser();
+                servant.setBaseServant(baseServant);
+            }
+        }
+        return servant;
+    }
+
+    private Servant findServantFromManager(String name) {
+        ServantFromManager servantFromManager = managerLookup.stream().filter(svt -> name.equalsIgnoreCase(svt.getName())).findFirst().get();
+        return servantDataList.stream().filter(svt -> svt.getCollectionNo() == servantFromManager.getCollectionNo()).findFirst().orElse(new Servant());
+    }
+
+    private Map<String, String> filterData(String[] importedData) {
+        Map<String, String> filteredData = new HashMap<>();
+        filteredData.put("name", importedData[0]);
+        filteredData.put("npLevel", importedData[14]);
+        filteredData.put("level", importedData[15]);
+        filteredData.put("skill1", importedData[16]);
+        filteredData.put("skill2", importedData[17]);
+        filteredData.put("skill3", importedData[18]);
+        filteredData.put("fouHp", importedData[19]);
+        filteredData.put("fouAtk", importedData[20]);
+        filteredData.put("bond", importedData[21]);
+        return filteredData;
+    }
+
+    private boolean dataMissing(Map<String, String> importedData) {
+        return importedData.values().stream().anyMatch(String::isBlank);
     }
 
     public void saveUserServant(ServantOfUser servant, int index) {
@@ -50,13 +115,9 @@ public class DataManagementService {
     }
 
     private void clearUnnecessaryEmptyRows() {
-        if (!userServantList.isEmpty()){
-            int index = userServantList.size() - 1;
-            if (userServantList.get(index) == null) {
-                while (userServantList.get(index) == null) {
-                    userServantList.remove(index--);
-                }
-            }
+        int index = userServantList.size() - 1;
+        while (!userServantList.isEmpty() && userServantList.get(index) == null){
+            userServantList.remove(index--);
         }
     }
 
@@ -81,7 +142,7 @@ public class DataManagementService {
             loadFromCache();
         }
         userServantList.addAll(createAssociatedUserServantList());
-        servantNameList = servantDataList.stream().map(Servant::getName).collect(Collectors.toList());
+        servantNameList.addAll(servantDataList.stream().map(Servant::getName).collect(Collectors.toList()));
     }
 
     private List<ServantOfUser> createAssociatedUserServantList() {

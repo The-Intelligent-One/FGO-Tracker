@@ -12,6 +12,7 @@ import java.util.Map;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Servant {
     private long id;
+    private int collectionNo;
     private String name;
     private String type;
     private String className;

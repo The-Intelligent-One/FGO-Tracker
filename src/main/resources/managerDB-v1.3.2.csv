@@ -1,0 +1,305 @@
+Name,ID,Rarity,Class,Type,Target,NP1,NP2,NP3,NP4,NP5,Special Effect,SE1,SE2,SE3,SE4,SE5
+Mash Kyrielight,1,4*,Shielder,Arts,Support,,,,,,,,,,,
+Artoria Pendragon,2,5*,Saber,Buster,AoE,38806,48508,53359,55784,58209,-,,,,,
+Artoria Pendragon [Alter],3,4*,Saber,Buster,AoE,29337,35856,39116,40746,42376,-,,,,,
+Artoria Pendragon [Lily],4,4*,Saber,Buster,AoE,13547,20321,23707,25401,27094,-,,,,,
+Nero Claudius,5,4*,Saber,Arts,AoE,20764,25955,28551,29849,31146,Water / City,24917,31146,34261,35818,37376
+Siegfried,6,4*,Saber,Buster,AoE,19005,23756,26131,27319,28507,Dragon,51313,64141,70555,73762,76969
+Gaius Julius Caesar,7,3*,Saber,Quick,Single,37105,46350,50973,53284,55595,NP Buff 5 stack,53045,59660,62967,64621,66275
+Altera,8,5*,Saber,Buster,AoE,28900,36081,39672,41467,43262,-,,,,,
+Gilles de Rais [Saber],9,3*,Saber,Arts,Self,,,,,,,,,,,
+Chevalier D'Eon,10,4*,Saber,Arts,Debuff,,,,,,,,,,,
+Emiya,11,4*,Archer,Buster,AoE,20448,25560,28116,29394,30672,-,,,,,
+Gilgamesh,12,5*,Archer,Buster,AoE,27561,34408,37831,39542,41254,Servant,41254,51524,56659,59226,61794
+Robin Hood,13,3*,Archer,Arts,Single,15172,20229,22757,24022,25286,Debuff : Poison,30343,40457,45515,48043,50572
+Atalanta,14,4*,Archer,Quick,AoE,20206,25258,27783,29046,30309,-,,,,,
+Euryale,15,3*,Archer,Arts,Single,27678,27678,27678,27678,27678,Male,41367,55056,61900,65322,68745
+Arash,16,1*,Archer,Buster,AoE,17872,22339,24573,25690,26807,-,,,,,
+Cu Chulainn,17,3*,Lancer,Quick,Single,25643,32010,35194,36786,38378,HP 1,38378,47928,52704,55091,57479
+Elizabeth Bathory,18,4*,Lancer,Buster,AoE,20533,25667,28234,29517,30800,-,,,,,
+Musashibou Benkei,19,2*,Lancer,Arts,Debuff,,,,,,,,,,,
+Cu Chulainn [Prototype],20,3*,Lancer,Quick,Single,18912,25158,28281,29842,31404,Beast,37650,50141,56387,59510,62633
+Leonidas I,21,2*,Lancer,Buster,Self,,,,,,,,,,,
+Romulus,22,3*,Lancer,Buster,AoE,16761,22349,25142,26539,27936,-,,,,,
+Medusa,23,3*,Rider,Quick,AoE,17513,21867,24044,25133,26221,-,,,,,
+Georgios,24,2*,Rider,Arts,Single,12909,17211,19363,20438,21514,-,,,,,
+Edward Teach,25,2*,Rider,Buster,AoE,16454,20568,22625,23653,24682,-,,,,,
+Boudica,26,3*,Rider,Arts,Debuff,,,,,,,,,,,
+Ushiwakamaru,27,3*,Rider,Quick,Single,36441,45551,50106,52384,54662,-,,,,,
+Alexander,28,3*,Rider,Quick,AoE,18791,23464,25800,26968,28137,-,,,,,
+Marie Antoinette,29,4*,Rider,Quick,AoE,18221,22776,25054,26192,27331,-,,,,,
+Martha,30,4*,Rider,Buster,AoE,19555,24407,26832,28045,29258,-,,,,,
+Medea,31,3*,Caster,Arts,Single,11501,14376,15813,16532,17251,-,,,,,
+Gilles de Rais,32,3*,Caster,Buster,AoE,6999,9332,10499,11082,11665,-,,,,,
+Hans Christian Andersen,33,2*,Caster,Arts,Support,,,,,,,,,,,
+William Shakespeare,34,2*,Caster,Buster,AoE,11820,14775,16253,16992,17731,-,,,,,
+Mephistopheles,35,3*,Caster,Buster,AoE,9736,12170,13387,13996,14604,-,,,,,
+Wolfgang Amadeus Mozart,36,1*,Caster,Arts,Debuff,,,,,,,,,,,
+Zhuge Liang [El-Melloi II],37,5*,Caster,Arts,Debuff,,,,,,,,,,,
+Cu Chulainn [Caster],38,3*,Caster,Buster,AoE,11472,14297,15709,16415,17121,-,,,,,
+Sasaki Kojirou,39,1*,Assassin,Quick,Single,21414,26768,29444,30783,32121,"Vitrify 2x (20% Quick Resistance Down),
+Sure Hit",24983,31228,34351,35913,37474
+Hassan of the Cursed Arm,40,2*,Assassin,Quick,Single,14467,19289,21700,22903,24111,-,,,,,
+Stheno,41,4*,Assassin,Buster,Debuff,,,,,,,,,,,
+Jing Ke,42,3*,Assassin,Quick,Single,28269,35336,38870,40636,42403,-,,,,,
+Charles-Henri Sanson,43,2*,Assassin,Buster,Single,16037,20046,22050,23053,24055,Evil / Human,25659,32073,35281,36884,38488
+Phantom of the Opera,44,2*,Assassin,Arts,AoE,8264,10330,11363,11880,12396,-,,,,,
+Mata Hari,45,1*,Assassin,Arts,Debuff,,,,,,,,,,,
+Carmilla,46,4*,Assassin,Buster,Single,31024,38780,42658,44597,46536,Female,46536,58170,63987,66896,69804
+Heracles,47,4*,Berserker,Buster,Single,37747,50262,56520,59649,62278,After Guts,44700,59533,66949,70658,74366
+Lancelot,48,4*,Berserker,Quick,AoE,15331,20442,22997,24275,25552,-,,,,,
+Lu Bu Fengxian,49,3*,Berserker,Buster,Single,37709,50279,56564,59707,62849,-,,,,,
+Spartacus,50,1*,Berserker,Buster,AoE,14013,17516,19267,20143,21019,-,,,,,
+Sakata Kintoki,51,5*,Berserker,Buster,Single,47895,63818,71780,75761,79742,-,,,,,
+Vlad III,52,5*,Berserker,Arts,Single,49331,61663,67830,70913,73996,,49331,61663,67830,70913,73996
+Asterios,53,1*,Berserker,Arts,Debuff,,,,,,,,,,,
+Caligula,54,2*,Berserker,Arts,Debuff,,,,,,,,,,,
+Darius III,55,3*,Berserker,Buster,AoE,16726,20907,22998,24043,25089,-,,,,,
+Kiyohime,56,3*,Berserker,Buster,AoE,15324,20432,22986,24263,25540,-,,,,,
+Eric Bloodaxe,57,2*,Berserker,Buster,AoE,14342,19122,21513,22708,23903,-,,,,,
+Tamamo Cat,58,4*,Berserker,Quick,AoE,21104,26380,29018,30337,31656,-,,,,,
+Jeanne D'Arc,59,5*,Ruler,Arts,Support,,,,,,,,,,,
+Orion,60,5*,Archer,Arts,Single,38093,47617,52379,54759,57140,Male,76187,95234,104757,109519,114280
+Elizabeth Bathory [Caster],61,4*,Caster,Buster,AoE,12988,17317,19482,20564,21647,-,,,,,
+Tamamo no Mae,62,5*,Caster,Arts,Support,,,,,,,,,,,
+David,63,3*,Archer,Buster,Single,27029,33786,37165,38854,40543,Giant Human,54058,67572,74329,77708,81087
+Hector,64,3*,Lancer,Buster,AoE,13785,17232,18955,19816,20678,-,,,,,
+Francis Drake,65,5*,Rider,Buster,AoE,23285,29106,32017,33472,34927,-,,,,,
+Anne Bonny & Mary Read,66,4*,Rider,Quick,Single,38383,47979,52777,55176,57574,HP 1,67170,76766,81564,83963,86362
+Medea [Lily],67,4*,Caster,Arts,Support,,,,,,,,,,,
+Okita Souji,68,5*,Saber,Quick,Single,43858,58478,65787,69442,73097,-,,,,,
+Oda Nobunaga,69,4*,Archer,Buster,AoE,10318,13758,15477,16337,17197,"Divine , Riding",30955,41273,46432,49012,51591
+Scathach,70,5*,Lancer,Quick,Single,57380,71726,78898,82484,86071,Divine / Undead,114761,143451,157796,164969,172141
+Diarmuid Ua Duibhne,71,3*,Lancer,Quick,Single,24349,30437,33480,35002,36524,-,,,,,
+Fergus Mac Roich,72,3*,Saber,Buster,AoE,15177,18972,20869,21817,22766,-,,,,,
+Artoria Pendragon [Santa Alter],73,4*,Rider,Buster,AoE,23092,28224,30789,32072,33355,-,,,,,
+Nursery Rhyme,74,4*,Caster,Arts,AoE,13155,16444,18088,18911,19733,-,,,,,
+Jack the Ripper,75,5*,Assassin,Quick,Single,43668,56145,62383,65502,68621,Female,65502,84217,93575,98254,102932
+Mordred,76,5*,Saber,Buster,AoE,26337,32921,36213,37859,39505,Arthur,47406,59257,65183,68146,71109
+Nikola Tesla,77,5*,Archer,Buster,AoE,26139,32674,35941,37575,39209,Earth / Sky,39209,49011,53912,56363,58813
+Artoria Pendragon [Lancer Alter],78,4*,Lancer,Buster,AoE,27590,34487,37936,39660,41384,-,,,,,
+Paracelsus Von Hohenheim,79,3*,Caster,Arts,AoE,8300,10375,11413,11931,12450,-,,,,,
+Charles Babbage,80,3*,Caster,Buster,AoE,15206,19007,20908,21858,22809,-,,,,,
+Henry Jekyll & Hyde,81,3*,Assassin,Buster,Self,,,,,,,,,,,
+Frankenstein,82,4*,Berserker,Quick,AoE,32143,39285,42857,44643,46428,-,,,,,
+Arjuna,84,5*,Archer,Buster,AoE,27462,34283,37694,39399,41105,-,,,,,
+Karna,85,5*,Lancer,Buster,AoE,29531,36864,40531,42364,44197,Divine,44197,55197,60696,63446,66196
+Mysterious Heroine X,86,5*,Assassin,Quick,Single,53017,66271,72898,76211,79525,"Saber , Artoria Face",119287,149109,164020,171475,178931
+Fionn Mac Cumhaill,87,4*,Lancer,Arts,AoE,20269,25305,27823,29082,30341,-,,,,,
+Brynhildr,88,5*,Lancer,Buster,Single,51890,64838,71311,74548,77785,Brynhildr's Beloved,77785,97207,106917,111773,116628
+Beowulf,89,4*,Berserker,Buster,Single,47075,60525,67250,70613,73975,-,,,,,
+Nero Claudius [Bride],90,5*,Saber,Arts,Single,48713,60892,66981,70026,73070,-,,,,,
+Ryougi Shiki [Saber],91,5*,Saber,Arts,AoE,29519,36899,40589,42434,44279,-,,,,,
+Ryougi Shiki,92,4*,Assassin,Arts,Single,36764,45956,50551,52849,55147,-,,,,,
+Amakusa Shirou,93,5*,Ruler,Buster,AoE,23626,29532,32485,33962,35438,-,,,,,
+Astolfo,94,4*,Rider,Quick,AoE,20782,25978,28576,29875,31174,-,,,,,
+Kid Gil,95,3*,Archer,Buster,AoE,13970,17418,19143,20005,20867,-,,,,,
+Edmond Dantés,96,5*,Avenger,Quick,AoE,33131,41414,45555,47626,49697,-,,,,,
+Nightingale,97,5*,Berserker,Arts,Support,,,,,,,,,,,
+Cu Chulainn [Alter],98,5*,Berserker,Buster,Single,43466,57905,65124,68734,72343,-,,,,,
+Queen Medb,99,5*,Rider,Buster,Single,46765,58457,64302,67225,70148,Male,70148,87685,96454,100838,105222
+Helena Blavatsky,100,4*,Caster,Arts,AoE,23320,29151,32066,33523,34981,-,,,,,
+Rama,101,4*,Saber,Buster,Single,35549,44386,48805,51014,53223,Demonic,53223,66479,73107,76421,79735
+Li Shuwen,102,4*,Lancer,Arts,Single,46309,57886,63674,66569,69463,-,,,,,
+Thomas Edison,103,4*,Caster,Arts,AoE,11563,14454,15899,16622,17345,-,,,,,
+Geronimo,104,3*,Caster,Arts,AoE,15418,19273,21200,22164,23127,-,,,,,
+Billy the Kid,105,3*,Archer,Quick,Single,23611,29514,32466,33941,35417,-,,,,,
+Jeanne D'Arc [Alter],106,5*,Avenger,Buster,Single,58380,77841,87571,92436,97301,-,,,,,
+Angra Mainyu,107,0*,Avenger,Arts,Self,,,,,,,,,,,
+Iskandar,108,5*,Rider,Buster,AoE,37589,46949,51628,53968,56308,-,,,,,
+Emiya [Assassin],109,4*,Assassin,Arts,Single,34630,43287,47616,49781,51945,-,,,,,
+Hassan of a Hundred Faces,110,3*,Assassin,Arts,Single,24820,31025,34127,35678,37229,-,,,,,
+Irisviel [Dress of Heaven],111,4*,Caster,Arts,Support,,,,,,,,,,,
+Shuten Douji,112,5*,Assassin,Arts,AoE,29520,36862,40534,42369,44205,-,,,,,
+Xuanzang Sanzang,113,5*,Caster,Buster,Single,37731,47164,51880,54238,56596,-,,,,,
+Minamoto no Raikou,114,5*,Berserker,Buster,AoE,27215,33982,37365,39056,40748,"Demon , SV Earth / Sky",40748,50897,55972,58509,61047
+Sakata Kintoki [Rider],115,4*,Rider,Quick,Single,33594,44742,50316,53103,55889,-,,,,,
+Ibaraki Douji,116,4*,Berserker,Buster,Single,40803,54404,61204,64604,68005,-,,,,,
+Fuuma Kotarou,117,3*,Assassin,Quick,AoE,12863,16078,17686,18490,19294,-,,,,,
+Ozymandias,118,5*,Rider,Buster,Single,42598,56739,63809,67345,70880,-,,,,,
+Artoria Pendragon [Lancer],119,5*,Lancer,Buster,AoE,23073,30764,34609,36532,38455,-,,,,,
+Nitocris,120,4*,Caster,Arts,AoE,16417,20478,22508,23524,24539,,,,,,
+Lancelot [Saber],121,4*,Saber,Arts,Single,29464,39285,44196,46651,49106,-,,,,,
+Tristan,122,4*,Archer,Quick,Single,30024,37530,41283,43159,45035,-,,,,,
+Gawain,123,4*,Saber,Buster,AoE,16190,21586,24285,25634,26983,Sunlight,21047,28062,31570,33324,35078
+Hassan of Serenity,124,3*,Assassin,Arts,Single,24658,30822,33904,35446,36987,-,,,,,
+Tawara Touta,125,3*,Archer,Buster,AoE,13689,17111,18822,19678,20533,Demon,20533,25667,28233,29517,30800
+Bedivere,126,3*,Saber,Buster,Single,35906,44883,49371,51615,53859,-,,,,,
+Leonardo Da Vinci,127,5*,Caster,Arts,AoE,25352,31690,34859,36444,38028,-,,,,,
+Tamamo no Mae [Lancer],128,5*,Lancer,Buster,Single,38460,51203,57575,60760,63946,Male,57575,76689,86247,91026,95804
+Artoria Pendragon [Archer],129,5*,Archer,Arts,Single,39881,53174,59821,63144,66468,-,,,,,
+Marie Antoinette [Caster],130,4*,Caster,Arts,AoE,12318,16424,18477,19504,20530,-,,,,,
+Anne Bonny & Mary Read [Archer],131,4*,Archer,Buster,Single,34489,45985,51734,54608,57482,HP 1,68978,80474,86223,89097,91971
+Mordred [Rider],132,4*,Rider,Arts,AoE,14269,19025,21403,22592,23781,-,,,,,
+Scathach [Assassin],133,4*,Assassin,Quick,AoE,14977,19969,22466,23714,24962,-,,,,,
+Kiyohime [Lancer],134,4*,Lancer,Buster,Single,39866,53155,59799,63121,66443,-,,,,,
+Martha [Ruler],135,4*,Ruler,Buster,Single,38421,48026,52829,55230,57632,"Water , Divine / Demon / Undead",89649,112062,123268,128871,134474
+Illyasviel von Einzbern,136,5*,Caster,Buster,Single,50070,62587,68846,71975,75105,-,,,,,
+Chloe von Einzbern,137,4*,Archer,Arts,Single,28791,38388,43187,45586,47985,-,,,,,
+Elizabeth Bathory [Brave],138,4*,Saber,Buster,Single,31585,42114,47378,50010,52642,-,,,,,
+Cleopatra,139,5*,Assassin,Buster,AoE,27449,34280,37696,39404,41111,-,,,,,
+Vlad III [EXTRA],140,4*,Lancer,Buster,Single,30084,40112,45126,47633,50140,Evil,45126,60169,67690,71450,75211
+Jeanne D'Arc [Santa Alter Lily],141,4*,Lancer,Buster,AoE,17284,23046,25926,27367,28807,-,,,,,
+Ishtar,142,5*,Archer,Buster,AoE,35667,44527,48957,51172,53388,-,,,,,
+Enkidu,143,5*,Lancer,Buster,Single,66570,83212,91534,95694,99855,Threat to Humanity,133140,166425,183067,191389,199710
+Quetzalcoatl,144,5*,Rider,Buster,Single,42633,56744,63799,67327,70854,-,,,,,
+Gilgamesh [Caster],145,4*,Caster,Arts,AoE,20078,25054,27542,28786,30030,-,,,,,
+Medusa [Lancer],146,4*,Lancer,Quick,Single,44870,56026,61603,64392,67181,-,,,,,
+Gorgon,147,4*,Avenger,Buster,AoE,26655,33318,36650,38316,39982,-,,,,,
+Jaguar Man,148,3*,Lancer,Buster,Single,34523,39893,44880,47373,49866,-,,,,,
+Merlin,150,5*,Caster,Arts,Support,,,,,,,,,,,
+Miyamoto Musashi,153,5*,Saber,Buster,Single,70165,87706,96477,100862,105248,Alterego / Moon Cancer,105248,131560,144716,151294,157872
+Old Man of the Mountain,154,5*,Assassin,Buster,Single,51701,68935,77552,81861,86169,After Guts,57446,76595,86169,90956,95743
+Mysterious Heroine X [Alter],155,5*,Berserker,Quick,Single,61193,76492,84141,87965,91790,"Saber Servant and 
+Good Alignment",137685,172107,189318,197923,206528
+James Moriarty,156,5*,Archer,Buster,Single,42225,56300,63337,66856,70375,-,,,,,
+EMIYA [Alter],157,4*,Archer,Arts,Single,47701,59627,65589,68571,71552,-,,,,,
+Hessian Lobo,158,4*,Avenger,Quick,Single,48953,61191,67310,70370,73429,-,,,,,
+Yan Qing,159,4*,Assassin,Quick,Single,34557,43196,47515,49675,51835,-,,,,,
+Arthur Pendragon [Prototype],160,5*,Saber,Buster,AoE,22995,30660,34492,36409,38325,Giant Monster,43899,58532,65849,69507,73165
+Hijikata Toshizou,161,5*,Berserker,Buster,Single,49673,62091,68300,71406,74509,HP1,99346,111764,117973,121077,124182
+Chacha,162,4*,Berserker,Buster,AoE,12828,17104,19242,20311,21380,-,,,,,
+Meltryllis,163,5*,Alter Ego,Quick,Single,51374,68424,76949,81211,85474,2nd spam,56110,74739,84053,88710,93367
+Passionlip,164,4*,Alter Ego,Buster,AoE,20470,25538,28072,29339,30606,HP1,28267,35283,38792,40546,42300
+Suzuka Gozen,165,4*,Saber,Buster,AoE,24546,30757,33812,35340,36868,-,,,,,
+BB,166,4*,Moon Cancer,Arts,Single,20942,27922,31412,33157,34903,-,,,,,
+Sessyoin Kiara,167,5*,Alter Ego,Arts,AoE,22158,29544,33237,35084,36930,Ruler,33237,44316,49856,52626,55396
+Scheherazade,169,5*,Caster,Arts,AoE,21536,26920,29612,30958,32304,King,43073,53841,59225,61917,64609
+Wu Zetian,170,4*,Assassin,Quick,Single,47073,58842,64726,67668,70610,-,,,,,
+Penthesilea,171,4*,Berserker,Buster,Single,40969,54567,61365,64765,68164,Greek Mythology Males,81762,108958,122556,129355,136154
+Christopher Columbus,172,3*,Rider,Buster,AoE,16253,20316,22348,23364,24379,-,,,,,
+Sherlock Holmes,173,5*,Ruler,Arts,Debuff,,,,,,,,,,,
+Paul Bunyan,174,1*,Berserker,Buster,AoE,11933,15911,17900,18894,19889,-,,,,,
+Nero Claudius [Caster],175,5*,Caster,Buster,AoE,23857,31809,35785,37773,39761,-,,,,,
+Frankenstein [Saber],176,4*,Saber,Quick,Single,36868,49157,55032,58374,61446,-,,,,,
+Nitocris [Assassin],177,4*,Assassin,Arts,AoE,14443,19196,21572,22760,23949,-,,,,,
+Oda Nobunaga [Berserker],178,4*,Berserker,Buster,Single,42637,53297,58627,61291,63956,"Fire , Divine",76747,95934,105528,110324,115121
+Artoria Pendragon [Rider Alter],179,5*,Rider,Quick,Single,53407,71209,80110,84561,89011,Stack Skill 3,63547,84730,95321,100617,105912
+Helena Blavatsky [Archer],180,4*,Archer,Arts,AoE,16379,21173,23569,24767,25966,-,,,,,
+Minamoto no Raikou [Lancer],181,4*,Lancer,Buster,Single,38719,51626,58079,61306,64532,-,,,,,
+Ishtar [Rider],182,4*,Rider,Quick,AoE,18018,23949,26914,28397,29879,-,,,,,
+Parvati,183,4*,Lancer,Quick,AoE,20856,27733,31172,32891,34610,-,,,,,
+Tomoe Gozen,184,4*,Archer,Buster,Single,44591,55738,61312,64099,66886,-,,,,,
+Mochizuki Chiyome,185,4*,Assassin,Arts,Single,30709,38387,42225,44145,46064,,30709,38387,42225,44145,46064
+Hozoin Inshun,186,3*,Lancer,Arts,Self,,,,,,-,,,,,
+Yagyu Munenori,187,4*,Saber,Arts,Single,40982,54643,61473,64889,68304,-,,,,,
+Kato Danzo,188,4*,Assassin,Buster,AoE,12031,16041,18046,19049,20051,Demonic,18046,24062,27069,28573,30077
+Osakabehime,189,5*,Assassin,Quick,Support,,,,,,-,,,,,
+Mecha Eli-chan,190,4*,Alter Ego,Buster,Single,36422,48563,54633,57668,60703,-,,,,,
+Mecha Eli-chan MK II,191,4*,Alter Ego,Buster,Single,36422,48563,54633,57668,60703,-,,,,,
+Circe,192,4*,Caster,Buster,Single,21620,28827,32431,34232,36034,-,,,,,
+Nezha,193,4*,Lancer,Buster,AoE,21458,26823,29505,30846,32187,-,,,,,
+Queen of Sheba,194,4*,Caster,Arts,Single,26626,35502,39939,42158,44377,-,,,,,
+Abigail Williams,195,5*,Foreigner,Buster,Single,45862,61091,68705,72512,76320,-,,,,,
+Ereshkigal,196,5*,Lancer,Buster,AoE,19948,26523,29810,31453,33097,2nd spam with Skill 3,23893,31782,35727,37699,39671
+Altera [Santa],197,4*,Archer,Quick,Single,33034,43987,49464,52202,54940,-,,,,,
+Katsushika Hokusai,198,5*,Foreigner,Arts,AoE,18343,24400,27428,28942,30456,Man,27428,36512,41054,43325,45596
+Semiramis,199,5*,Assassin,Buster,AoE,25375,31681,34834,36411,37987,-,,,,,
+Asagami Fujino,200,4*,Archer,Buster,Single,29996,39995,44994,47494,49994,-,,,,,
+Anastasia Nikolaevna Romanova,201,5*,Caster,Arts,AoE,20908,27877,31362,33104,34847,-,,,,,
+Atalanta [Alter],202,4*,Berserker,Quick,Single,39368,52491,59053,62333,65614,-,,,,,
+Avicebron,203,3*,Caster,Buster,AoE,8932,11909,13398,14142,14887,-,,,,,
+Antonio Salieri,204,3*,Avenger,Arts,AoE,17557,23409,26336,27799,29262,-,,,,,
+Ivan the Terrible,205,5*,Rider,Buster,AoE,31694,39617,43579,45560,47541,-,,,,,
+Achilles,206,5*,Rider,Quick,AoE,23049,30682,34498,36406,38315,-,,,,,
+Chiron,207,4*,Archer,Arts,Single,26466,35238,39624,41817,44040,-,,,,,
+Sieg,208,4*,Caster,Arts,AoE,14963,19951,22445,23692,24939,Dragon,29927,39902,44890,47384,49878
+Okita Souji [Alter],209,5*,Alter Ego,Buster,AoE,28263,37684,42394,44749,47105,-,,,,,
+Okada Izou,210,3*,Assassin,Arts,Single,14679,19571,22018,23241,24464,Human,29357,39143,44036,46482,48929
+Sakamoto Ryouma,211,4*,Rider,Arts,Single,27940,37196,41824,44138,46453,-,,,,,
+Napoleon Bonaparte,212,5*,Archer,Buster,AoE,28705,35881,39469,41263,43057,Divinity,43057,53822,59204,61895,64586
+Sigurd,213,5*,Saber,Buster,Single,41984,55920,62888,66372,69856,Dragon,62888,83793,94245,99471,104697
+Valkyrie,214,4*,Lancer,Quick,AoE,16542,21989,24713,26075,27437,-,,,,,
+Skadi,215,5*,Caster,Arts,Support,,,,,,-,,,,,
+Jeanne D'Arc [Archer],216,5*,Archer,Arts,AoE,21213,28285,31820,33588,35356,-,,,,,
+Ibaraki Douji [Lancer],217,4*,Lancer,Buster,Single,35732,47642,53598,56575,59553,-,,,,,
+Ushiwakamaru [Assassin],218,4*,Assassin,Quick,AoE,14649,19531,21973,23194,24414,-,,,,,
+Jeanne D'Arc [Berserker Alter],219,4*,Berserker,Buster,Single,40749,54332,61124,64520,67915,-,,,,,
+BB [Summer],220,5*,Moon Cancer,Buster,AoE,22945,30510,34293,36184,38075,-,,,,,
+Medb [Saber],221,4*,Saber,Arts,Single,26878,35837,40317,42557,44796,-,,,,,
+Mysterious Heroine XX,222,4*,Foreigner,Arts,Single,37833,50444,56749,59902,63055,Threat to Humanity,56749,75666,85124,89853,94582
+Diarmuid Ua Duibhne [Saber],223,4*,Saber,Quick,Single,37469,49959,56204,59326,62449,-,,,,,
+Sitonai,224,5*,Alter Ego,Arts,Single,44279,58964,66306,69978,73649,-,,,,,
+Shuten Douji [Caster],225,4*,Caster,Buster,Single,30776,40985,46090,48642,51194,Demonic,46090,61403,69059,72888,76716
+Xiang Yu,226,5*,Berserker,Quick,AoE,23895,31860,35842,37834,39825,-,,,,,
+Prince of Lanling,227,4*,Saber,Arts,Support,,,,,,-,,,,,
+Qin Liangyu,228,4*,Lancer,Arts,Self,,,,,,-,,,,,
+Qin Shi Huang,229,5*,Ruler,Arts,Self,,,,,,,,,,,
+Yu Miaoyi,230,4*,Assassin,Buster,AoE,16293,21724,24440,25798,27156,-,,,,,
+Red Hare,231,3*,Rider,Quick,AoE,13985,18647,20977,22143,23308,-,,,,,
+Bradamante,232,5*,Lancer,Quick,AoE,21398,28531,32097,33881,35664,-,,,,,
+Quetzalcoatl [Santa],233,4*,Ruler,Buster,AoE,18981,25308,28471,30053,31635,-,,,,,
+Beni Enma,234,5*,Saber,Arts,Single,40189,53585,60283,63632,66981,Chaotic / Evil,56264,75019,84396,89085,93773
+Li Shuwen [Assassin],235,5*,Assassin,Arts,Single,47392,63190,71089,75038,78987,-,,,,,
+Miyu Edelfelt,236,4*,Caster,Arts,Support,,,,,,-,,,,,
+Murasaki Shikibu,237,5*,Caster,Arts,AoE,19240,25653,28860,30463,32066,Demonic,28860,38480,43290,45695,48100
+Kingprotea,238,5*,Alter Ego,Buster,AoE,26511,35265,39642,41831,44019,Growth state,30521,40611,45656,48179,50701
+Kama,239,5*,Assassin,Quick,Single,43917,58481,65763,69404,73045,Alterego,87609,116737,131301,138583,145865
+Sima Yi [Reines],241,5*,Rider,Arts,Debuff,,,,,,-,,,,,
+Astraea [Luvia Edelfelt],242,4*,Ruler,Arts,Single,41061,54974,61817,65239,68661,Evil,61817,82348,92613,97746,102879
+Gray,243,4*,Assassin,Buster,AoE,17726,23635,26590,28067,29544,Undead,35453,47270,53179,56134,59088
+William Tell,244,3*,Archer,Arts,Single,19114,25427,28584,30162,31740,-,,,,,
+Lakshmi Bai,245,4*,Saber,Quick,AoE,15866,21088,23698,25004,26309,-,,,,,
+Great Statue God,246,5*,Moon Cancer,Arts,AoE,21433,28578,32150,33936,35722,Avoid Buff,42867,57155,64300,67872,71444
+Arjuna [Alter],247,5*,Berserker,Buster,AoE,21251,28251,31751,33501,35251,Buster Down (Debuff),37376,49752,55940,59034,62127
+Ashwatthama,248,4*,Archer,Buster,Single,30074,40028,45005,47494,49983,HP 1,59937,69892,74869,77358,79846
+Asclepius,249,3*,Caster,Arts,Support,,,,,,-,,,,,
+Demon King Nobunaga,250,5*,Avenger,Buster,AoE,20189,26919,30284,31966,33649,"Max ATK Buff , Divine , Sky",59403,79204,89105,94055,99006
+Mori Nagayoshi,251,3*,Berserker,Buster,Single,19883,26510,29824,31481,33138,Max ATK Buff,28830,38440,43245,45648,48050
+Nagao Kagetora,252,4*,Lancer,Arts,Single,36149,48148,54148,57148,60148,-,,,,,
+Leonardo Da Vinci [Rider],253,5*,Rider,Arts,AoE,20146,26861,30218,31897,33576,OC 200%,20945,27927,31418,33163,34908
+Jason,254,1*,Saber,Arts,AoE,9624,12831,14435,15237,16039,-,,,,,
+Paris,255,2*,Archer,Quick,Single,22092,29456,33139,34980,36821,Discovers Weakness,33139,44185,49708,52469,55231
+Gareth,256,2*,Lancer,Buster,Single,13939,18585,20908,22070,23231,Max ATK Buff,39028,52038,58542,61795,65047
+Bartholomew Roberts,257,1*,Rider,Quick,AoE,12108,16144,18162,19171,20180,Low Rarity,18162,24215,27242,28756,30269
+Chen Gong,258,2*,Caster,Arts,AoE,14058,18745,21088,22259,23431,OC 500%,28117,32803,35146,36318,37489
+Charlotte Corday,259,1*,Assassin,Arts,Single,15713,20951,23570,24879,26189,NP Dmg Buff,23570,31427,35355,37319,39283
+Salome,260,2*,Berserker,Arts,Single,22727,30303,34091,35985,37878,Lawful Good,34091,45454,51136,53977,56818
+Miyamoto Musashi [Berserker],261,5*,Berserker,Arts,AoE,25103,33429,37592,39673,41755,-,,,,,
+Osakabehime [Archer],262,4*,Archer,Buster,AoE,15323,20382,22911,24176,25441,-,,,,,
+Carmilla [Rider],263,4*,Rider,Quick,AoE,15286,20382,22929,24203,25477,-,,,,,
+Katsushika Hokusai [Saber],264,4*,Saber,Arts,Single,36444,48558,54616,57644,60673,-,,,,,
+Meltryllis [Lancer],265,4*,Lancer,Arts,AoE,24603,32804,36904,38954,41004,-,,,,,
+Okita J Souji,266,4*,Assassin,Quick,AoE,18488,24650,27731,29272,30813,-,,,,,
+Artoria Pendragon [Ruler],267,5*,Ruler,Buster,AoE,20272,26963,30308,31981,33653,Stack Skill 2,23617,31423,35326,37278,39229
+Space Ishtar,268,5*,Avenger,Arts,AoE,31512,41927,47134,49737,52341,3rd spam,40439,53829,60523,63871,67218
+Calamity Jane,269,4*,Archer,Quick,Single,32709,43613,49064,51790,54516,-,,,,,
+Astolfo [Saber],270,5*,Saber,Quick,Single,43724,58299,65586,69230,72874,-,,,,,
+Nightingale [Santa],271,4*,Archer,Quick,AoE,17765,23687,26648,28128,29608,-,,,,,
+Super Orion,272,5*,Archer,Arts,Self,,,,,,-,,,,,
+Mandricardo,273,3*,Rider,Arts,Single,26972,35963,40458,42706,44954,HP 50%,38211,50948,57316,60500,63685
+Europa,274,5*,Rider,Buster,AoE,23879,31789,35744,37721,39698,-,,,,,
+Yang Guifei,275,5*,Foreigner,Arts,Single,33317,44364,49887,52649,55411,"Max Def Down , Burn",62315,83029,93386,98564,103742
+Sei Shounagon,276,5*,Archer,Quick,AoE,21626,28835,32440,34242,36044,Man & Neutral & Shadow SV,54066,72088,81099,85604,90110
+Odysseus,277,5*,Rider,Arts,AoE,22380,29840,33571,35436,37301,-,,,,,
+Dioscuri,278,5*,Saber,Arts,Single,42406,56466,63496,67011,70526,,,,,,
+Caenis,279,4*,Lancer,Buster,AoE,18792,24981,28076,29623,31170,,,,,,
+Romulus-Quirinus,280,5*,Lancer,Buster,AoE,29107,38731,43543,45949,48355,<< Roman 1 Stack | Roman 10 Stack >>,72415,96475,108505,114520,120535
+Voyager,281,5*,Foreigner,Quick,AoE,21237,28315,31855,33625,35394,Sky,31855,42473,47782,50437,53091
+Kijo Kōyō,282,4*,Berserker,Buster,Single,38931,51908,58396,61640,64884,,,,,,
+Utsumi Erice,283,4*,Lancer,Arts,AoE,13719,18259,20529,21664,22799,Servant,17805,23707,26657,28133,29608
+Artoria Caster,284,5*,Caster,Arts,Support,,,,,,,,,,,
+Sessyoin Kiara [Moon Cancer],285,5*,Moon Cancer,Arts,AoE,31495,41993,47242,49867,52491,2nd Upgrade Skill,48939,65252,73409,77487,81565
+Illyasviel von Einzbern [Archer],286,4*,Archer,Quick,AoE,18158,24210,27237,28750,30263,,,,,,
+Brynhildr [Berserker],287,4*,Berserker,Buster,AoE,19668,26190,29452,31082,32713,-,,,,,
+Yu Miaoyi [Lancer],288,4*,Lancer,Quick,Single,30314,40418,45470,47996,50523,Male,75784,101045,113676,119991,126306
+Tomoe Gozen [Saber],290,4*,Saber,Arts,AoE,16370,21826,24554,25918,27283,-,,,,,
+Murasaki Shikibu [Rider],291,4*,Rider,Arts,Single,34038,45385,51058,53894,56731,-,,,,,
+Abigail Williams [Summer],289,5*,Foreigner,Buster,AoE,31444,41863,47073,49678,52283,-,,,,,
+Himiko,292,5*,Ruler,Buster,Support,,,,,,,,,,,
+Saitou Hajime,293,4*,Saber,Arts,Single,39275,52366,58912,62185,65458,,,,,,
+Oda Nobukatsu,294,1*,Archer,Buster,Support,,,,,,,,,,,
+Van Gogh,295,5*,Foreigner,Arts,Support,,,,,,,,,,,
+Nemo,296,5*,Rider,Arts,Single,42378,56438,63468,66983,70498,Waterside or Void Space Field Super Large,101455,135207,152083,160521,168959
+Ashiya Douman,297,5*,Alter Ego,Quick,AoE,25096,33386,37532,39604,41677,Instant Kill after Damage,25096,33386,37532,39604,41677
+Watanabe no Tsuna,298,4*,Saber,Buster,Single,32234,42979,48351,51037,53724,Demonic and Oni,77362,,116044,,
+Ibuki Douji,299,5*,Saber,Buster,AoE,28457,37859,42561,44911,47262,Undead Ignores Defense,42561,56664,63716,67242,70768
+Vritra,300,5*,Lancer,Arts,AoE,22601,30136,33902,35786,37669,Divine,28252,37669,42378,44733,47087
+Karna [Santa],301,4*,Saber,Quick,Single,33916,45154,50774,53583,56393,,33916,45154,50774,53583,56393
+Senji Muramasa,302,5*,Saber,Arts,AoE,23947,31930,35921,37917,39912,Ignores Defense King,28301,37735,42452,44811,47169
+Taira no Kagekiyo,303,5*,Avenger,Quick,Single,43272,57696,64909,68515,72121,Genji Vengeful Grudge x1,162272,216363,243409,256931,270454
+Kiichi Hougen,304,4*,Assassin,Quick,AoE,17416,23222,26125,27576,29028,,17416,23222,26125,27576,29028
+Caren C Hortensia,305,5*,Ruler,Quick,AoE,23983,31903,35862,37842,39822,Debuff on Self (20% Attack Up),27943,37182,41802,44112,46422
+Galatea,306,5*,Berserker,Arts,Single,44096,58794,66144,69818,73493,,44096,58794,66144,69818,73493
+Miss Crane,307,5*,Caster,Arts,Support,,,,,,,,,,,
+Mysterious Idol X [Alter],308,4*,Foreigner,Quick,AoE,19961,26615,29942,31605,33269,Mechanical and Evil,44913,59884,67369,71112,74855

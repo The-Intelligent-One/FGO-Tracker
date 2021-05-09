@@ -9,9 +9,14 @@
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.github.theintelligentone.fgotracker.ui.MainController">
     <MenuBar>
-        <Menu onAction="#addNewRow">
+        <Menu>
             <graphic>
                 <Label onMouseClicked="#addNewRow" text="Add New Row"/>
+            </graphic>
+        </Menu>
+        <Menu>
+            <graphic>
+                <Label onMouseClicked="#importFromCsv" text="Import"/>
             </graphic>
         </Menu>
     </MenuBar>

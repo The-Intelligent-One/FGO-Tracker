@@ -2,11 +2,17 @@ package com.github.theintelligentone.fgotracker.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.theintelligentone.fgotracker.domain.ServantFromManager;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
+import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
+import com.opencsv.exceptions.CsvException;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -14,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class FileManagementService {
     private static final String BASE_DATA_PATH = "data/";
@@ -142,5 +149,45 @@ public class FileManagementService {
         File file = new File(BASE_DATA_PATH, filePath);
         file.getParentFile().mkdirs();
         file.createNewFile();
+    }
+
+    public List<String[]> importCsv(File sourceFile) {
+        FileReader fileReader = null;
+        try {
+            fileReader = new FileReader(sourceFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        CSVReader csvReader = new CSVReaderBuilder(fileReader)
+                .withSkipLines(2)
+                .build();
+        List<String[]> strings = new ArrayList<>();
+        try {
+            strings = csvReader.readAll();
+        } catch (IOException | CsvException e) {
+            e.printStackTrace();
+        }
+        return strings;
+    }
+
+    public List<ServantFromManager> loadManagerLookupTable() {
+        FileReader fileReader = null;
+        try {
+            fileReader = new FileReader("src/main/resources/managerDB-v1.3.2.csv");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        CSVReader csvReader = new CSVReaderBuilder(fileReader).withSkipLines(1).build();
+        List<String[]> strings = new ArrayList<>();
+        try {
+            strings = csvReader.readAll();
+        } catch (IOException | CsvException e) {
+            e.printStackTrace();
+        }
+        return strings.stream().map(this::buildLookupObject).collect(Collectors.toList());
+    }
+
+    private ServantFromManager buildLookupObject(String[] strings) {
+        return new ServantFromManager(Integer.parseInt(strings[1]), strings[0]);
     }
 }

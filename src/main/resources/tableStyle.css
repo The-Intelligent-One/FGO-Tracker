@@ -1,0 +1,12 @@
+.table-column, .text-field {
+    -fx-alignment: center
+}
+
+.table-row-cell:last-row {
+    -fx-border-width: 0 0 2px 0;
+    -fx-border-style: solid
+}
+
+.table-row-cell {
+    -fx-cell-size: 35px
+}

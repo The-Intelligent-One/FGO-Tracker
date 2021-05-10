@@ -1,34 +1,77 @@
 package com.github.theintelligentone.fgotracker.app;
 
-import com.github.theintelligentone.fgotracker.domain.ServantOfUser;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import com.github.theintelligentone.fgotracker.ui.MainController;
 import javafx.application.Application;
-import javafx.scene.Group;
+import javafx.concurrent.Task;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import lombok.Getter;
 
 public class MainApp extends Application {
-    private DataManagementService dataManagementService;
+    private static final String MAIN_WINDOW_FXML = "/mainWindow.fxml";
+    private static final double AUTO_WIDTH = 1030;
+    private static final double AUTO_HEIGHT = 480;
+    @Getter
+    private static DataManagementService dataManagementService;
+    private FXMLLoader loader;
+    private MainController mainController;
 
     public static void main(String[] args) {
         launch();
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void init() throws Exception {
         dataManagementService = new DataManagementService();
-        Group group = new Group();
-        Scene scene = new Scene(group);
-        ServantOfUser tempSvt = new ServantOfUser();
-        tempSvt.setLevel(20);
-        dataManagementService.saveUserServant(tempSvt, 0);
-        primaryStage.setScene(scene);
-        primaryStage.setTitle("FGO Tracker");
-        primaryStage.show();
+        loader = new FXMLLoader(getClass().getResource(MAIN_WINDOW_FXML));
     }
 
     @Override
-    public void stop() throws Exception {
-        dataManagementService.tearDown();
+    public void start(Stage primaryStage) throws Exception {
+        Parent root = loader.load();
+        mainController = loader.getController();
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add("tableStyle.css");
+        Alert loadingAlert = initServantData();
+        primaryStage.setScene(scene);
+        primaryStage.setResizable(false);
+        primaryStage.setTitle("FGO Tracker");
+        primaryStage.setMinHeight(AUTO_HEIGHT);
+        primaryStage.setMinWidth(AUTO_WIDTH);
+        primaryStage.show();
+        loadingAlert.show();
+    }
+
+    private Alert initServantData() {
+        Alert loadingAlert = new Alert(Alert.AlertType.NONE);
+        loadingAlert.setTitle("FGO Tracker");
+        loadingAlert.initStyle(StageStyle.UNIFIED);
+        loadingAlert.setContentText("Servant data loading");
+        Task loadingTask = new Task() {
+            @Override
+            protected Object call() throws Exception {
+                dataManagementService.initApp();
+                this.succeeded();
+                return null;
+            }
+        };
+        loadingTask.setOnSucceeded(event -> {
+            mainController.rosterTableSetup();
+            loadingAlert.setResult(ButtonType.CANCEL);
+            loadingAlert.close();
+        });
+        new Thread(loadingTask).start();
+        return loadingAlert;
+    }
+
+    @Override
+    public void stop() {
+        mainController.tearDown();
     }
 }

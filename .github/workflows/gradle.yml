@@ -31,7 +31,7 @@ jobs:
     - name: action-zip
       uses: montudor/action-zip@v1.0.0
       with:
-        args: zip -qq -r "FGO Tracker.zip" launch4j
+        args: zip -qq -r "FGO Tracker.zip" build/launch4j
     - name: Upload a Build Artifact
       uses: actions/upload-artifact@v2.2.3
       with:

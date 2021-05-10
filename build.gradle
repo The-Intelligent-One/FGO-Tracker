@@ -7,11 +7,12 @@ plugins {
     id "org.beryx.runtime" version "1.12.4"
 }
 
-group "com.github.theintelligentone"
-version "1.0-SNAPSHOT"
-
 def MAINPATH = "com.github.theintelligentone.fgotracker.Main"
 mainClassName = MAINPATH
+
+group "com.github.theintelligentone"
+version "0.1.0"
+
 
 repositories {
     mavenCentral()
@@ -30,6 +31,12 @@ dependencies {
 application {
     mainClassName MAINPATH
     applicationName = "FGO Tracker"
+}
+
+task packageDistribution(type: Zip) {
+    dependsOn("embedJre")
+    destinationDirectory = file("$buildDir/dist")
+    from "$buildDir/launch4j"
 }
 
 test {
@@ -62,15 +69,15 @@ task embedJre {
     dependsOn("createExe")
     copy {
         from System.getenv("JAVA_HOME") + "/bin"
-        into "${buildDir}/launch4j/jre/bin"
+        into "$buildDir/launch4j/jre/bin"
     }
     copy {
         from System.getenv("JAVA_HOME") + "/lib"
-        into "${buildDir}/launch4j/jre/lib"
+        into "$buildDir/launch4j/jre/lib"
     }
     copy {
         from System.getenv("JAVA_HOME") + "/conf"
-        into "${buildDir}/launch4j/jre/conf"
+        into "$buildDir/launch4j/jre/conf"
     }
 }
 

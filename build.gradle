@@ -24,11 +24,11 @@ dependencies {
     runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:win"
     runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:linux"
     runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:mac"
-    implementation "com.opencsv:opencsv:5.4"
+    compile "com.opencsv:opencsv:5.4"
 }
 
 application {
-    getMainClass().set MAINPATH
+    mainClassName MAINPATH
     applicationName = "FGO Tracker"
 }
 

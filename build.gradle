@@ -36,6 +36,7 @@ application {
 task packageDistribution(type: Zip) {
     dependsOn("embedJre")
     destinationDirectory = file("$buildDir/dist")
+    archiveVersion = ""
     from "$buildDir/launch4j"
 }
 

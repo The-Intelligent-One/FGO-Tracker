@@ -11,7 +11,7 @@ def MAINPATH = "com.github.theintelligentone.fgotracker.Main"
 mainClassName = MAINPATH
 
 group "com.github.theintelligentone"
-version "0.1.0"
+version "0.1.1"
 
 
 repositories {

@@ -5,8 +5,8 @@ name: Java CI with Gradle
 
 on:
   push:
+    branches: [master]
     tags:
-      - branches [master]
       - 'v*.*.*'
   pull_request:
     tags:

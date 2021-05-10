@@ -6,6 +6,7 @@ name: Java CI with Gradle
 on:
   push:
     tags:
+      - branches ['master']
       - 'v*.*.*'
   pull_request:
     tags:
@@ -28,7 +29,7 @@ jobs:
     - name: Setup Gradle Wrapper
       run: gradle wrapper --gradle-version 6.8
     - name: Build with Gradle
-      run: ./gradlew packageDistribution
+      run: ./gradlew packageDistribution --debug
     - name: Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')

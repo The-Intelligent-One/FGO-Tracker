@@ -66,17 +66,19 @@ launch4j {
 
 task embedJre {
     dependsOn("createExe")
-    copy {
-        from System.getenv("JAVA_HOME") + "/bin"
-        into "$buildDir/launch4j/jre/bin"
-    }
-    copy {
-        from System.getenv("JAVA_HOME") + "/lib"
-        into "$buildDir/launch4j/jre/lib"
-    }
-    copy {
-        from System.getenv("JAVA_HOME") + "/conf"
-        into "$buildDir/launch4j/jre/conf"
+    doLast {
+        copy {
+            from System.getenv("JAVA_HOME") + "/bin"
+            into "$buildDir/launch4j/jre/bin"
+        }
+        copy {
+            from System.getenv("JAVA_HOME") + "/lib"
+            into "$buildDir/launch4j/jre/lib"
+        }
+        copy {
+            from System.getenv("JAVA_HOME") + "/conf"
+            into "$buildDir/launch4j/jre/conf"
+        }
     }
 }
 

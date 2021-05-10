@@ -60,7 +60,7 @@ launch4j {
     mainClassName MAINPATH
     copyConfigurable = []
     bundledJrePath = "./jre"
-    bundledJre64Bit = true
+    bundledJre64Bit = false
     jdkPreference = "jdkOnly"
 }
 

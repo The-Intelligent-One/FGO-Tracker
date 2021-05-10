@@ -22,7 +22,7 @@ jobs:
       uses: actions/setup-java@v2
       with:
         java-version: '11'
-        java-package: 'jre'
+        java-package: 'jre+fx'
         architecture: 'x86'
         distribution: 'zulu'
     - name: Grant execute permission for gradlew

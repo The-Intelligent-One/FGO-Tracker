@@ -23,7 +23,7 @@ jobs:
       with:
         java-version: '11'
         java-package: 'jdk+fx'
-        architecture: 'x86'
+        architecture: 'x64'
         distribution: 'zulu'
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew

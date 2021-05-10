@@ -59,8 +59,8 @@ javafx {
 launch4j {
     mainClassName MAINPATH
     copyConfigurable = []
-    bundledJrePath = "./jre"
-    bundledJre64Bit = false
+    bundledJrePath = "jre"
+    bundledJre64Bit = true
     jdkPreference = "jdkOnly"
 }
 

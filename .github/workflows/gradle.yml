@@ -29,6 +29,7 @@ jobs:
       run: ./gradlew packageDistribution
     - name: Release
       uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
       with:
         files: "build/dist/FGO Tracker.zip"
       env:

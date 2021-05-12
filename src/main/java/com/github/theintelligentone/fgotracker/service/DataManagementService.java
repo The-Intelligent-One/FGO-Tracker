@@ -1,7 +1,7 @@
 package com.github.theintelligentone.fgotracker.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.theintelligentone.fgotracker.domain.ServantFromManager;
+import com.github.theintelligentone.fgotracker.domain.servant.ServantFromManager;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
@@ -11,10 +11,7 @@ import javafx.collections.ObservableList;
 import lombok.Getter;
 
 import java.io.File;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DataManagementService {

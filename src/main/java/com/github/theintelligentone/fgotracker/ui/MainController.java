@@ -61,4 +61,8 @@ public class MainController {
     public void add10NewRow() {
         IntStream.range(0, 10).forEach(number -> this.addNewRow());
     }
+
+    public void saveUserData() {
+        dataManagementService.saveUserState();
+    }
 }

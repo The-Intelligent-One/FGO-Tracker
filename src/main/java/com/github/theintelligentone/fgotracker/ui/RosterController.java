@@ -1,10 +1,12 @@
 package com.github.theintelligentone.fgotracker.ui;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
-import com.github.theintelligentone.fgotracker.domain.AutoCompleteTextFieldTableCell;
+import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServantFactory;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import com.github.theintelligentone.fgotracker.ui.cellfactory.AscensionCheckBoxTableCell;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
@@ -41,7 +43,7 @@ public class RosterController {
     private TableColumn<ServantOfUser, String> npColumn;
 
     @FXML
-    private TableColumn<ServantOfUser, String> ascColumn;
+    private TableColumn<ServantOfUser, Boolean> ascColumn;
 
     @FXML
     private TableColumn<ServantOfUser, Integer> bondColumn;
@@ -85,17 +87,14 @@ public class RosterController {
     }
 
     private void ascColumnSetup() {
-        ascColumn.setCellFactory(list -> {
-            ComboBoxTableCell<ServantOfUser, String> tableCell = new ComboBoxTableCell<>(FXCollections.observableArrayList(ZERO_TO_FOUR));
-            tableCell.setComboBoxEditable(true);
-            return tableCell;
-        });
-        ascColumn.setOnEditCommit(event -> {
-            int input = Integer.parseInt(event.getNewValue());
-            if (input <= 4 && input >= 0) {
-                event.getRowValue().setAscension(input);
-            }
-            rosterTable.refresh();
+        ascColumn.setCellFactory(cell -> new AscensionCheckBoxTableCell());
+        ascColumn.setCellValueFactory(cellData -> {
+            ServantOfUser servant = cellData.getValue();
+            SimpleBooleanProperty simpleBooleanProperty = new SimpleBooleanProperty(servant != null ? servant.isAscension() : false);
+            simpleBooleanProperty.addListener((observable, oldValue, newValue) -> {
+                cellData.getValue().setAscension(newValue);
+            });
+            return simpleBooleanProperty;
         });
     }
 
@@ -133,8 +132,8 @@ public class RosterController {
     }
 
     private void bondColumnSetup() {
-        skill1Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        skill1Column.setOnEditCommit(event -> {
+        bondColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        bondColumn.setOnEditCommit(event -> {
             int input = event.getNewValue();
             if (input <= 15 && input >= 0) {
                 event.getRowValue().setSkillLevel1(input);

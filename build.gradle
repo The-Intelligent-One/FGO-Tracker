@@ -7,35 +7,34 @@ plugins {
     id "org.beryx.runtime" version "1.12.4"
 }
 
+group "com.github.theintelligentone"
+version "1.0-SNAPSHOT"
+
 def MAINPATH = "com.github.theintelligentone.fgotracker.Main"
 mainClassName = MAINPATH
-
-group "com.github.theintelligentone"
-version "0.1.1"
-
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.0"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.0"
     implementation "com.fasterxml.jackson.core:jackson-databind:2.11.1"
     runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:win"
     runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:linux"
     runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:mac"
-    implementation "com.opencsv:opencsv:5.4"
+    compile "com.opencsv:opencsv:5.4"
 }
 
 application {
-    getMainClass().set MAINPATH
+    mainClassName MAINPATH
     applicationName = "FGO Tracker"
 }
 
-task packageDistribution(type: Zip) {
-    dependsOn("embedJre")
-    destinationDirectory = file("$buildDir/dist")
-    archiveVersion = ""
-    from "$buildDir/launch4j"
+compileJava {
+    options.compilerArgs.add("-encoding")
+    options.compilerArgs.add("UTF-8")
 }
 
 test {
@@ -59,26 +58,24 @@ javafx {
 launch4j {
     mainClassName MAINPATH
     copyConfigurable = []
-    bundledJrePath = "jre"
+    bundledJrePath = "./jre"
     bundledJre64Bit = true
     jdkPreference = "jdkOnly"
 }
 
 task embedJre {
     dependsOn("createExe")
-    doLast {
-        copy {
-            from System.getenv("JAVA_HOME") + "/bin"
-            into "$buildDir/launch4j/jre/bin"
-        }
-        copy {
-            from System.getenv("JAVA_HOME") + "/lib"
-            into "$buildDir/launch4j/jre/lib"
-        }
-        copy {
-            from System.getenv("JAVA_HOME") + "/conf"
-            into "$buildDir/launch4j/jre/conf"
-        }
+    copy {
+        from System.getenv("JAVA_HOME") + "/bin"
+        into "${buildDir}/launch4j/jre/bin"
+    }
+    copy {
+        from System.getenv("JAVA_HOME") + "/lib"
+        into "${buildDir}/launch4j/jre/lib"
+    }
+    copy {
+        from System.getenv("JAVA_HOME") + "/conf"
+        into "${buildDir}/launch4j/jre/conf"
     }
 }
 

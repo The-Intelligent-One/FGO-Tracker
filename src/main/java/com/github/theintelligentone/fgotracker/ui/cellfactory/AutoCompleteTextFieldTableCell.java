@@ -1,4 +1,4 @@
-package com.github.theintelligentone.fgotracker.domain;
+package com.github.theintelligentone.fgotracker.ui.cellfactory;
 
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -18,6 +18,7 @@ import javafx.util.Callback;
 import javafx.util.StringConverter;
 import javafx.util.converter.DefaultStringConverter;
 
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -58,7 +59,7 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
                         } else {
                             List<T> searchResult = new ArrayList<>();
                             //Check if the entered Text is part of some entry
-                            String text1 = text.getText();
+                            String text1 = createNormalizedString(text.getText());
                             Pattern pattern;
                             if (isCaseSensitive()) {
                                 pattern = Pattern.compile(".*" + text1 + ".*");
@@ -66,7 +67,8 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
                                 pattern = Pattern.compile(".*" + text1 + ".*", Pattern.CASE_INSENSITIVE);
                             }
                             for (T entry : entries) {
-                                Matcher matcher = pattern.matcher(entry.toString());
+                                String normalizedString = createNormalizedString(entry.toString());
+                                Matcher matcher = pattern.matcher(normalizedString);
                                 if (matcher.matches()) {
                                     searchResult.add(entry);
                                 }
@@ -112,6 +114,10 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
         };
     }
 
+    private String createNormalizedString(String toNormalize) {
+        return Normalizer.normalize(toNormalize.toLowerCase(), Normalizer.Form.NFKD).replaceAll("[^\\p{ASCII}]", "");
+    }
+
     public ObservableList<T> getEntries() {
         return entries;
     }
@@ -127,7 +133,7 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
             if (isCaseSensitive()) {
                 occurence = result.indexOf(text);
             } else {
-                occurence = result.toLowerCase().indexOf(text.toLowerCase());
+                occurence = createNormalizedString(result).indexOf(createNormalizedString(text));
             }
             if (occurence < 0) {
                 continue;

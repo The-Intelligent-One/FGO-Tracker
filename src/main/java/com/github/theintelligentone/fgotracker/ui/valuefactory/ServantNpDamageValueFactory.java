@@ -11,7 +11,7 @@ import javafx.util.Callback;
 
 public class ServantNpDamageValueFactory implements Callback<TableColumn.CellDataFeatures<ServantOfUser, Number>, ObservableValue<Number>> {
 
-    private static final int PERCANTAGE_SCALE = 1000;
+    private static final double PERCANTAGE_SCALE = 1000;
     private static final double BASE_DAMAGE_MULTIPLIER = 0.23;
 
     @Override

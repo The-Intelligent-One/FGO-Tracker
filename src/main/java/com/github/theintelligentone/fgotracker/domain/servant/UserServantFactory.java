@@ -10,7 +10,7 @@ public class UserServantFactory {
                 .rarity(baseServant.getRarity())
                 .fouAtk(0)
                 .fouHp(0)
-                .ascension(0)
+                .ascension(false)
                 .bondLevel(0)
                 .level(1)
                 .npLevel(1)

@@ -18,7 +18,7 @@ public class ServantOfUser {
     private int fouAtk;
     private int fouHp;
     private int level;
-    private int ascension;
+    private boolean ascension;
     private int npLevel;
     private String npType;
     private String npTarget;

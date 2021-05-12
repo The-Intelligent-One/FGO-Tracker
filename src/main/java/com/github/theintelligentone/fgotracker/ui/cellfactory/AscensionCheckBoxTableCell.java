@@ -1,6 +1,7 @@
 package com.github.theintelligentone.fgotracker.ui.cellfactory;
 
 import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
+import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import javafx.scene.control.cell.CheckBoxTableCell;
 
 import java.util.HashSet;
@@ -8,7 +9,6 @@ import java.util.Set;
 import java.util.stream.IntStream;
 
 public class AscensionCheckBoxTableCell extends CheckBoxTableCell<ServantOfUser, Boolean> {
-    private static final int[] MAX_LEVELS = {65, 60, 65, 70, 80, 90};
 
     @Override
     public void updateItem(Boolean item, boolean empty) {
@@ -25,7 +25,7 @@ public class AscensionCheckBoxTableCell extends CheckBoxTableCell<ServantOfUser,
     private boolean servantIsAtLevelWithAscension(ServantOfUser servant) {
         boolean result = false;
         if (servant != null) {
-            Set<Integer> levelsWithAscension = createSetOfAscensionLevels(MAX_LEVELS[servant.getRarity()]);
+            Set<Integer> levelsWithAscension = createSetOfAscensionLevels(DataManagementService.MAX_LEVELS[servant.getRarity()]);
             result = levelsWithAscension.contains(servant.getLevel());
         }
         return result;

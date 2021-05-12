@@ -1,7 +1,7 @@
 package com.github.theintelligentone.fgotracker.app;
 
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
-import com.github.theintelligentone.fgotracker.ui.MainController;
+import com.github.theintelligentone.fgotracker.ui.controller.MainController;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
@@ -14,7 +14,7 @@ import javafx.stage.StageStyle;
 import lombok.Getter;
 
 public class MainApp extends Application {
-    private static final String MAIN_WINDOW_FXML = "/mainWindow.fxml";
+    private static final String MAIN_WINDOW_FXML = "/fxml/mainWindow.fxml";
     private static final double AUTO_WIDTH = 1030;
     private static final double AUTO_HEIGHT = 480;
     @Getter

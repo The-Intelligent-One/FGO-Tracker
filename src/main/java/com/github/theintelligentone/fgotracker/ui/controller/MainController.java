@@ -1,4 +1,4 @@
-package com.github.theintelligentone.fgotracker.ui;
+package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
@@ -12,6 +12,12 @@ import java.util.List;
 import java.util.stream.IntStream;
 
 public class MainController {
+    public static final double NAME_CELL_WIDTH = 200;
+    public static final double LONG_CELL_WIDTH = 100;
+    public static final double MID_CELL_WIDTH = 60;
+    public static final double SHORT_CELL_WIDTH = 40;
+    public static final double CHAR_CELL_WIDTH = 20;
+
     @FXML
     private RosterController rosterTabController;
 
@@ -26,7 +32,7 @@ public class MainController {
     }
 
     public void rosterTableSetup() {
-        rosterTabController.tableSetup();
+        rosterTabController.loadData();
     }
 
     public void importFromCsv() {

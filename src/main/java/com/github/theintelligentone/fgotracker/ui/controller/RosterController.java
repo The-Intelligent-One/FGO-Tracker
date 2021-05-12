@@ -1,11 +1,11 @@
-package com.github.theintelligentone.fgotracker.ui;
+package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
-import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServantFactory;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AscensionCheckBoxTableCell;
+import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -20,11 +20,25 @@ import javafx.util.converter.IntegerStringConverter;
 
 public class RosterController {
     private static final String[] ONE_TO_FIVE = {"1", "2", "3", "4", "5"};
-    private static final String[] ZERO_TO_FOUR = {"0", "1", "2", "3", "4"};
     private DataManagementService dataManagementService;
 
     @FXML
     private TableView<ServantOfUser> rosterTable;
+
+    @FXML
+    private TableColumn<ServantOfUser, Integer> rarityColumn;
+
+    @FXML
+    private TableColumn<ServantOfUser, String> classColumn;
+
+    @FXML
+    private TableColumn<ServantOfUser, String> attributeColumn;
+
+    @FXML
+    private TableColumn<ServantOfUser, ?> deckColumn;
+
+    @FXML
+    private TableColumn<ServantOfUser, ?> npColumn;
 
     @FXML
     private TableColumn<ServantOfUser, String> nameColumn;
@@ -38,9 +52,9 @@ public class RosterController {
     @FXML
     private TableColumn<ServantOfUser, Integer> hpColumn;
 
-    // these need to be set to String for some reason. If I set it to Integer it freaks out in the edit commit event handler about casting during runtime
+    // this need to be set to String for some reason. If I set it to Integer it freaks out in the edit commit event handler about casting during runtime
     @FXML
-    private TableColumn<ServantOfUser, String> npColumn;
+    private TableColumn<ServantOfUser, String> npDmgColumn;
 
     @FXML
     private TableColumn<ServantOfUser, Boolean> ascColumn;
@@ -59,12 +73,12 @@ public class RosterController {
 
     public void initialize() {
         dataManagementService = MainApp.getDataManagementService();
-
+        tableSetup();
     }
 
     public void tableSetup() {
-        rosterTable.setItems(getUserServants());
         rosterTable.getSelectionModel().setCellSelectionEnabled(true);
+        columnWidthSetup();
         nameColumnSetup();
         npColumnSetup();
         levelColumnSetup();
@@ -84,6 +98,23 @@ public class RosterController {
                         index >= 0 && index == rosterTable.getItems().size() - 1);
             }
         });
+    }
+
+    private void columnWidthSetup() {
+        nameColumn.setPrefWidth(MainController.NAME_CELL_WIDTH);
+        rarityColumn.setPrefWidth(MainController.CHAR_CELL_WIDTH);
+        classColumn.setPrefWidth(MainController.LONG_CELL_WIDTH);
+        attributeColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
+        deckColumn.getColumns().forEach(column -> column.setPrefWidth(MainController.CHAR_CELL_WIDTH));
+        npColumn.getColumns().forEach(column -> column.setPrefWidth(MainController.MID_CELL_WIDTH));
+        levelColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
+        ascColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
+        bondColumn.setPrefWidth(MainController.CHAR_CELL_WIDTH);
+        skill1Column.setPrefWidth(MainController.CHAR_CELL_WIDTH);
+        skill2Column.setPrefWidth(MainController.CHAR_CELL_WIDTH);
+        skill3Column.setPrefWidth(MainController.CHAR_CELL_WIDTH);
+        atkColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
+        hpColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
     }
 
     private void ascColumnSetup() {
@@ -176,12 +207,12 @@ public class RosterController {
     }
 
     private void npColumnSetup() {
-        npColumn.setCellFactory(list -> {
+        npDmgColumn.setCellFactory(list -> {
             ComboBoxTableCell<ServantOfUser, String> tableCell = new ComboBoxTableCell<>(FXCollections.observableArrayList(ONE_TO_FIVE));
             tableCell.setComboBoxEditable(true);
             return tableCell;
         });
-        npColumn.setOnEditCommit(event -> {
+        npDmgColumn.setOnEditCommit(event -> {
             int input = Integer.parseInt(event.getNewValue());
             if (input <= 5 && input >= 1) {
                 event.getRowValue().setNpLevel(input);
@@ -203,5 +234,9 @@ public class RosterController {
 
     public ObservableList<ServantOfUser> getUserServants() {
         return dataManagementService.getUserServantList();
+    }
+
+    public void loadData() {
+        rosterTable.setItems(getUserServants());
     }
 }

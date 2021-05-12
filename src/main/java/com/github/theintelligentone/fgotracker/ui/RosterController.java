@@ -1,7 +1,7 @@
 package com.github.theintelligentone.fgotracker.ui;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
-import com.github.theintelligentone.fgotracker.domain.AutoCompleteTextFieldTableCell;
+import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServantFactory;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
@@ -14,7 +14,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.IntegerStringConverter;
@@ -90,7 +89,8 @@ public class RosterController {
     private void ascColumnSetup() {
         ascColumn.setCellFactory(cell -> new AscensionCheckBoxTableCell());
         ascColumn.setCellValueFactory(cellData -> {
-            SimpleBooleanProperty simpleBooleanProperty = new SimpleBooleanProperty(cellData.getValue().isAscension());
+            ServantOfUser servant = cellData.getValue();
+            SimpleBooleanProperty simpleBooleanProperty = new SimpleBooleanProperty(servant != null ? servant.isAscension() : false);
             simpleBooleanProperty.addListener((observable, oldValue, newValue) -> {
                 cellData.getValue().setAscension(newValue);
             });

@@ -32,6 +32,11 @@ application {
     applicationName = "FGO Tracker"
 }
 
+compileJava {
+    options.compilerArgs.add("-encoding")
+    options.compilerArgs.add("UTF-8")
+}
+
 test {
     useJUnitPlatform()
 }

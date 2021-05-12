@@ -24,6 +24,11 @@
                 <Label onMouseClicked="#importFromCsv" text="Import"/>
             </graphic>
         </Menu>
+        <Menu>
+            <graphic>
+                <Label onMouseClicked="#saveUserData" text="Save"/>
+            </graphic>
+        </Menu>
     </MenuBar>
     <TabPane>
         <fx:include fx:id="rosterTab" source="rosterTab.fxml"/>

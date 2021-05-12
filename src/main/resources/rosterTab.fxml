@@ -102,11 +102,7 @@
                             <PropertyValueFactory property="level"/>
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn fx:id="ascColumn" text="Asc" prefWidth="$SHORT_CELL_WIDTH">
-                        <cellValueFactory>
-                            <PropertyValueFactory property="ascension"/>
-                        </cellValueFactory>
-                    </TableColumn>
+                    <TableColumn fx:id="ascColumn" text="Asc" prefWidth="$SHORT_CELL_WIDTH"/>
                     <TableColumn fx:id="bondColumn" text="B" prefWidth="$CHAR_CELL_WIDTH">
                         <cellValueFactory>
                             <PropertyValueFactory property="bondLevel"/>

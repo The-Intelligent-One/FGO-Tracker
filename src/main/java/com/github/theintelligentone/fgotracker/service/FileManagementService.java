@@ -2,7 +2,7 @@ package com.github.theintelligentone.fgotracker.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.theintelligentone.fgotracker.domain.ServantFromManager;
+import com.github.theintelligentone.fgotracker.domain.servant.ServantFromManager;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;

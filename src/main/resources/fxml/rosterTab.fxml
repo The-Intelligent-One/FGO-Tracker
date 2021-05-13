@@ -81,7 +81,7 @@
                             <ServantNpDamageValueFactory/>
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn editable="true" fx:id="npDmgColumn">
+                    <TableColumn text="Level" editable="true" fx:id="npDmgColumn">
                         <cellValueFactory>
                             <PropertyValueFactory property="npLevel"/>
                         </cellValueFactory>

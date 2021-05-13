@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class UpgradeObject {
+public class UpgradeCost {
     private List<UpgradeMaterialCost> items;
-//    private long qp;
+    private long qp;
 }

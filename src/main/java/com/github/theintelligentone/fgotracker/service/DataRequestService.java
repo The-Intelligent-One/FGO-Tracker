@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
+import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.UpgradeMaterial;
 
 import java.io.IOException;
 import java.net.URL;
@@ -14,7 +15,9 @@ import java.util.stream.Collectors;
 public class DataRequestService {
 
     private static final String[] SERVANT_TYPES = {"normal", "heroine"};
+    private static final String[] MATERIAL_USES = {"skill", "ascension"};
     private static final String ALL_SERVANT_URL = "https://api.atlasacademy.io/export/NA/nice_servant.json";
+    private static final String MAT_URL = "https://api.atlasacademy.io/export/NA/nice_item.json";
     private static final String CLASS_ATTACK_RATE_URL = "https://api.atlasacademy.io/export/NA/NiceClassAttackRate.json";
     private static final String CARD_DETAILS_URL = "https://api.atlasacademy.io/export/NA/NiceCard.json";
     private static final String VERSION_URL = "https://api.atlasacademy.io/info";
@@ -32,6 +35,16 @@ public class DataRequestService {
             e.printStackTrace();
         }
         return dataList.stream().filter(this::isServant).collect(Collectors.toList());
+    }
+
+    public List<UpgradeMaterial> getAllMaterialData() {
+        List<UpgradeMaterial> dataList = new ArrayList<>();
+        try {
+            dataList = objectMapper.readValue(new URL(MAT_URL), new TypeReference<>() {});
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return dataList.stream().filter(this::isMat).collect(Collectors.toList());
     }
 
     public Map<String, Integer> getClassAttackRate() {
@@ -66,5 +79,9 @@ public class DataRequestService {
 
     private boolean isServant(Servant svt) {
         return Arrays.asList(SERVANT_TYPES).contains(svt.getType());
+    }
+
+    private boolean isMat(UpgradeMaterial mat) {
+        return Arrays.asList(MATERIAL_USES).stream().anyMatch(mat.getUses()::contains);
     }
 }

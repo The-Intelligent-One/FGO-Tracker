@@ -6,12 +6,12 @@ import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantFromManager;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServantFactory;
+import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.UpgradeMaterial;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
 
 import java.io.File;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +25,7 @@ public class DataManagementService {
     private final FileManagementService fileService;
     private ObservableList<String> servantNameList = FXCollections.observableArrayList();
     private List<Servant> servantDataList;
+    private List<UpgradeMaterial> materials;
     private List<ServantFromManager> managerLookup;
     @Getter
     private ObservableList<ServantOfUser> userServantList = FXCollections.observableArrayList();
@@ -178,15 +179,23 @@ public class DataManagementService {
     }
 
     private void refreshCache() {
+        downloadNewData();
+        saveNewDataToCache();
+    }
+
+    private void saveNewDataToCache() {
+        fileService.saveFullServantData(servantDataList);
+        fileService.saveClassAttackRate(CLASS_ATTACK_MULTIPLIER);
+        fileService.saveMaterialData(materials);
+        fileService.saveCardData(CARD_DATA);
+        fileService.saveNewVersion(currentVersion);
+    }
+
+    private void downloadNewData() {
         servantDataList = requestService.getAllServantData();
-        if (!servantDataList.isEmpty()) {
-            fileService.saveFullServantData(servantDataList);
-            fileService.saveNewVersion(currentVersion);
-        }
+        materials = requestService.getAllMaterialData();
         CLASS_ATTACK_MULTIPLIER = requestService.getClassAttackRate();
         CARD_DATA = requestService.getCardDetails();
-        fileService.saveClassAttackRate(CLASS_ATTACK_MULTIPLIER);
-        fileService.saveCardData(CARD_DATA);
     }
 
     private boolean newVersionAvailable() {

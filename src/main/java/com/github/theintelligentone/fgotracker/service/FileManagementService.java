@@ -2,18 +2,16 @@ package com.github.theintelligentone.fgotracker.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.theintelligentone.fgotracker.domain.servant.ServantFromManager;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
+import com.github.theintelligentone.fgotracker.domain.servant.ServantFromManager;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
+import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.UpgradeMaterial;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
@@ -25,11 +23,13 @@ import java.util.stream.Collectors;
 public class FileManagementService {
     private static final String BASE_DATA_PATH = "data/";
     private static final String VERSION_FILE = "dbVersion.json";
-    private static final String FULL_DATA_FILE = "cache/servant/full.json";
+    private static final String FULL_DATA_FILE = "cache/servants.json";
+    private static final String MATERIAL_DATA_FILE = "cache/mats.json";
+    private static final String IMAGE_FOLDER_PATH = "cache/images/";
     private static final String CLASS_ATTACK_FILE = "cache/classAttack.json";
     private static final String CARD_DATA_FILE = "cache/cardData.json";
     private static final String USER_DATA_FILE = "userdata/servants.json";
-    private static final String MANAGER_DB_PATH = "src/main/resources/managerDB-v1.3.2.csv";
+    private static final String MANAGER_DB_PATH = "/managerDB-v1.3.2.csv";
     private final ObjectMapper objectMapper;
 
     public FileManagementService(ObjectMapper objectMapper) {
@@ -44,6 +44,11 @@ public class FileManagementService {
     public void saveFullServantData(List<Servant> servants) {
         File file = new File(BASE_DATA_PATH, FULL_DATA_FILE);
         saveDataToFile(servants, file);
+    }
+
+    public void saveMaterialData(List<UpgradeMaterial> materials) {
+        File file = new File(BASE_DATA_PATH, MATERIAL_DATA_FILE);
+        saveDataToFile(materials, file);
     }
 
     public void saveClassAttackRate(Map<String, Integer> classAttackRate) {
@@ -80,6 +85,19 @@ public class FileManagementService {
             }
         }
         return servantList;
+    }
+
+    public List<UpgradeMaterial> loadMaterialData() {
+        File file = new File(BASE_DATA_PATH, MATERIAL_DATA_FILE);
+        List<UpgradeMaterial> itemList = new ArrayList<>();
+        if (file.length() != 0) {
+            try {
+                itemList = objectMapper.readValue(file, new TypeReference<>() {});
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return itemList;
     }
 
     public List<ServantOfUser> loadUserData() {
@@ -142,8 +160,10 @@ public class FileManagementService {
 
     private void initFileStructure() throws IOException {
         createFileIfDoesNotExist(FULL_DATA_FILE);
+        createFileIfDoesNotExist(MATERIAL_DATA_FILE);
         createFileIfDoesNotExist(USER_DATA_FILE);
         createFileIfDoesNotExist(VERSION_FILE);
+        Files.createDirectories(Path.of(BASE_DATA_PATH, IMAGE_FOLDER_PATH));
     }
 
     private void createFileIfDoesNotExist(String filePath) throws IOException {
@@ -172,13 +192,8 @@ public class FileManagementService {
     }
 
     public List<ServantFromManager> loadManagerLookupTable() {
-        FileReader fileReader = null;
-        try {
-            fileReader = new FileReader(MANAGER_DB_PATH);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        CSVReader csvReader = new CSVReaderBuilder(fileReader).withSkipLines(1).build();
+        Reader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(MANAGER_DB_PATH)));
+        CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
         List<String[]> strings = new ArrayList<>();
         try {
             strings = csvReader.readAll();

@@ -2,13 +2,11 @@ package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
 import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
-import com.github.theintelligentone.fgotracker.domain.servant.UserServantFactory;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AscensionCheckBoxTableCell;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
@@ -224,19 +222,15 @@ public class RosterController {
     private void nameColumnSetup() {
         nameColumn.setOnEditCommit(event -> {
             if (event.getNewValue().isEmpty()) {
-                getUserServants().set(getUserServants().indexOf(event.getRowValue()), null);
+                dataManagementService.eraseUserServant(event.getRowValue());
             } else {
-                getUserServants().set(event.getTablePosition().getRow(), new UserServantFactory().replaceBaseServant(event.getRowValue(), dataManagementService.getServantByName(event.getNewValue())));
+                dataManagementService.replaceBaseServantInRow(event.getTablePosition().getRow(), event.getRowValue(), event.getNewValue());
             }
         });
         nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementService.getServantNameList()));
     }
 
-    public ObservableList<ServantOfUser> getUserServants() {
-        return dataManagementService.getUserServantList();
-    }
-
     public void loadData() {
-        rosterTable.setItems(getUserServants());
+        rosterTable.setItems(dataManagementService.getUserServantList());
     }
 }

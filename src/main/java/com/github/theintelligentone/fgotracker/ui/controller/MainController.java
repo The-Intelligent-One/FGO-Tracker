@@ -37,27 +37,43 @@ public class MainController {
 
     public void importFromCsv() {
         if (dataManagementService.isDataLoaded()) {
-            FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle("CSV to import");
-            File csvFile = fileChooser.showOpenDialog(Stage.getWindows().get(0));
-            if (csvFile != null) {
-                List<String> notFoundNames = dataManagementService.importFromCsv(csvFile);
-                if (notFoundNames != null && !notFoundNames.isEmpty()) {
-                    StringBuilder stringBuilder = new StringBuilder();
-                    Alert notFoundAlert = new Alert(Alert.AlertType.WARNING);
-                    notFoundNames.forEach(str -> {
-                        stringBuilder.append(str);
-                        stringBuilder.append("\n");
-                    });
-                    notFoundAlert.setContentText(stringBuilder.toString());
-                    notFoundAlert.show();
-                }
-            }
+            displayFileChooserForUserForCsvImport();
         } else {
-            Alert loadingAlert = new Alert(Alert.AlertType.WARNING);
-            loadingAlert.setContentText("Servant data still loading.");
-            loadingAlert.show();
+            showNotLoadedYetAlert();
         }
+    }
+
+    private void displayFileChooserForUserForCsvImport() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("CSV to import");
+        File csvFile = fileChooser.showOpenDialog(Stage.getWindows().get(0));
+        if (csvFile != null) {
+            loadDataFromCsv(csvFile);
+        }
+    }
+
+    private void showNotLoadedYetAlert() {
+        Alert loadingAlert = new Alert(Alert.AlertType.WARNING);
+        loadingAlert.setContentText("Servant data still loading.");
+        loadingAlert.show();
+    }
+
+    private void loadDataFromCsv(File csvFile) {
+        List<String> notFoundNames = dataManagementService.importFromCsv(csvFile);
+        if (notFoundNames != null && !notFoundNames.isEmpty()) {
+            displayNotFoundAlert(notFoundNames);
+        }
+    }
+
+    private void displayNotFoundAlert(List<String> notFoundNames) {
+        StringBuilder stringBuilder = new StringBuilder();
+        Alert notFoundAlert = new Alert(Alert.AlertType.WARNING);
+        notFoundNames.forEach(str -> {
+            stringBuilder.append(str);
+            stringBuilder.append("\n");
+        });
+        notFoundAlert.setContentText(stringBuilder.toString());
+        notFoundAlert.show();
     }
 
     public void tearDown() {

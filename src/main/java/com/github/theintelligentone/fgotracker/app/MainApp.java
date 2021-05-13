@@ -15,8 +15,8 @@ import lombok.Getter;
 
 public class MainApp extends Application {
     private static final String MAIN_WINDOW_FXML = "/fxml/mainWindow.fxml";
-    private static final double AUTO_WIDTH = 1030;
-    private static final double AUTO_HEIGHT = 480;
+    private static final double AUTO_WIDTH = 1040;
+    private static final double AUTO_HEIGHT = 1000;
     @Getter
     private static DataManagementService dataManagementService;
     private FXMLLoader loader;

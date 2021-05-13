@@ -114,11 +114,13 @@ public class DataManagementService {
         return filteredData;
     }
 
-    public void saveUserServant(ServantOfUser servant, int index) {
-        while (userServantList.size() <= index) {
-            userServantList.add(null);
-        }
-        userServantList.set(index, servant);
+    public void eraseUserServant(ServantOfUser servant) {
+        userServantList.set(userServantList.indexOf(servant), null);
+    }
+
+    public void replaceBaseServantInRow(int index, ServantOfUser servant, String newServantName) {
+        ServantOfUser modifiedServant = new UserServantFactory().replaceBaseServant(servant, findServantByName(newServantName));
+        userServantList.set(index, modifiedServant);
     }
 
     public void saveUserServant(ServantOfUser servant) {
@@ -137,15 +139,9 @@ public class DataManagementService {
         }
     }
 
-    public ServantOfUser tempLoad() {
-        Servant baseServant = servantDataList.stream().sorted((svt1, svt2) -> Comparator.<Integer>reverseOrder().compare(svt1.getName().length(), svt2.getName().length())).findFirst().get();
-        return new UserServantFactory().createUserServantFromBaseServant(baseServant);
-    }
-
     public void initApp() {
         userServantList = FXCollections.observableArrayList();
         refreshAllData();
-//            saveUserServant(tempLoad(),3);
     }
 
     public void refreshAllData() {
@@ -174,6 +170,7 @@ public class DataManagementService {
 
     private void loadFromCache() {
         servantDataList = fileService.loadFullServantData();
+        materials = fileService.loadMaterialData();
         CLASS_ATTACK_MULTIPLIER = fileService.getClassAttackRate();
         CARD_DATA = fileService.getCardData();
     }
@@ -213,7 +210,7 @@ public class DataManagementService {
         return servantNameList;
     }
 
-    public Servant getServantByName(String name) {
+    public Servant findServantByName(String name) {
         return servantDataList.stream().filter(svt -> name.equalsIgnoreCase(svt.getName())).findFirst().orElse(null);
     }
 }

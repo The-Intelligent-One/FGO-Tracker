@@ -14,11 +14,9 @@ public class AscensionCheckBoxTableCell extends CheckBoxTableCell<ServantOfUser,
     public void updateItem(Boolean item, boolean empty) {
         super.updateItem(item, empty);
         ServantOfUser servant = getTableRow().getItem();
-        if (servant != null) {
-            if (!servantIsAtLevelWithAscension(servant)) {
-                setText(null);
-                setGraphic(null);
-            }
+        if (servant == null || !servantIsAtLevelWithAscension(servant)) {
+            setText(null);
+            setGraphic(null);
         }
     }
 

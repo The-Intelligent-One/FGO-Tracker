@@ -1,6 +1,6 @@
 package com.github.theintelligentone.fgotracker.ui.cellfactory;
 
-import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
+import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import javafx.scene.control.cell.CheckBoxTableCell;
 
@@ -8,22 +8,22 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.IntStream;
 
-public class AscensionCheckBoxTableCell extends CheckBoxTableCell<ServantOfUser, Boolean> {
+public class AscensionCheckBoxTableCell extends CheckBoxTableCell<UserServant, Boolean> {
 
     @Override
     public void updateItem(Boolean item, boolean empty) {
         super.updateItem(item, empty);
-        ServantOfUser servant = getTableRow().getItem();
+        UserServant servant = getTableRow().getItem();
         if (servant == null || !servantIsAtLevelWithAscension(servant)) {
             setText(null);
             setGraphic(null);
         }
     }
 
-    private boolean servantIsAtLevelWithAscension(ServantOfUser servant) {
+    private boolean servantIsAtLevelWithAscension(UserServant servant) {
         boolean result = false;
         if (servant != null) {
-            Set<Integer> levelsWithAscension = createSetOfAscensionLevels(DataManagementService.MAX_LEVELS[servant.getRarity()]);
+            Set<Integer> levelsWithAscension = createSetOfAscensionLevels(DataManagementService.MAX_LEVELS[servant.getBaseServant().getRarity()]);
             result = levelsWithAscension.contains(servant.getLevel());
         }
         return result;

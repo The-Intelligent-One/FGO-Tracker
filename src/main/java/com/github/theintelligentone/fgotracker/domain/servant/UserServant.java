@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(value = "baseServant", ignoreUnknown = true)
-public class ServantOfUser {
+public class UserServant {
     private long svtId;
     private Servant baseServant;
     private int rarity;

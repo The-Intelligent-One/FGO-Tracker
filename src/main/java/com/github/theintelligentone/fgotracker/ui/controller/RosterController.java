@@ -1,7 +1,7 @@
 package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
-import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
+import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AscensionCheckBoxTableCell;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
@@ -23,53 +23,53 @@ public class RosterController {
     private DataManagementService dataManagementService;
 
     @FXML
-    private TableView<ServantOfUser> rosterTable;
+    private TableView<UserServant> rosterTable;
 
     @FXML
-    private TableColumn<ServantOfUser, Integer> rarityColumn;
+    private TableColumn<UserServant, Integer> rarityColumn;
 
     @FXML
-    private TableColumn<ServantOfUser, String> classColumn;
+    private TableColumn<UserServant, String> classColumn;
 
     @FXML
-    private TableColumn<ServantOfUser, String> attributeColumn;
+    private TableColumn<UserServant, String> attributeColumn;
 
     @FXML
-    private TableColumn<ServantOfUser, ?> deckColumn;
+    private TableColumn<UserServant, ?> deckColumn;
 
     @FXML
-    private TableColumn<ServantOfUser, ?> npColumn;
+    private TableColumn<UserServant, ?> npColumn;
 
     @FXML
-    private TableColumn<ServantOfUser, String> nameColumn;
+    private TableColumn<UserServant, String> nameColumn;
 
     @FXML
-    private TableColumn<ServantOfUser, Integer> levelColumn;
+    private TableColumn<UserServant, Integer> levelColumn;
 
     @FXML
-    private TableColumn<ServantOfUser, Integer> atkColumn;
+    private TableColumn<UserServant, Integer> atkColumn;
 
     @FXML
-    private TableColumn<ServantOfUser, Integer> hpColumn;
+    private TableColumn<UserServant, Integer> hpColumn;
 
     // this need to be set to String for some reason. If I set it to Integer it freaks out in the edit commit event handler about casting during runtime
     @FXML
-    private TableColumn<ServantOfUser, String> npDmgColumn;
+    private TableColumn<UserServant, String> npDmgColumn;
 
     @FXML
-    private TableColumn<ServantOfUser, Boolean> ascColumn;
+    private TableColumn<UserServant, Boolean> ascColumn;
 
     @FXML
-    private TableColumn<ServantOfUser, Integer> bondColumn;
+    private TableColumn<UserServant, Integer> bondColumn;
 
     @FXML
-    private TableColumn<ServantOfUser, Integer> skill1Column;
+    private TableColumn<UserServant, Integer> skill1Column;
 
     @FXML
-    private TableColumn<ServantOfUser, Integer> skill2Column;
+    private TableColumn<UserServant, Integer> skill2Column;
 
     @FXML
-    private TableColumn<ServantOfUser, Integer> skill3Column;
+    private TableColumn<UserServant, Integer> skill3Column;
 
     public void initialize() {
         dataManagementService = MainApp.getDataManagementService();
@@ -120,7 +120,7 @@ public class RosterController {
     private void ascColumnSetup() {
         ascColumn.setCellFactory(cell -> new AscensionCheckBoxTableCell());
         ascColumn.setCellValueFactory(cellData -> {
-            ServantOfUser servant = cellData.getValue();
+            UserServant servant = cellData.getValue();
             SimpleBooleanProperty simpleBooleanProperty = new SimpleBooleanProperty(servant != null && servant.isAscension());
             simpleBooleanProperty.addListener((observable, oldValue, newValue) -> cellData.getValue().setAscension(newValue));
             return simpleBooleanProperty;
@@ -206,7 +206,7 @@ public class RosterController {
 
     private void npColumnSetup() {
         npDmgColumn.setCellFactory(list -> {
-            ComboBoxTableCell<ServantOfUser, String> tableCell = new ComboBoxTableCell<>(FXCollections.observableArrayList(ONE_TO_FIVE));
+            ComboBoxTableCell<UserServant, String> tableCell = new ComboBoxTableCell<>(FXCollections.observableArrayList(ONE_TO_FIVE));
             tableCell.setComboBoxEditable(true);
             return tableCell;
         });

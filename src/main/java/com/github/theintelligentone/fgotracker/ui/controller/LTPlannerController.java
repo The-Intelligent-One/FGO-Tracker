@@ -1,7 +1,7 @@
 package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
-import com.github.theintelligentone.fgotracker.domain.servant.ServantForPlanner;
+import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
@@ -13,18 +13,18 @@ import java.util.List;
 
 public class LTPlannerController {
     @FXML
-    private TableView<ServantForPlanner> sumTable;
+    private TableView<PlannerServant> sumTable;
     private DataManagementService dataManagementService;
-    private List<ServantForPlanner> servantList;
+    private List<PlannerServant> servantList;
 
     public void initialize() {
         dataManagementService = MainApp.getDataManagementService();
     }
 
-    private List<TableColumn<ServantForPlanner, Integer>> createColumnsForAllMats() {
-        List<TableColumn<ServantForPlanner, Integer>> columns = new ArrayList<>();
+    private List<TableColumn<PlannerServant, Integer>> createColumnsForAllMats() {
+        List<TableColumn<PlannerServant, Integer>> columns = new ArrayList<>();
         dataManagementService.getAllMaterials().forEach(mat -> {
-            TableColumn<ServantForPlanner, Integer> newCol = new TableColumn<>();
+            TableColumn<PlannerServant, Integer> newCol = new TableColumn<>();
             ImageView imageView = new ImageView(mat.getIcon());
             imageView.fitHeightProperty().bind(newCol.widthProperty());
             imageView.fitWidthProperty().bind(newCol.widthProperty());
@@ -41,7 +41,7 @@ public class LTPlannerController {
 //        sumTable.getItems().addAll(createPlannerServantList());
     }
 
-    private List<ServantForPlanner> createPlannerServantList() {
+    private List<PlannerServant> createPlannerServantList() {
         return null;
     }
 }

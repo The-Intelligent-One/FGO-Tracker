@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
-import com.github.theintelligentone.fgotracker.domain.servant.ServantFromManager;
-import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
+import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
+import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.UpgradeMaterial;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
@@ -69,7 +69,7 @@ public class FileManagementService {
         }
     }
 
-    public void saveUserServants(List<ServantOfUser> servants) {
+    public void saveUserServants(List<UserServant> servants) {
         File file = new File(BASE_DATA_PATH, USER_DATA_FILE);
         saveDataToFile(servants, file);
     }
@@ -100,9 +100,9 @@ public class FileManagementService {
         return itemList;
     }
 
-    public List<ServantOfUser> loadUserData() {
+    public List<UserServant> loadUserData() {
         File file = new File(BASE_DATA_PATH, USER_DATA_FILE);
-        List<ServantOfUser> basicDataList = new ArrayList<>();
+        List<UserServant> basicDataList = new ArrayList<>();
         if (file.length() != 0) {
             try {
                 basicDataList = objectMapper.readValue(file, new TypeReference<>() {});
@@ -191,7 +191,7 @@ public class FileManagementService {
         return strings;
     }
 
-    public List<ServantFromManager> loadManagerLookupTable() {
+    public List<ManagerServant> loadManagerLookupTable() {
         Reader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(MANAGER_DB_PATH)));
         CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
         List<String[]> strings = new ArrayList<>();
@@ -203,7 +203,7 @@ public class FileManagementService {
         return strings.stream().map(this::buildLookupObject).collect(Collectors.toList());
     }
 
-    private ServantFromManager buildLookupObject(String[] strings) {
-        return new ServantFromManager(Integer.parseInt(strings[1]), strings[0]);
+    private ManagerServant buildLookupObject(String[] strings) {
+        return new ManagerServant(Integer.parseInt(strings[1]), strings[0]);
     }
 }

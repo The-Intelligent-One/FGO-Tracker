@@ -1,6 +1,6 @@
 package com.github.theintelligentone.fgotracker.ui.valuefactory;
 
-import com.github.theintelligentone.fgotracker.domain.servant.ServantOfUser;
+import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.FgoFunction;
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.NoblePhantasm;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
@@ -9,13 +9,13 @@ import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
 
-public class ServantNpDamageValueFactory implements Callback<TableColumn.CellDataFeatures<ServantOfUser, Number>, ObservableValue<Number>> {
+public class ServantNpDamageValueFactory implements Callback<TableColumn.CellDataFeatures<UserServant, Number>, ObservableValue<Number>> {
 
     private static final double PERCANTAGE_SCALE = 1000;
     private static final double BASE_DAMAGE_MULTIPLIER = 0.23;
 
     @Override
-    public ObservableValue<Number> call(TableColumn.CellDataFeatures<ServantOfUser, Number> param) {
+    public ObservableValue<Number> call(TableColumn.CellDataFeatures<UserServant, Number> param) {
         SimpleLongProperty damage = new SimpleLongProperty();
         if (param.getValue() != null) {
             damage.set(calculateNpDamage(param.getValue()));
@@ -23,7 +23,7 @@ public class ServantNpDamageValueFactory implements Callback<TableColumn.CellDat
         return damage.getValue() > 0 ? damage : null;
     }
 
-    private Long calculateNpDamage(ServantOfUser servant) {
+    private Long calculateNpDamage(UserServant servant) {
         Long damage = 0l;
         NoblePhantasm np = servant.getBaseServant().getNoblePhantasms().get(servant.getBaseServant().getNoblePhantasms().size() - 1);
         FgoFunction dmgFnc = findDamagingNpFunction(np);
@@ -33,7 +33,7 @@ public class ServantNpDamageValueFactory implements Callback<TableColumn.CellDat
         return damage;
     }
 
-    private long calculateDamage(ServantOfUser servant, FgoFunction np, String card) {
+    private long calculateDamage(UserServant servant, FgoFunction np, String card) {
         int svtAtk = calculateBaseAtk(servant);
         return Math.round(svtAtk * getNpMultiplier(servant.getNpLevel(), np) * getCardMultiplier(card) * BASE_DAMAGE_MULTIPLIER);
     }
@@ -46,7 +46,7 @@ public class ServantNpDamageValueFactory implements Callback<TableColumn.CellDat
         return np.getSvals().get(npLevel - 1).getValue() / PERCANTAGE_SCALE;
     }
 
-    private int calculateBaseAtk(ServantOfUser servant) {
+    private int calculateBaseAtk(UserServant servant) {
         return servant.getBaseServant().getAtkGrowth().get(servant.getLevel() - 1) + servant.getFouAtk();
     }
 

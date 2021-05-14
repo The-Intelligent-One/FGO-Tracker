@@ -3,8 +3,8 @@ package com.github.theintelligentone.fgotracker.domain.servant;
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.FgoFunction;
 
 public class UserServantFactory {
-    public ServantOfUser createUserServantFromBaseServant(Servant baseServant) {
-        return ServantOfUser.builder()
+    public UserServant createUserServantFromBaseServant(Servant baseServant) {
+        return UserServant.builder()
                 .svtId(baseServant.getId())
                 .baseServant(baseServant)
                 .rarity(baseServant.getRarity())
@@ -22,8 +22,8 @@ public class UserServantFactory {
                 .build();
     }
 
-    public ServantOfUser replaceBaseServant(ServantOfUser servant, Servant newBaseServant) {
-        ServantOfUser modifiedServant = servant;
+    public UserServant replaceBaseServant(UserServant servant, Servant newBaseServant) {
+        UserServant modifiedServant = servant;
         if (servant != null) {
             if (newBaseServant != null) {
                 modifiedServant.setBaseServant(newBaseServant);

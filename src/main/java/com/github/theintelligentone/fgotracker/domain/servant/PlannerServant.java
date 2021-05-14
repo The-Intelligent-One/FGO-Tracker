@@ -1,20 +1,24 @@
 package com.github.theintelligentone.fgotracker.domain.servant;
 
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.UpgradeCost;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.IntegerProperty;
+import lombok.Builder;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class ServantForPlanner {
+@Builder
+public class PlannerServant {
     private long svtId;
     private String name;
-    private int level;
-    private boolean ascension;
+    private IntegerProperty level;
+    private BooleanProperty ascension;
     private int desLevel;
-    private int skill1;
-    private int skill2;
-    private int skill3;
+    private IntegerProperty skill1;
+    private IntegerProperty skill2;
+    private IntegerProperty skill3;
     private int desSkill1;
     private int desSkill2;
     private int desSkill3;

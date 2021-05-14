@@ -165,7 +165,7 @@ public class RosterController {
         bondColumn.setOnEditCommit(event -> {
             int input = event.getNewValue();
             if (input <= 15 && input >= 0) {
-                event.getRowValue().setSkillLevel1(input);
+                event.getRowValue().setBondLevel(input);
             }
             rosterTable.refresh();
         });

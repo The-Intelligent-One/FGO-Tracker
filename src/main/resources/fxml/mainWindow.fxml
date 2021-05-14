@@ -23,6 +23,6 @@
     </MenuBar>
     <TabPane>
         <fx:include fx:id="rosterTab" source="rosterTab.fxml"/>
-        <fx:include source="ltPlannerTab.fxml"/>
+        <fx:include fx:id="ltPlanner" source="ltPlannerTab.fxml"/>
     </TabPane>
 </VBox>

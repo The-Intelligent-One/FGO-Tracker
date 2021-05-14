@@ -83,6 +83,10 @@ public class DataManagementService {
         return servant;
     }
 
+    public List<UpgradeMaterial> getAllMaterials() {
+        return materials;
+    }
+
     private int convertToInt(String data) {
         int result = 0;
         if (data != null && !data.isEmpty()) {

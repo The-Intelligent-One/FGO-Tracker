@@ -21,6 +21,9 @@ public class MainController {
     @FXML
     private RosterController rosterTabController;
 
+    @FXML
+    private LTPlannerController ltPlannerController;
+
     private DataManagementService dataManagementService;
 
     public void initialize() {
@@ -31,8 +34,9 @@ public class MainController {
         dataManagementService.saveUserServant(null);
     }
 
-    public void rosterTableSetup() {
-        rosterTabController.loadData();
+    public void tableSetup() {
+        rosterTabController.setup();
+        ltPlannerController.setup();
     }
 
     public void importFromCsv() {

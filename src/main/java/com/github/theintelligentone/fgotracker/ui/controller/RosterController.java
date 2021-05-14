@@ -16,6 +16,8 @@ import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.IntegerStringConverter;
 
+import java.util.stream.IntStream;
+
 public class RosterController {
     private static final String[] ONE_TO_FIVE = {"1", "2", "3", "4", "5"};
     private DataManagementService dataManagementService;
@@ -119,10 +121,8 @@ public class RosterController {
         ascColumn.setCellFactory(cell -> new AscensionCheckBoxTableCell());
         ascColumn.setCellValueFactory(cellData -> {
             ServantOfUser servant = cellData.getValue();
-            SimpleBooleanProperty simpleBooleanProperty = new SimpleBooleanProperty(servant != null ? servant.isAscension() : false);
-            simpleBooleanProperty.addListener((observable, oldValue, newValue) -> {
-                cellData.getValue().setAscension(newValue);
-            });
+            SimpleBooleanProperty simpleBooleanProperty = new SimpleBooleanProperty(servant != null && servant.isAscension());
+            simpleBooleanProperty.addListener((observable, oldValue, newValue) -> cellData.getValue().setAscension(newValue));
             return simpleBooleanProperty;
         });
     }
@@ -230,7 +230,10 @@ public class RosterController {
         nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementService.getServantNameList()));
     }
 
-    public void loadData() {
+    public void setup() {
         rosterTable.setItems(dataManagementService.getUserServantList());
+        if (rosterTable.getItems().size() == 0) {
+            IntStream.range(0, 10).forEach(i -> dataManagementService.saveUserServant(null));
+        }
     }
 }

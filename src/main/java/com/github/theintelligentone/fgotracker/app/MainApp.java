@@ -62,7 +62,7 @@ public class MainApp extends Application {
             }
         };
         loadingTask.setOnSucceeded(event -> {
-            mainController.rosterTableSetup();
+            mainController.tableSetup();
             loadingAlert.setResult(ButtonType.CANCEL);
             loadingAlert.close();
         });

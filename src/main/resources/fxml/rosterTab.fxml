@@ -89,7 +89,7 @@
             </TableColumn>
             <TableColumn text="Levels">
                 <columns>
-                    <TableColumn fx:id="levelColumn" text="Lvl">
+                    <TableColumn fx:id="levelColumn" text="LvL">
                         <cellValueFactory>
                             <PropertyValueFactory property="level"/>
                         </cellValueFactory>

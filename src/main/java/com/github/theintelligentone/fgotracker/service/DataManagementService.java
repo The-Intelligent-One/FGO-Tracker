@@ -193,7 +193,7 @@ public class DataManagementService {
     }
 
     public void eraseUserServant(UserServant servant) {
-        userServantList.set(userServantList.indexOf(servant), null);
+        userServantList.set(userServantList.indexOf(servant), new UserServant());
     }
 
     public void replaceBaseServantInRow(int index, UserServant servant, String newServantName) {

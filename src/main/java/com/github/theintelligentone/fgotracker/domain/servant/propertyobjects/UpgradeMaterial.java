@@ -14,5 +14,7 @@ public class UpgradeMaterial {
     private String icon;
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<String> uses;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private String type;
     private String background;
 }

@@ -16,6 +16,7 @@ public class DataRequestService {
 
     private static final String[] SERVANT_TYPES = {"normal", "heroine"};
     private static final String[] MATERIAL_USES = {"skill", "ascension"};
+    private static final String[] EXCLUDED_MATERIAL_TYPES = {"eventItem"};
     private static final String ALL_SERVANT_URL = "https://api.atlasacademy.io/export/NA/nice_servant.json";
     private static final String MAT_URL = "https://api.atlasacademy.io/export/NA/nice_item.json";
     private static final String CLASS_ATTACK_RATE_URL = "https://api.atlasacademy.io/export/NA/NiceClassAttackRate.json";
@@ -82,6 +83,6 @@ public class DataRequestService {
     }
 
     private boolean isMat(UpgradeMaterial mat) {
-        return Arrays.asList(MATERIAL_USES).stream().anyMatch(mat.getUses()::contains);
+        return Arrays.asList(MATERIAL_USES).stream().anyMatch(mat.getUses()::contains) && Arrays.asList(EXCLUDED_MATERIAL_TYPES).stream().noneMatch(mat.getType()::equalsIgnoreCase);
     }
 }

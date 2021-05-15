@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.Getter;
@@ -37,6 +38,8 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         Parent root = loader.load();
         mainController = loader.getController();
+//        root.prefWidthProperty().bind(primaryStage.widthProperty());
+//        root.prefHeightProperty().bind(primaryStage.heightProperty());
         Scene scene = new Scene(root);
         scene.getStylesheets().add("tableStyle.css");
         Alert loadingAlert = initServantData();

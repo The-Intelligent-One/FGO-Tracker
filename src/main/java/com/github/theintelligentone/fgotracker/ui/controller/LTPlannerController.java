@@ -84,6 +84,11 @@ public class LTPlannerController {
                 this.loadTableData();
             }
         });
+        plannerTable.getColumns().addAll(createColumnsForAllMats());
+        sumTable.getColumns().addAll(createColumnsForAllMats());
+        ((Pane) sumTable.getChildrenUnmodifiable().get(0)).setMaxHeight(0);
+        ((Pane) sumTable.getChildrenUnmodifiable().get(0)).setMinHeight(0);
+        ((Pane) sumTable.getChildrenUnmodifiable().get(0)).setPrefHeight(0);
     }
 
     private void tableSetup() {
@@ -93,7 +98,6 @@ public class LTPlannerController {
 
     private void setupPlannerTable() {
         plannerTable.getColumns().get(0).setPrefWidth(MainController.NAME_CELL_WIDTH);
-        plannerTable.getColumns().addAll(createColumnsForAllMats());
         setupCurrentInfoColumns();
         setupInfoColumn(desired);
     }
@@ -135,12 +139,8 @@ public class LTPlannerController {
     }
 
     private void setupSumTable() {
-        sumTable.getColumns().addAll(createColumnsForAllMats());
         sumCurrent.prefWidthProperty().bind(current.widthProperty());
         sumDesired.prefWidthProperty().bind(desired.widthProperty());
-        ((Pane) sumTable.getChildrenUnmodifiable().get(0)).setMaxHeight(0);
-        ((Pane) sumTable.getChildrenUnmodifiable().get(0)).setMinHeight(0);
-        ((Pane) sumTable.getChildrenUnmodifiable().get(0)).setPrefHeight(0);
     }
 
     private void setupInfoColumn(TableColumn<PlannerServant, ?> column) {

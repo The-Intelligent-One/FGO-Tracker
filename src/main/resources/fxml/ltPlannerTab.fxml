@@ -12,10 +12,9 @@
     <VBox>
         <TableView fx:id="sumTable">
             <columns>
-                <TableColumn/>
+                <TableColumn fx:id="label"/>
                 <TableColumn fx:id="sumCurrent"/>
-                <TableColumn fx:id="sumDesired">
-                </TableColumn>
+                <TableColumn fx:id="sumDesired"/>
             </columns>
         </TableView>
         <TableView fx:id="plannerTable">

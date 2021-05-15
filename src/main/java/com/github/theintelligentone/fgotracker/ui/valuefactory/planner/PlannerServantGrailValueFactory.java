@@ -11,11 +11,11 @@ public class PlannerServantGrailValueFactory implements Callback<TableColumn.Cel
 
     @Override
     public ObservableValue<Number> call(TableColumn.CellDataFeatures<PlannerServant, Number> param) {
-        SimpleIntegerProperty result = new SimpleIntegerProperty();
+        SimpleIntegerProperty result = null;
         if (param.getValue().getBaseServant() != null) {
             int matSum = sumNeededAscensionMats(param.getValue());
             if (matSum > 0) {
-                result.set(matSum);
+                result = new SimpleIntegerProperty(matSum);
             }
         }
         return result;

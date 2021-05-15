@@ -1,23 +1,17 @@
-package com.github.theintelligentone.fgotracker.ui.valuefactory;
+package com.github.theintelligentone.fgotracker.ui.valuefactory.roster;
 
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
+import javafx.beans.NamedArg;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
-import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
 
 public class DeckColumnValueFactory implements Callback<TableColumn.CellDataFeatures<UserServant, String>, ObservableValue<String>> {
-
-    @FXML
     private int cardNo;
 
-    public DeckColumnValueFactory(int cardNo) {
+    public DeckColumnValueFactory(@NamedArg("cardNo") int cardNo) {
         this.cardNo = cardNo;
-    }
-
-    public static DeckColumnValueFactory valueOf(String value) {
-        return new DeckColumnValueFactory(Integer.parseInt(value));
     }
 
     @Override

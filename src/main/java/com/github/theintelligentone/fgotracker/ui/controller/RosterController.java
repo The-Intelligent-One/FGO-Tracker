@@ -6,6 +6,7 @@ import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AscensionCheckBoxTableCell;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
@@ -91,9 +92,13 @@ public class RosterController {
     }
 
     private void columnSetup() {
-        columnWidthSetup();
+        rarityColumn.setPrefWidth(MainController.CHAR_CELL_WIDTH);
+        deckColumn.getColumns().forEach(column -> column.setPrefWidth(MainController.CHAR_CELL_WIDTH));
+        npColumn.getColumns().forEach(column -> column.setPrefWidth(MainController.MID_CELL_WIDTH));
+        classColumnSetup();
+        attributeColumnSetup();
         nameColumnSetup();
-        npColumnSetup();
+        npLvlColumnSetup();
         levelColumnSetup();
         atkColumnSetup();
         hpColumnSetup();
@@ -104,24 +109,32 @@ public class RosterController {
         ascColumnSetup();
     }
 
-    private void columnWidthSetup() {
-        nameColumn.setPrefWidth(MainController.NAME_CELL_WIDTH);
-        rarityColumn.setPrefWidth(MainController.CHAR_CELL_WIDTH);
-        classColumn.setPrefWidth(MainController.LONG_CELL_WIDTH);
+    private void attributeColumnSetup() {
         attributeColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
-        deckColumn.getColumns().forEach(column -> column.setPrefWidth(MainController.CHAR_CELL_WIDTH));
-        npColumn.getColumns().forEach(column -> column.setPrefWidth(MainController.MID_CELL_WIDTH));
-        levelColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
-        ascColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
-        bondColumn.setPrefWidth(MainController.CHAR_CELL_WIDTH);
-        skill1Column.setPrefWidth(MainController.CHAR_CELL_WIDTH);
-        skill2Column.setPrefWidth(MainController.CHAR_CELL_WIDTH);
-        skill3Column.setPrefWidth(MainController.CHAR_CELL_WIDTH);
-        atkColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
-        hpColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
+        attributeColumn.setCellValueFactory(param -> {
+            SimpleStringProperty name = new SimpleStringProperty();
+            if (param.getValue().getBaseServant() != null) {
+                String attribute = param.getValue().getBaseServant().getAttribute();
+                name.set(attribute.substring(0, 1).toUpperCase() + attribute.substring(1));
+            }
+            return name;
+        });
+    }
+
+    private void classColumnSetup() {
+        classColumn.setPrefWidth(MainController.LONG_CELL_WIDTH);
+        classColumn.setCellValueFactory(param -> {
+            SimpleStringProperty name = new SimpleStringProperty();
+            if (param.getValue().getBaseServant() != null) {
+                String className = param.getValue().getBaseServant().getClassName();
+                name.set(className.substring(0, 1).toUpperCase() + className.substring(1));
+            }
+            return name;
+        });
     }
 
     private void ascColumnSetup() {
+        ascColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         ascColumn.setCellFactory(cell -> new AscensionCheckBoxTableCell());
         ascColumn.setCellValueFactory(cellData -> {
             UserServant servant = cellData.getValue();
@@ -132,6 +145,7 @@ public class RosterController {
     }
 
     private void skill1ColumnSetup() {
+        skill1Column.setPrefWidth(MainController.CHAR_CELL_WIDTH);
         skill1Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         skill1Column.setOnEditCommit(event -> {
             int input = event.getNewValue();
@@ -143,6 +157,7 @@ public class RosterController {
     }
 
     private void skill2ColumnSetup() {
+        skill2Column.setPrefWidth(MainController.CHAR_CELL_WIDTH);
         skill2Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         skill2Column.setOnEditCommit(event -> {
             int input = event.getNewValue();
@@ -154,6 +169,7 @@ public class RosterController {
     }
 
     private void skill3ColumnSetup() {
+        skill3Column.setPrefWidth(MainController.CHAR_CELL_WIDTH);
         skill3Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         skill3Column.setOnEditCommit(event -> {
             int input = event.getNewValue();
@@ -165,6 +181,7 @@ public class RosterController {
     }
 
     private void bondColumnSetup() {
+        bondColumn.setPrefWidth(MainController.CHAR_CELL_WIDTH);
         bondColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         bondColumn.setOnEditCommit(event -> {
             int input = event.getNewValue();
@@ -176,6 +193,7 @@ public class RosterController {
     }
 
     private void levelColumnSetup() {
+        levelColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         levelColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         levelColumn.setOnEditCommit(event -> {
             int input = event.getNewValue();
@@ -187,6 +205,7 @@ public class RosterController {
     }
 
     private void atkColumnSetup() {
+        atkColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
         atkColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         atkColumn.setOnEditCommit(event -> {
             int input = event.getNewValue();
@@ -198,6 +217,7 @@ public class RosterController {
     }
 
     private void hpColumnSetup() {
+        hpColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
         hpColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         hpColumn.setOnEditCommit(event -> {
             int input = event.getNewValue();
@@ -208,7 +228,7 @@ public class RosterController {
         });
     }
 
-    private void npColumnSetup() {
+    private void npLvlColumnSetup() {
         npLvlColumn.setCellFactory(list -> {
             ComboBoxTableCell<UserServant, String> tableCell = new ComboBoxTableCell<>(FXCollections.observableArrayList(ONE_TO_FIVE));
             tableCell.setComboBoxEditable(true);
@@ -224,6 +244,7 @@ public class RosterController {
     }
 
     private void nameColumnSetup() {
+        nameColumn.setPrefWidth(MainController.NAME_CELL_WIDTH);
         nameColumn.setOnEditCommit(event -> {
             if (event.getNewValue().isEmpty()) {
                 dataManagementService.eraseUserServant(event.getRowValue());
@@ -232,6 +253,13 @@ public class RosterController {
             }
         });
         nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementService.getServantNameList()));
+        nameColumn.setCellValueFactory(param -> {
+            SimpleStringProperty name = new SimpleStringProperty();
+            if (param.getValue().getBaseServant() != null) {
+                name.set(param.getValue().getBaseServant().getName());
+            }
+            return name;
+        });
     }
 
     public void setup() {

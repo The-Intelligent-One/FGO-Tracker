@@ -1,4 +1,4 @@
-package com.github.theintelligentone.fgotracker.ui.valuefactory;
+package com.github.theintelligentone.fgotracker.ui.valuefactory.roster;
 
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import javafx.beans.NamedArg;

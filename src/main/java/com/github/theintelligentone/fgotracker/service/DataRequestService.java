@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
-import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.UpgradeMaterial;
+import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 
 import java.io.IOException;
 import java.net.URL;

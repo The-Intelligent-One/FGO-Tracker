@@ -2,7 +2,7 @@ package com.github.theintelligentone.fgotracker.domain.servant.factory;
 
 import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
-import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.UpgradeCost;
+import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
 
 import java.util.Comparator;

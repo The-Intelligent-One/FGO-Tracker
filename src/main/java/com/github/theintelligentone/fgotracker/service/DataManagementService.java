@@ -6,7 +6,7 @@ import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
-import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.UpgradeMaterial;
+import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;

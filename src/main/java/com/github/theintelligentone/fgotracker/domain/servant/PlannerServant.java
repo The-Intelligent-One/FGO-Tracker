@@ -1,6 +1,6 @@
 package com.github.theintelligentone.fgotracker.domain.servant;
 
-import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.UpgradeCost;
+import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -2,7 +2,7 @@ package com.github.theintelligentone.fgotracker.domain.servant;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.NoblePhantasm;
-import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.UpgradeCost;
+import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
 import lombok.Data;
 
 import java.util.List;

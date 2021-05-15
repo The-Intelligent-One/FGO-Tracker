@@ -17,7 +17,7 @@ public class ServantNpDamageValueFactory implements Callback<TableColumn.CellDat
     @Override
     public ObservableValue<Number> call(TableColumn.CellDataFeatures<UserServant, Number> param) {
         SimpleLongProperty damage = new SimpleLongProperty();
-        if (param.getValue() != null) {
+        if (param.getValue().getBaseServant() != null) {
             damage.set(calculateNpDamage(param.getValue()));
         }
         return damage.getValue() > 0 ? damage : null;

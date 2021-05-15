@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.github.theintelligentone.fgotracker.ui.valuefactory.*?>
-<?import javafx.scene.control.cell.*?>
 <?import javafx.scene.control.*?>
 <Tab xmlns="http://javafx.com/javafx"
      xmlns:fx="http://javafx.com/fxml"
@@ -19,7 +18,7 @@
                     </TableColumn>
                     <TableColumn fx:id="rarityColumn" text="R">
                         <cellValueFactory>
-                            <PropertyValueFactory property="rarity"/>
+                            <UserServantValueFactory property="rarity"/>
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn fx:id="classColumn" text="Class">
@@ -67,12 +66,12 @@
                 <columns>
                     <TableColumn text="Type">
                         <cellValueFactory>
-                            <PropertyValueFactory property="npType"/>
+                            <UserServantValueFactory property="npType"/>
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn text="Target">
                         <cellValueFactory>
-                            <PropertyValueFactory property="npTarget"/>
+                            <UserServantValueFactory property="npTarget"/>
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn text="Damage">
@@ -80,9 +79,9 @@
                             <ServantNpDamageValueFactory/>
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn text="Level" editable="true" fx:id="npDmgColumn">
+                    <TableColumn text="Level" editable="true" fx:id="npLvlColumn">
                         <cellValueFactory>
-                            <PropertyValueFactory property="npLevel"/>
+                            <UserServantValueFactory property="npLevel"/>
                         </cellValueFactory>
                     </TableColumn>
                 </columns>
@@ -91,28 +90,28 @@
                 <columns>
                     <TableColumn fx:id="levelColumn" text="LvL">
                         <cellValueFactory>
-                            <PropertyValueFactory property="level"/>
+                            <UserServantValueFactory property="level"/>
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn fx:id="ascColumn" text="Asc"/>
                     <TableColumn fx:id="bondColumn" text="B">
                         <cellValueFactory>
-                            <PropertyValueFactory property="bondLevel"/>
+                            <UserServantValueFactory property="bondLevel"/>
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn fx:id="skill1Column" text="S1">
                         <cellValueFactory>
-                            <PropertyValueFactory property="skillLevel1"/>
+                            <UserServantValueFactory property="skillLevel1"/>
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn fx:id="skill2Column" text="S2">
                         <cellValueFactory>
-                            <PropertyValueFactory property="skillLevel2"/>
+                            <UserServantValueFactory property="skillLevel2"/>
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn fx:id="skill3Column" text="S3">
                         <cellValueFactory>
-                            <PropertyValueFactory property="skillLevel3"/>
+                            <UserServantValueFactory property="skillLevel3"/>
                         </cellValueFactory>
                     </TableColumn>
                 </columns>
@@ -121,12 +120,12 @@
                 <columns>
                     <TableColumn fx:id="atkColumn" text="ATK">
                         <cellValueFactory>
-                            <PropertyValueFactory property="fouAtk"/>
+                            <UserServantValueFactory property="fouAtk"/>
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn fx:id="hpColumn" text="HP">
                         <cellValueFactory>
-                            <PropertyValueFactory property="fouHp"/>
+                            <UserServantValueFactory property="fouHp"/>
                         </cellValueFactory>
                     </TableColumn>
                 </columns>

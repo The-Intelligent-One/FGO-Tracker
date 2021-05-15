@@ -3,8 +3,8 @@ package com.github.theintelligentone.fgotracker.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
-import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
+import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.UpgradeMaterial;
 import com.opencsv.CSVReader;
@@ -146,8 +146,7 @@ public class FileManagementService {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        long currentTimestamp = versionAsString.isEmpty() ? 0 : Long.parseLong(versionAsString);
-        return currentTimestamp;
+        return versionAsString.isEmpty() ? 0 : Long.parseLong(versionAsString);
     }
 
     public void saveNewVersion(long timestamp) {

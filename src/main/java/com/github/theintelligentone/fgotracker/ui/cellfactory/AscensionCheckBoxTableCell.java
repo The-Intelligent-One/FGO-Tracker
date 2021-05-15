@@ -22,7 +22,7 @@ public class AscensionCheckBoxTableCell extends CheckBoxTableCell<UserServant, B
 
     private boolean servantIsAtLevelWithAscension(UserServant servant) {
         boolean result = false;
-        if (servant != null) {
+        if (servant.getBaseServant() != null) {
             Set<Integer> levelsWithAscension = createSetOfAscensionLevels(DataManagementService.MAX_LEVELS[servant.getBaseServant().getRarity()]);
             result = levelsWithAscension.contains(servant.getLevel());
         }

@@ -24,7 +24,7 @@ public class UserServantFactory {
 
     public UserServant replaceBaseServant(UserServant servant, Servant newBaseServant) {
         UserServant modifiedServant = servant;
-        if (servant != null) {
+        if (servant.getBaseServant() != null) {
             if (newBaseServant != null) {
                 modifiedServant.setBaseServant(newBaseServant);
                 modifiedServant.setSvtId(newBaseServant.getId());

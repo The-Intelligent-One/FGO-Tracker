@@ -10,7 +10,7 @@ public class ServantNameValueFactory implements Callback<TableColumn.CellDataFea
     @Override
     public ObservableValue<String> call(TableColumn.CellDataFeatures<UserServant, String> param) {
         SimpleStringProperty name = new SimpleStringProperty();
-        if (param.getValue() != null) {
+        if (param.getValue().getBaseServant() != null) {
             name.set(param.getValue().getBaseServant().getName());
         }
         return name;

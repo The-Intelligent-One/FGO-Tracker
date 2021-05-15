@@ -10,7 +10,7 @@ public class ServantAttributeValueFactory implements Callback<TableColumn.CellDa
     @Override
     public ObservableValue<String> call(TableColumn.CellDataFeatures<UserServant, String> param) {
         SimpleStringProperty name = new SimpleStringProperty();
-        if (param.getValue() != null) {
+        if (param.getValue().getBaseServant() != null) {
             name.set(capitalizeFirstLetter(param.getValue().getBaseServant().getAttribute()));
         }
         return name;

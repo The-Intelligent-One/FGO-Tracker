@@ -54,7 +54,7 @@ public class RosterController {
 
     // this need to be set to String for some reason. If I set it to Integer it freaks out in the edit commit event handler about casting during runtime
     @FXML
-    private TableColumn<UserServant, String> npDmgColumn;
+    private TableColumn<UserServant, String> npLvlColumn;
 
     @FXML
     private TableColumn<UserServant, Boolean> ascColumn;
@@ -78,6 +78,19 @@ public class RosterController {
 
     public void tableSetup() {
         rosterTable.getSelectionModel().setCellSelectionEnabled(true);
+        columnSetup();
+        PseudoClass lastRow = PseudoClass.getPseudoClass("last-row");
+        rosterTable.setRowFactory(tv -> new TableRow<>() {
+            @Override
+            public void updateIndex(int index) {
+                super.updateIndex(index);
+                pseudoClassStateChanged(lastRow,
+                        index >= 0 && index == rosterTable.getItems().size() - 1);
+            }
+        });
+    }
+
+    private void columnSetup() {
         columnWidthSetup();
         nameColumnSetup();
         npColumnSetup();
@@ -89,15 +102,6 @@ public class RosterController {
         skill3ColumnSetup();
         bondColumnSetup();
         ascColumnSetup();
-        PseudoClass lastRow = PseudoClass.getPseudoClass("last-row");
-        rosterTable.setRowFactory(tv -> new TableRow<>() {
-            @Override
-            public void updateIndex(int index) {
-                super.updateIndex(index);
-                pseudoClassStateChanged(lastRow,
-                        index >= 0 && index == rosterTable.getItems().size() - 1);
-            }
-        });
     }
 
     private void columnWidthSetup() {
@@ -205,12 +209,12 @@ public class RosterController {
     }
 
     private void npColumnSetup() {
-        npDmgColumn.setCellFactory(list -> {
+        npLvlColumn.setCellFactory(list -> {
             ComboBoxTableCell<UserServant, String> tableCell = new ComboBoxTableCell<>(FXCollections.observableArrayList(ONE_TO_FIVE));
             tableCell.setComboBoxEditable(true);
             return tableCell;
         });
-        npDmgColumn.setOnEditCommit(event -> {
+        npLvlColumn.setOnEditCommit(event -> {
             int input = Integer.parseInt(event.getNewValue());
             if (input <= 5 && input >= 1) {
                 event.getRowValue().setNpLevel(input);
@@ -233,7 +237,7 @@ public class RosterController {
     public void setup() {
         rosterTable.setItems(dataManagementService.getUserServantList());
         if (rosterTable.getItems().size() == 0) {
-            IntStream.range(0, 10).forEach(i -> dataManagementService.saveUserServant(null));
+            IntStream.range(0, 10).forEach(i -> dataManagementService.saveUserServant(new UserServant()));
         }
     }
 }

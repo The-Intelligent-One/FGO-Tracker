@@ -1,12 +1,12 @@
 package com.github.theintelligentone.fgotracker.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
-import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
@@ -26,6 +26,7 @@ public class DataManagementService {
     private ObservableList<String> servantNameList = FXCollections.observableArrayList();
     private List<Servant> servantDataList;
     private List<UpgradeMaterial> materials;
+    private boolean iconsResized = false;
     @Getter
     private ObservableList<UserServant> userServantList = FXCollections.observableArrayList();
     private long currentVersion;
@@ -56,6 +57,10 @@ public class DataManagementService {
         return servantDataList != null && !servantDataList.isEmpty();
     }
 
+    public boolean isIconsResized() {
+        return iconsResized;
+    }
+
     public void initApp() {
         userServantList = FXCollections.observableArrayList();
         refreshAllData();
@@ -84,6 +89,7 @@ public class DataManagementService {
     private void loadFromCache() {
         servantDataList = fileService.loadFullServantData();
         materials = fileService.loadMaterialData();
+        iconsResized = true;
         CLASS_ATTACK_MULTIPLIER = fileService.getClassAttackRate();
         CARD_DATA = fileService.getCardData();
     }
@@ -96,14 +102,18 @@ public class DataManagementService {
     private void saveNewDataToCache() {
         fileService.saveFullServantData(servantDataList);
         fileService.saveClassAttackRate(CLASS_ATTACK_MULTIPLIER);
-        fileService.saveMaterialData(materials);
         fileService.saveCardData(CARD_DATA);
         fileService.saveNewVersion(currentVersion);
+    }
+
+    public void saveMaterialData() {
+        fileService.saveMaterialData(materials);
     }
 
     private void downloadNewData() {
         servantDataList = requestService.getAllServantData();
         materials = requestService.getAllMaterialData();
+        materials.forEach(material -> material.setIconImage(requestService.getImageForMaterial(material)));
         CLASS_ATTACK_MULTIPLIER = requestService.getClassAttackRate();
         CARD_DATA = requestService.getCardDetails();
     }

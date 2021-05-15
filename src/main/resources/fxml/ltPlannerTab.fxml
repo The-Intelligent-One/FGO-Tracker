@@ -6,7 +6,6 @@
 <Tab xmlns="http://javafx.com/javafx"
      xmlns:fx="http://javafx.com/fxml"
      text="LT-Planner"
-     closable="false"
      fx:id="ltPlannerTab"
      fx:controller="com.github.theintelligentone.fgotracker.ui.controller.LTPlannerController">
     <VBox>

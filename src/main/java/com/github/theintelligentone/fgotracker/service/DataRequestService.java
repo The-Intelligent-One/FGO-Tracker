@@ -3,9 +3,10 @@ package com.github.theintelligentone.fgotracker.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
-import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
+import javafx.scene.image.Image;
 
 import java.io.IOException;
 import java.net.URL;
@@ -67,6 +68,10 @@ public class DataRequestService {
             e.printStackTrace();
         }
         return cardDetailMap;
+    }
+
+    public Image getImageForMaterial(UpgradeMaterial material) {
+        return new Image(material.getIcon());
     }
 
     public long getOnlineVersion() {

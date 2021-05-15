@@ -2,15 +2,18 @@ package com.github.theintelligentone.fgotracker.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
-import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
 
+import javax.imageio.ImageIO;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -30,6 +33,7 @@ public class FileManagementService {
     private static final String CARD_DATA_FILE = "cache/cardData.json";
     private static final String USER_DATA_FILE = "userdata/servants.json";
     private static final String MANAGER_DB_PATH = "/managerDB-v1.3.2.csv";
+    private static final String PNG_FORMAT = "png";
     private final ObjectMapper objectMapper;
 
     public FileManagementService(ObjectMapper objectMapper) {
@@ -46,8 +50,20 @@ public class FileManagementService {
         saveDataToFile(servants, file);
     }
 
+    public void saveImage(Image image, long id) {
+        File file = new File(BASE_DATA_PATH + IMAGE_FOLDER_PATH, id + "." + PNG_FORMAT);
+        try {
+            if (!ImageIO.write(SwingFXUtils.fromFXImage(image, null), PNG_FORMAT, file)) {
+                throw new IOException();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void saveMaterialData(List<UpgradeMaterial> materials) {
         File file = new File(BASE_DATA_PATH, MATERIAL_DATA_FILE);
+        materials.forEach(mat -> saveImage(mat.getIconImage(), mat.getId()));
         saveDataToFile(materials, file);
     }
 
@@ -97,6 +113,7 @@ public class FileManagementService {
                 e.printStackTrace();
             }
         }
+        itemList.forEach(this::loadImageForMaterial);
         return itemList;
     }
 
@@ -124,6 +141,12 @@ public class FileManagementService {
             }
         }
         return classAttackMap;
+    }
+
+    public void loadImageForMaterial(UpgradeMaterial material) {
+        File file = new File(BASE_DATA_PATH + IMAGE_FOLDER_PATH, material.getId() + "." + PNG_FORMAT);
+        Image iconImage = new Image(file.toURI().toString());
+        material.setIconImage(iconImage);
     }
 
     public Map<String, Map<Integer, CardPlacementData>> getCardData() {

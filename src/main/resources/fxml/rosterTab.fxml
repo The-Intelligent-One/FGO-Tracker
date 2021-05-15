@@ -5,8 +5,7 @@
 <Tab xmlns="http://javafx.com/javafx"
      xmlns:fx="http://javafx.com/fxml"
      fx:controller="com.github.theintelligentone.fgotracker.ui.controller.RosterController"
-     text="Servants"
-     closable="false">
+     text="Roster">
     <TableView fx:id="rosterTable" editable="true">
         <columns>
             <TableColumn text="General Info">

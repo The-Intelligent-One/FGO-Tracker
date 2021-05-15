@@ -9,9 +9,13 @@ import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerSe
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.SnapshotParameters;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,9 +67,14 @@ public class LTPlannerController {
         List<TableColumn<PlannerServant, Number>> columns = new ArrayList<>();
         dataManagementService.getAllMaterials().forEach(mat -> {
             TableColumn<PlannerServant, Number> newCol = new TableColumn<>();
-            ImageView imageView = new ImageView(mat.getIcon());
+            ImageView imageView = new ImageView(mat.getIconImage());
             imageView.setPreserveRatio(true);
             imageView.fitWidthProperty().bind(newCol.widthProperty());
+            if (!dataManagementService.isIconsResized()) {
+                SnapshotParameters parameters = new SnapshotParameters();
+                parameters.setFill(Color.TRANSPARENT);
+                mat.setIconImage(imageView.snapshot(parameters, null));
+            }
             newCol.setGraphic(imageView);
             newCol.setPrefWidth(MainController.SHORT_CELL_WIDTH);
             newCol.setCellValueFactory(new PlannerServantMaterialValueFactory(mat.getId()));
@@ -86,6 +95,9 @@ public class LTPlannerController {
         });
         plannerTable.getColumns().addAll(createColumnsForAllMats());
         sumTable.getColumns().addAll(createColumnsForAllMats());
+        if (!dataManagementService.isIconsResized()) {
+            dataManagementService.saveMaterialData();
+        }
         ((Pane) sumTable.getChildrenUnmodifiable().get(0)).setMaxHeight(0);
         ((Pane) sumTable.getChildrenUnmodifiable().get(0)).setMinHeight(0);
         ((Pane) sumTable.getChildrenUnmodifiable().get(0)).setPrefHeight(0);

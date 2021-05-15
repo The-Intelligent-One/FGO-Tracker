@@ -9,8 +9,7 @@ import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerSe
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 
@@ -19,6 +18,10 @@ import java.util.List;
 
 public class LTPlannerController {
     private static final int HOLY_GRAIL_ID = 7999;
+
+    @FXML
+    private Tab ltPlannerTab;
+
     @FXML
     private TableView<PlannerServant> sumTable;
 
@@ -53,6 +56,7 @@ public class LTPlannerController {
 
     public void initialize() {
         dataManagementService = MainApp.getDataManagementService();
+        tableSetup();
     }
 
     private List<TableColumn<PlannerServant, Number>> createColumnsForAllMats() {
@@ -74,17 +78,28 @@ public class LTPlannerController {
     }
 
     public void setup() {
+        loadTableData();
+        ltPlannerTab.setOnSelectionChanged(event -> {
+            if (ltPlannerTab.isSelected() && dataManagementService.isDataLoaded()) {
+                this.loadTableData();
+            }
+        });
+    }
+
+    private void tableSetup() {
         setupPlannerTable();
         setupSumTable();
-
     }
 
     private void setupPlannerTable() {
         plannerTable.getColumns().get(0).setPrefWidth(MainController.NAME_CELL_WIDTH);
         plannerTable.getColumns().addAll(createColumnsForAllMats());
-        plannerTable.setItems(FXCollections.observableArrayList(createPlannerServantList()));
         setupCurrentInfoColumns();
         setupInfoColumn(desired);
+    }
+
+    private void loadTableData() {
+        plannerTable.setItems(FXCollections.observableArrayList(createPlannerServantList()));
     }
 
     private void setupCurrentInfoColumns() {

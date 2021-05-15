@@ -160,7 +160,7 @@ public class DataManagementService {
     private List<UserServant> createAssociatedUserServantList() {
         List<UserServant> userServants = fileService.loadUserData();
         userServants.forEach(svt -> {
-            if (svt != null) {
+            if (svt != null && svt.getBaseServant() != null) {
                 svt.setBaseServant(findServantById(svt.getSvtId()));
             }
         });

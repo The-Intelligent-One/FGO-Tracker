@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.cell.PropertyValueFactory?>
+<?import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
 <Tab xmlns="http://javafx.com/javafx"
@@ -11,70 +11,47 @@
     <VBox>
         <TableView fx:id="sumTable">
             <columns>
-                <TableColumn text="Name">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="name"/>
-                    </cellValueFactory>
-                </TableColumn>
+                <TableColumn/>
                 <TableColumn fx:id="sumCurrent"/>
                 <TableColumn fx:id="sumDesired">
-                    <cellValueFactory>
-                        <PropertyValueFactory property="name"/>
-                    </cellValueFactory>
                 </TableColumn>
             </columns>
         </TableView>
-        <TableView fx:id="bottomTable">
+        <TableView fx:id="plannerTable">
             <columns>
                 <TableColumn text="Name">
                     <cellValueFactory>
-                        <PropertyValueFactory property="name"/>
+                        <PlannerServantNameValueFactory/>
                     </cellValueFactory>
                 </TableColumn>
                 <TableColumn text="Current" fx:id="current">
                     <columns>
-                        <TableColumn fx:id="level" text="LvL">
-                            <cellValueFactory>
-                                <PropertyValueFactory property="level"/>
-                            </cellValueFactory>
-                        </TableColumn>
-                        <TableColumn fx:id="skill1" text="S1">
-                            <cellValueFactory>
-                                <PropertyValueFactory property="skill1"/>
-                            </cellValueFactory>
-                        </TableColumn>
-                        <TableColumn fx:id="skill2" text="S2">
-                            <cellValueFactory>
-                                <PropertyValueFactory property="skill2"/>
-                            </cellValueFactory>
-                        </TableColumn>
-                        <TableColumn fx:id="skill3" text="S3">
-                            <cellValueFactory>
-                                <PropertyValueFactory property="skill3"/>
-                            </cellValueFactory>
-                        </TableColumn>
+                        <TableColumn fx:id="level" text="LvL"/>
+                        <TableColumn fx:id="skill1" text="S1"/>
+                        <TableColumn fx:id="skill2" text="S2"/>
+                        <TableColumn fx:id="skill3" text="S3"/>
                     </columns>
                 </TableColumn>
                 <TableColumn text="Desired" fx:id="desired">
                     <columns>
                         <TableColumn fx:id="desLevel" text="LvL">
                             <cellValueFactory>
-                                <PropertyValueFactory property="desLevel"/>
+                                <PlannerServantValueFactory property="desLevel"/>
                             </cellValueFactory>
                         </TableColumn>
                         <TableColumn fx:id="desSkill1" text="S1">
                             <cellValueFactory>
-                                <PropertyValueFactory property="desSkill1"/>
+                                <PlannerServantValueFactory property="desSkill1"/>
                             </cellValueFactory>
                         </TableColumn>
                         <TableColumn fx:id="desSkill2" text="S2">
                             <cellValueFactory>
-                                <PropertyValueFactory property="desSkill2"/>
+                                <PlannerServantValueFactory property="desSkill2"/>
                             </cellValueFactory>
                         </TableColumn>
                         <TableColumn fx:id="desSkill3" text="S3">
                             <cellValueFactory>
-                                <PropertyValueFactory property="desSkill3"/>
+                                <PlannerServantValueFactory property="desSkill3"/>
                             </cellValueFactory>
                         </TableColumn>
                     </columns>

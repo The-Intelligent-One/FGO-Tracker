@@ -22,6 +22,7 @@ public class DataRequestService {
     private static final String CLASS_ATTACK_RATE_URL = "https://api.atlasacademy.io/export/NA/NiceClassAttackRate.json";
     private static final String CARD_DETAILS_URL = "https://api.atlasacademy.io/export/NA/NiceCard.json";
     private static final String VERSION_URL = "https://api.atlasacademy.io/info";
+    private static final int HOLY_GRAIL_ID = 7999;
     private final ObjectMapper objectMapper;
 
     public DataRequestService(ObjectMapper objectMapper) {
@@ -83,6 +84,18 @@ public class DataRequestService {
     }
 
     private boolean isMat(UpgradeMaterial mat) {
-        return Arrays.asList(MATERIAL_USES).stream().anyMatch(mat.getUses()::contains) && Arrays.asList(EXCLUDED_MATERIAL_TYPES).stream().noneMatch(mat.getType()::equalsIgnoreCase);
+        return isGrail(mat) || isForSkillOrAsc(mat) && isNotEventItem(mat);
+    }
+
+    private boolean isGrail(UpgradeMaterial mat) {
+        return mat.getId() == HOLY_GRAIL_ID;
+    }
+
+    private boolean isNotEventItem(UpgradeMaterial mat) {
+        return Arrays.asList(EXCLUDED_MATERIAL_TYPES).stream().noneMatch(mat.getType()::equalsIgnoreCase);
+    }
+
+    private boolean isForSkillOrAsc(UpgradeMaterial mat) {
+        return Arrays.asList(MATERIAL_USES).stream().anyMatch(mat.getUses()::contains);
     }
 }

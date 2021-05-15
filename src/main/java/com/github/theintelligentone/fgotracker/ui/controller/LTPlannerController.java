@@ -2,46 +2,138 @@ package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
 import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
+import com.github.theintelligentone.fgotracker.domain.servant.factory.PlannerServantFactory;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerServantGrailValueFactory;
+import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerServantMaterialValueFactory;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.Pane;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class LTPlannerController {
+    private static final int HOLY_GRAIL_ID = 7999;
     @FXML
     private TableView<PlannerServant> sumTable;
+
+    @FXML
+    private TableColumn<PlannerServant, String> sumCurrent;
+
+    @FXML
+    private TableColumn<PlannerServant, String> sumDesired;
+
+    @FXML
+    private TableView<PlannerServant> plannerTable;
+
+    @FXML
+    private TableColumn<PlannerServant, ?> current;
+
+    @FXML
+    private TableColumn<PlannerServant, ?> desired;
+
+    @FXML
+    private TableColumn<PlannerServant, Number> level;
+
+    @FXML
+    private TableColumn<PlannerServant, Number> skill1;
+
+    @FXML
+    private TableColumn<PlannerServant, Number> skill2;
+
+    @FXML
+    private TableColumn<PlannerServant, Number> skill3;
+
     private DataManagementService dataManagementService;
-    private List<PlannerServant> servantList;
 
     public void initialize() {
         dataManagementService = MainApp.getDataManagementService();
     }
 
-    private List<TableColumn<PlannerServant, Integer>> createColumnsForAllMats() {
-        List<TableColumn<PlannerServant, Integer>> columns = new ArrayList<>();
+    private List<TableColumn<PlannerServant, Number>> createColumnsForAllMats() {
+        List<TableColumn<PlannerServant, Number>> columns = new ArrayList<>();
         dataManagementService.getAllMaterials().forEach(mat -> {
-            TableColumn<PlannerServant, Integer> newCol = new TableColumn<>();
+            TableColumn<PlannerServant, Number> newCol = new TableColumn<>();
             ImageView imageView = new ImageView(mat.getIcon());
-            imageView.fitHeightProperty().bind(newCol.widthProperty());
+            imageView.setPreserveRatio(true);
             imageView.fitWidthProperty().bind(newCol.widthProperty());
             newCol.setGraphic(imageView);
             newCol.setPrefWidth(MainController.SHORT_CELL_WIDTH);
+            newCol.setCellValueFactory(new PlannerServantMaterialValueFactory(mat.getId()));
+            if (mat.getId() == HOLY_GRAIL_ID) {
+                newCol.setCellValueFactory(new PlannerServantGrailValueFactory());
+            }
             columns.add(newCol);
         });
         return columns;
     }
 
     public void setup() {
+        setupPlannerTable();
+        setupSumTable();
+
+    }
+
+    private void setupPlannerTable() {
+        plannerTable.getColumns().get(0).setPrefWidth(MainController.NAME_CELL_WIDTH);
+        plannerTable.getColumns().addAll(createColumnsForAllMats());
+        plannerTable.setItems(FXCollections.observableArrayList(createPlannerServantList()));
+        setupCurrentInfoColumns();
+        setupInfoColumn(desired);
+    }
+
+    private void setupCurrentInfoColumns() {
+        level.setCellValueFactory(param -> {
+            SimpleIntegerProperty level = null;
+            if (param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getBaseServant() != null) {
+                level = new SimpleIntegerProperty(param.getValue().getBaseServant().getLevel());
+            }
+            return level;
+        });
+        skill1.setCellValueFactory(param -> {
+            SimpleIntegerProperty skill1 = null;
+            if (param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getBaseServant() != null) {
+                skill1 = new SimpleIntegerProperty(param.getValue().getBaseServant().getSkillLevel1());
+            }
+            return skill1;
+        });
+        skill2.setCellValueFactory(param -> {
+            SimpleIntegerProperty skill2 = null;
+            if (param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getBaseServant() != null) {
+                skill2 = new SimpleIntegerProperty(param.getValue().getBaseServant().getSkillLevel1());
+            }
+            return skill2;
+        });
+        skill3.setCellValueFactory(param -> {
+            SimpleIntegerProperty skill3 = null;
+            if (param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getBaseServant() != null) {
+                skill3 = new SimpleIntegerProperty(param.getValue().getBaseServant().getSkillLevel1());
+            }
+            return skill3;
+        });
+        setupInfoColumn(current);
+    }
+
+    private void setupSumTable() {
         sumTable.getColumns().addAll(createColumnsForAllMats());
-        sumTable.getItems().add(null);
-//        sumTable.getItems().addAll(createPlannerServantList());
+        sumCurrent.prefWidthProperty().bind(current.widthProperty());
+        sumDesired.prefWidthProperty().bind(desired.widthProperty());
+        ((Pane) sumTable.getChildrenUnmodifiable().get(0)).setMaxHeight(0);
+        ((Pane) sumTable.getChildrenUnmodifiable().get(0)).setMinHeight(0);
+        ((Pane) sumTable.getChildrenUnmodifiable().get(0)).setPrefHeight(0);
+    }
+
+    private void setupInfoColumn(TableColumn<PlannerServant, ?> column) {
+        column.getColumns().get(0).setPrefWidth(MainController.SHORT_CELL_WIDTH);
+        column.getColumns().stream().skip(1).forEach(col -> col.setPrefWidth(MainController.CHAR_CELL_WIDTH));
     }
 
     private List<PlannerServant> createPlannerServantList() {
-        return null;
+        return new PlannerServantFactory().createForLTPlanner(dataManagementService.getUserServantList());
     }
 }

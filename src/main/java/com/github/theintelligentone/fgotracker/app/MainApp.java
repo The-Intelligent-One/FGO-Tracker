@@ -3,6 +3,7 @@ package com.github.theintelligentone.fgotracker.app;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import com.github.theintelligentone.fgotracker.ui.controller.MainController;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -66,6 +67,7 @@ public class MainApp extends Application {
             loadingAlert.setResult(ButtonType.CANCEL);
             loadingAlert.close();
         });
+        loadingTask.setOnFailed(event -> Platform.exit());
         new Thread(loadingTask).start();
         return loadingAlert;
     }

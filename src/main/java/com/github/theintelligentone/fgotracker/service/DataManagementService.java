@@ -142,6 +142,7 @@ public class DataManagementService {
                 .map(svt -> svt.getBaseServant().getName())
                 .collect(Collectors.toList());
         importedServants = importedServants.stream().filter(svt -> svt.getBaseServant() == null || svt.getNpTarget() != null).collect(Collectors.toList());
+        clearUnnecessaryEmptyRows(importedServants);
         userServantList.setAll(importedServants);
         return notFoundNames;
     }
@@ -159,9 +160,9 @@ public class DataManagementService {
                 if (!filteredData.get("level").isEmpty()) {
                     servant.setLevel(convertToInt(filteredData.get("level").substring(4)));
                 }
-                servant.setSkillLevel1(Math.min(convertToInt(filteredData.get("skill1")), 1));
-                servant.setSkillLevel2(Math.min(convertToInt(filteredData.get("skill2")), 1));
-                servant.setSkillLevel3(Math.min(convertToInt(filteredData.get("skill3")), 1));
+                servant.setSkillLevel1(Math.max(convertToInt(filteredData.get("skill1")), 1));
+                servant.setSkillLevel2(Math.max(convertToInt(filteredData.get("skill2")), 1));
+                servant.setSkillLevel3(Math.max(convertToInt(filteredData.get("skill3")), 1));
                 servant.setFouHp(convertToInt(filteredData.get("fouHp")));
                 servant.setFouAtk(convertToInt(filteredData.get("fouAtk")));
                 servant.setBondLevel(convertToInt(filteredData.get("bond")));
@@ -216,14 +217,14 @@ public class DataManagementService {
     }
 
     public void saveUserState() {
-        clearUnnecessaryEmptyRows();
+        clearUnnecessaryEmptyRows(userServantList);
         fileService.saveUserServants(userServantList);
     }
 
-    private void clearUnnecessaryEmptyRows() {
-        int index = userServantList.size() - 1;
-        while (!userServantList.isEmpty() && userServantList.get(index).getBaseServant() == null) {
-            userServantList.remove(index--);
+    private void clearUnnecessaryEmptyRows(List<UserServant> servantList) {
+        int index = servantList.size() - 1;
+        while (!servantList.isEmpty() && servantList.get(index).getBaseServant() == null) {
+            servantList.remove(index--);
         }
     }
 }

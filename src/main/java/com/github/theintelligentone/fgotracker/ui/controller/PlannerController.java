@@ -122,6 +122,7 @@ public class PlannerController {
 
     private void setupSumTable() {
         sumTable.getColumns().addAll(createColumnsForAllMats());
+        sumTable.setMaxHeight(MainController.CELL_HEIGHT * 3);
         disableSumTableHeader();
         bindColumnWidths();
         sumTable.getStyleClass().add("sum-table");

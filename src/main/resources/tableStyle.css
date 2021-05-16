@@ -7,15 +7,12 @@
     -fx-border-style: solid
 }
 
-.table-row-cell {
-    -fx-cell-size: 2em
-}
+.sum-table .scroll-bar * {
+    -fx-min-width: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
 
-.sum-table .scroll-bar:horizontal{
-    -fx-padding:0px;
-	-fx-background-color:transparent;
-	-fx-border-color:transparent;
-	-fx-background-radius: 0em;
-	-fx-border-radius:2em;
-
+    -fx-min-height: 0;
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
 }

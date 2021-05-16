@@ -21,7 +21,7 @@
             </graphic>
         </Menu>
     </MenuBar>
-    <TabPane tabClosingPolicy="UNAVAILABLE">
+    <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
         <fx:include fx:id="rosterTab" source="rosterTab.fxml"/>
         <fx:include fx:id="ltPlanner" source="plannerTab.fxml"/>
         <fx:include fx:id="planner" source="plannerTab.fxml"/>

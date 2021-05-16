@@ -29,7 +29,6 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class PlannerController {
     private static final int HOLY_GRAIL_ID = 7999;
@@ -91,6 +90,7 @@ public class PlannerController {
     private void addColumnForMaterial(List<TableColumn<PlannerServant, Number>> columns, UpgradeMaterial mat) {
         TableColumn<PlannerServant, Number> newCol = new TableColumn<>();
         ImageView imageView = new ImageView(mat.getIconImage());
+        newCol.setId(String.valueOf(mat.getId()));
         newCol.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         resizeIconIfNeeded(mat, newCol, imageView);
         newCol.setGraphic(imageView);
@@ -159,9 +159,9 @@ public class PlannerController {
         ObservableList<UpgradeMaterialCost> result = FXCollections.observableArrayList();
         for (int index = 0; index < inventory.getInventory().size(); index++) {
             UpgradeMaterialCost mat = new UpgradeMaterialCost();
-            mat.setAmount(inventory.getInventory().get(index).getAmount() - planned.getInventory().get(0).getAmount());
-            mat.setId(inventory.getInventory().get(0).getId());
-            mat.setItem(inventory.getInventory().get(0).getItem());
+            mat.setAmount(inventory.getInventory().get(index).getAmount() - planned.getInventory().get(index).getAmount());
+            mat.setId(inventory.getInventory().get(index).getId());
+            mat.setItem(inventory.getInventory().get(index).getItem());
             result.add(mat);
         }
         return result;
@@ -175,11 +175,11 @@ public class PlannerController {
             matCost.setItem(mat.getItem());
             int sum = 0;
             for (PlannerServant servant : plannerTable.getItems()) {
-                for (TableColumn<PlannerServant, ?> col : plannerTable.getColumns().stream().skip(3).collect(Collectors.toList())) {
-                    TableColumn<PlannerServant, Number> actualCol = (TableColumn<PlannerServant, Number>) col;
-                    ObservableValue<Number> value = actualCol.getCellObservableValue(servant);
-                    sum += value != null ? value.getValue().intValue() : 0;
-                }
+                TableColumn<PlannerServant, Number> actualCol = (TableColumn<PlannerServant, Number>) plannerTable.getColumns().stream()
+                        .filter(col -> String.valueOf(mat.getItem().getId()).equalsIgnoreCase(col.getId()))
+                        .findFirst().get();
+                ObservableValue<Number> value = actualCol.getCellObservableValue(servant);
+                sum += value != null ? value.getValue().intValue() : 0;
             }
             matCost.setAmount(sum);
             result.add(matCost);

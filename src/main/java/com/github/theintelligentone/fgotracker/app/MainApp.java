@@ -5,21 +5,15 @@ import com.github.theintelligentone.fgotracker.ui.controller.MainController;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.embed.swing.SwingFXUtils;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.TabPane;
-import javafx.scene.image.Image;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.Getter;
-
-import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
 
 public class MainApp extends Application {
     private static final String MAIN_WINDOW_FXML = "/fxml/mainWindow.fxml";
@@ -42,6 +36,8 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        double screenHeight = Screen.getPrimary().getBounds().getMaxY() * 3 / 4;
+        double screenWidth = Screen.getPrimary().getBounds().getMaxX() * 3 / 4;
         Parent root = loader.load();
         mainController = loader.getController();
         mainController.initTables();
@@ -51,8 +47,8 @@ public class MainApp extends Application {
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.setTitle("FGO Tracker");
-        primaryStage.setMinHeight(AUTO_HEIGHT);
-        primaryStage.setMinWidth(AUTO_WIDTH);
+        primaryStage.setHeight(screenHeight);
+        primaryStage.setWidth(screenWidth);
         primaryStage.show();
         loadingAlert.show();
     }

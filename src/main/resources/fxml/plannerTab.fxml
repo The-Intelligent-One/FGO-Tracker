@@ -5,9 +5,8 @@
 <?import javafx.scene.layout.VBox?>
 <Tab xmlns="http://javafx.com/javafx"
      xmlns:fx="http://javafx.com/fxml"
-     text="LT-Planner"
-     fx:id="ltPlannerTab"
-     fx:controller="com.github.theintelligentone.fgotracker.ui.controller.LTPlannerController">
+     fx:id="plannerTab"
+     fx:controller="com.github.theintelligentone.fgotracker.ui.controller.PlannerController">
     <VBox>
         <TableView fx:id="sumTable">
             <columns>

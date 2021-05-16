@@ -22,7 +22,10 @@ public class MainController {
     private RosterController rosterTabController;
 
     @FXML
-    private LTPlannerController ltPlannerController;
+    private PlannerController plannerController;
+
+    @FXML
+    private PlannerController ltPlannerController;
 
     private DataManagementService dataManagementService;
 
@@ -36,6 +39,7 @@ public class MainController {
 
     public void tableSetup() {
         rosterTabController.setup();
+        plannerController.setup();
         ltPlannerController.setup();
     }
 
@@ -90,5 +94,12 @@ public class MainController {
 
     public void saveUserData() {
         dataManagementService.saveUserState();
+    }
+
+    public void initTables() {
+        plannerController.setLongTerm(false);
+        plannerController.init();
+        ltPlannerController.setLongTerm(true);
+        ltPlannerController.init();
     }
 }

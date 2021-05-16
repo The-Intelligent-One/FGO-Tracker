@@ -10,3 +10,12 @@
 .table-row-cell {
     -fx-cell-size: 2em
 }
+
+.sum-table .scroll-bar:horizontal{
+    -fx-padding:0px;
+	-fx-background-color:transparent;
+	-fx-border-color:transparent;
+	-fx-background-radius: 0em;
+	-fx-border-radius:2em;
+
+}

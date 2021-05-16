@@ -159,9 +159,9 @@ public class DataManagementService {
                 if (!filteredData.get("level").isEmpty()) {
                     servant.setLevel(convertToInt(filteredData.get("level").substring(4)));
                 }
-                servant.setSkillLevel1(convertToInt(filteredData.get("skill1")));
-                servant.setSkillLevel2(convertToInt(filteredData.get("skill2")));
-                servant.setSkillLevel3(convertToInt(filteredData.get("skill3")));
+                servant.setSkillLevel1(Math.min(convertToInt(filteredData.get("skill1")), 1));
+                servant.setSkillLevel2(Math.min(convertToInt(filteredData.get("skill2")), 1));
+                servant.setSkillLevel3(Math.min(convertToInt(filteredData.get("skill3")), 1));
                 servant.setFouHp(convertToInt(filteredData.get("fouHp")));
                 servant.setFouAtk(convertToInt(filteredData.get("fouAtk")));
                 servant.setBondLevel(convertToInt(filteredData.get("bond")));

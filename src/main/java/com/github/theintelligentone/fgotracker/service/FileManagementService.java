@@ -86,7 +86,7 @@ public class FileManagementService {
     }
 
     public void saveInventory(Inventory inventory) {
-        File file = new File(BASE_DATA_PATH, USER_DATA_FILE);
+        File file = new File(BASE_DATA_PATH, INVENTORY_FILE);
         saveDataToFile(inventory.getInventory(), file);
     }
 

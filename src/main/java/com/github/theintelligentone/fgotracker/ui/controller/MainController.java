@@ -68,7 +68,7 @@ public class MainController {
     }
 
     private void loadDataFromCsv(File csvFile) {
-        List<String> notFoundNames = dataManagementService.importFromCsv(csvFile);
+        List<String> notFoundNames = dataManagementService.importUserServantsFromCsv(csvFile);
         if (notFoundNames != null && !notFoundNames.isEmpty()) {
             displayNotFoundAlert(notFoundNames);
         }

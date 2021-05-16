@@ -3,6 +3,7 @@
 <?import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
 <Tab xmlns="http://javafx.com/javafx"
      xmlns:fx="http://javafx.com/fxml"
      fx:id="plannerTab"
@@ -12,7 +13,11 @@
             <columns>
                 <TableColumn fx:id="label"/>
                 <TableColumn fx:id="sumCurrent"/>
-                <TableColumn fx:id="sumDesired"/>
+                <TableColumn fx:id="sumDesired">
+                    <cellValueFactory>
+                        <PropertyValueFactory property="label"/>
+                    </cellValueFactory>
+                </TableColumn>
             </columns>
         </TableView>
         <TableView fx:id="plannerTable" VBox.vgrow="ALWAYS">

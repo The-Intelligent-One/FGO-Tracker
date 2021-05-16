@@ -6,6 +6,7 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UpgradeMaterialCost {
+    private long id;
     private UpgradeMaterial item;
     private int amount;
 }

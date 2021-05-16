@@ -1,7 +1,9 @@
 package com.github.theintelligentone.fgotracker.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
+import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
@@ -12,6 +14,7 @@ import javafx.collections.ObservableList;
 import lombok.Getter;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +29,7 @@ public class DataManagementService {
     private ObservableList<String> servantNameList = FXCollections.observableArrayList();
     private List<Servant> servantDataList;
     private List<UpgradeMaterial> materials;
+    private Inventory inventory;
     private boolean iconsResized = false;
     @Getter
     private ObservableList<UserServant> userServantList = FXCollections.observableArrayList();
@@ -37,8 +41,8 @@ public class DataManagementService {
         this.fileService = new FileManagementService(objectMapper);
     }
 
-    public List<String> getAllServantNames() {
-        return servantNameList;
+    public Inventory getInventory() {
+        return inventory;
     }
 
     public Servant findServantByName(String name) {
@@ -73,7 +77,35 @@ public class DataManagementService {
             loadFromCache();
         }
         userServantList.addAll(createAssociatedUserServantList());
+        inventory = createInventoryWithAssociatedMatList();
         servantNameList.addAll(servantDataList.stream().map(Servant::getName).collect(Collectors.toList()));
+    }
+
+    private Inventory createInventoryWithAssociatedMatList() {
+        Inventory inventory = fileService.loadInventory();
+        if (inventory.getInventory().size() == 0) {
+            inventory = createEmptyInventory();
+        } else {
+            for (UpgradeMaterialCost mat : inventory.getInventory()) {
+                mat.setItem(materials.stream().filter(material -> material.getId() == mat.getId()).findFirst().get());
+            }
+        }
+        inventory.setLabel("Inventory");
+        return inventory;
+    }
+
+    public Inventory createEmptyInventory() {
+        Inventory inventory = new Inventory();
+        List<UpgradeMaterialCost> inventoryList = new ArrayList<>();
+        materials.forEach(material -> {
+            UpgradeMaterialCost mat = new UpgradeMaterialCost();
+            mat.setId(material.getId());
+            mat.setItem(material);
+            mat.setAmount(0);
+            inventoryList.add(mat);
+        });
+        inventory.setInventory(inventoryList);
+        return inventory;
     }
 
     private List<UserServant> createAssociatedUserServantList() {
@@ -133,7 +165,7 @@ public class DataManagementService {
         return servantDataList.stream().filter(svt -> svtId == svt.getId()).findFirst().get();
     }
 
-    public List<String> importFromCsv(File sourceFile) {
+    public List<String> importUserServantsFromCsv(File sourceFile) {
         List<ManagerServant> managerLookup = fileService.loadManagerLookupTable();
         List<String[]> importedData = fileService.importCsv(sourceFile);
         List<UserServant> importedServants = importedData.stream().map(importedData1 -> buildUserServantFromStringArray(importedData1, managerLookup)).collect(Collectors.toList());
@@ -219,6 +251,7 @@ public class DataManagementService {
     public void saveUserState() {
         clearUnnecessaryEmptyRows(userServantList);
         fileService.saveUserServants(userServantList);
+        fileService.saveInventory(inventory);
     }
 
     private void clearUnnecessaryEmptyRows(List<UserServant> servantList) {

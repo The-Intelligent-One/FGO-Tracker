@@ -2,7 +2,9 @@ package com.github.theintelligentone.fgotracker.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
+import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
@@ -34,6 +36,7 @@ public class FileManagementService {
     private static final String USER_DATA_FILE = "userdata/servants.json";
     private static final String MANAGER_DB_PATH = "/managerDB-v1.3.2.csv";
     private static final String PNG_FORMAT = "png";
+    private static final String INVENTORY_FILE = "userdata/inventory.json";
     private final ObjectMapper objectMapper;
 
     public FileManagementService(ObjectMapper objectMapper) {
@@ -77,17 +80,22 @@ public class FileManagementService {
         saveDataToFile(cardData, file);
     }
 
+    public void saveUserServants(List<UserServant> servants) {
+        File file = new File(BASE_DATA_PATH, USER_DATA_FILE);
+        saveDataToFile(servants, file);
+    }
+
+    public void saveInventory(Inventory inventory) {
+        File file = new File(BASE_DATA_PATH, USER_DATA_FILE);
+        saveDataToFile(inventory.getInventory(), file);
+    }
+
     private void saveDataToFile(Object data, File file) {
         try {
             objectMapper.writeValue(file, data);
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    public void saveUserServants(List<UserServant> servants) {
-        File file = new File(BASE_DATA_PATH, USER_DATA_FILE);
-        saveDataToFile(servants, file);
     }
 
     public List<Servant> loadFullServantData() {
@@ -184,6 +192,7 @@ public class FileManagementService {
         createFileIfDoesNotExist(FULL_DATA_FILE);
         createFileIfDoesNotExist(MATERIAL_DATA_FILE);
         createFileIfDoesNotExist(USER_DATA_FILE);
+        createFileIfDoesNotExist(INVENTORY_FILE);
         createFileIfDoesNotExist(VERSION_FILE);
         Files.createDirectories(Path.of(BASE_DATA_PATH, IMAGE_FOLDER_PATH));
     }
@@ -227,5 +236,21 @@ public class FileManagementService {
 
     private ManagerServant buildLookupObject(String[] strings) {
         return new ManagerServant(Integer.parseInt(strings[1]), strings[0]);
+    }
+
+    public Inventory loadInventory() {
+        File file = new File(BASE_DATA_PATH, INVENTORY_FILE);
+        List<UpgradeMaterialCost> matList = new ArrayList<>();
+        if (file.length() != 0) {
+            try {
+                matList = objectMapper.readValue(file, new TypeReference<>() {});
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        Inventory result = new Inventory();
+        result.setLabel("Inventory");
+        result.setInventory(matList);
+        return result;
     }
 }

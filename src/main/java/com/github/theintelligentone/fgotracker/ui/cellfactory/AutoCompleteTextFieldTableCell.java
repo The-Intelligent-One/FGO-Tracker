@@ -144,7 +144,7 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
             Text in = new Text(result.substring(occurence, occurence + text.length()));
             in.setStyle(getTextOccurenceStyle());
             //Part after occurence
-            Text post = new Text(result.substring(occurence + text.length(), result.length()));
+            Text post = new Text(result.substring(occurence + text.length()));
 
             TextFlow entryFlow = new TextFlow(pre, in, post);
 

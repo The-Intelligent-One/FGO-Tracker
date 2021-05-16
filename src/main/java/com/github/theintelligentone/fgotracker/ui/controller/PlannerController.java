@@ -1,10 +1,13 @@
 package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
+import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
+import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.PlannerServantFactory;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.InventoryValueFactory;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerServantGrailValueFactory;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerServantMaterialValueFactory;
 import javafx.beans.binding.Bindings;
@@ -12,6 +15,7 @@ import javafx.beans.binding.DoubleBinding;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.SnapshotParameters;
@@ -25,6 +29,7 @@ import javafx.scene.paint.Color;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PlannerController {
     private static final int HOLY_GRAIL_ID = 7999;
@@ -33,7 +38,7 @@ public class PlannerController {
     private Tab plannerTab;
 
     @FXML
-    private TableView<PlannerServant> sumTable;
+    private TableView<Inventory> sumTable;
 
     @FXML
     private TableColumn<PlannerServant, String> label;
@@ -121,12 +126,65 @@ public class PlannerController {
     }
 
     private void setupSumTable() {
-        sumTable.getColumns().addAll(createColumnsForAllMats());
+        sumTable.getColumns().addAll(createColumnsForAllMatsForSum());
         sumTable.setMaxHeight(MainController.CELL_HEIGHT * 3);
         disableSumTableHeader();
         bindColumnWidths();
         sumTable.getStyleClass().add("sum-table");
-        sumTable.getItems().add(new PlannerServant());
+        Inventory inventory = dataManagementService.getInventory();
+        sumTable.getItems().add(inventory);
+        Inventory planned = dataManagementService.createEmptyInventory();
+        planned.setLabel("Plan");
+        planned.setInventory(getSumOfNeededMats());
+        sumTable.getItems().add(planned);
+        Inventory sum = dataManagementService.createEmptyInventory();
+        sum.setLabel("Sum");
+        sum.setInventory(createListOfRemainingMats(inventory, planned));
+        sumTable.getItems().add(sum);
+    }
+
+    private List<TableColumn<Inventory, Number>> createColumnsForAllMatsForSum() {
+        List<TableColumn<Inventory, Number>> columns = new ArrayList<>();
+        dataManagementService.getAllMaterials().forEach(mat -> addSumColumnForMaterial(columns, mat));
+        return columns;
+    }
+
+    private void addSumColumnForMaterial(List<TableColumn<Inventory, Number>> columns, UpgradeMaterial mat) {
+        TableColumn<Inventory, Number> newCol = new TableColumn<>();
+        newCol.setCellValueFactory(new InventoryValueFactory(mat.getId()));
+        columns.add(newCol);
+    }
+
+    private List<UpgradeMaterialCost> createListOfRemainingMats(Inventory inventory, Inventory planned) {
+        ObservableList<UpgradeMaterialCost> result = FXCollections.observableArrayList();
+        for (int index = 0; index < inventory.getInventory().size(); index++) {
+            UpgradeMaterialCost mat = new UpgradeMaterialCost();
+            mat.setAmount(inventory.getInventory().get(index).getAmount() - planned.getInventory().get(0).getAmount());
+            mat.setId(inventory.getInventory().get(0).getId());
+            mat.setItem(inventory.getInventory().get(0).getItem());
+            result.add(mat);
+        }
+        return result;
+    }
+
+    private List<UpgradeMaterialCost> getSumOfNeededMats() {
+        List<UpgradeMaterialCost> result = new ArrayList<>();
+        for (UpgradeMaterialCost mat : dataManagementService.getInventory().getInventory()) {
+            UpgradeMaterialCost matCost = new UpgradeMaterialCost();
+            matCost.setId(mat.getId());
+            matCost.setItem(mat.getItem());
+            int sum = 0;
+            for (PlannerServant servant : plannerTable.getItems()) {
+                for (TableColumn<PlannerServant, ?> col : plannerTable.getColumns().stream().skip(3).collect(Collectors.toList())) {
+                    TableColumn<PlannerServant, Number> actualCol = (TableColumn<PlannerServant, Number>) col;
+                    ObservableValue<Number> value = actualCol.getCellObservableValue(servant);
+                    sum += value != null ? value.getValue().intValue() : 0;
+                }
+            }
+            matCost.setAmount(sum);
+            result.add(matCost);
+        }
+        return result;
     }
 
     private void disableSumTableHeader() {

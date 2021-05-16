@@ -13,17 +13,11 @@ public class PlannerServantGrailValueFactory implements Callback<TableColumn.Cel
     public ObservableValue<Number> call(TableColumn.CellDataFeatures<PlannerServant, Number> param) {
         SimpleIntegerProperty result = null;
         if (param.getValue().getBaseServant() != null) {
-            int matSum = sumNeededAscensionMats(param.getValue());
+            int matSum = new AscensionUtils().sumNeededAscensionGrails(param.getValue());
             if (matSum > 0) {
                 result = new SimpleIntegerProperty(matSum);
             }
         }
         return result;
-    }
-
-    private int sumNeededAscensionMats(PlannerServant servant) {
-        int currentAscensionLevel = AscensionUtils.getAscensionFromRarityAndLevel(servant.getBaseServant().getLevel(), servant.getBaseServant().getRarity());
-        int desiredAscensionLevel = AscensionUtils.getAscensionFromRarityAndLevel(servant.getDesLevel(), servant.getBaseServant().getRarity());
-        return Math.min(desiredAscensionLevel - currentAscensionLevel - 4, 0);
     }
 }

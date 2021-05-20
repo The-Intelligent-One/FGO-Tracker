@@ -4,15 +4,21 @@ import com.github.theintelligentone.fgotracker.app.MainApp;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
-import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
-import com.github.theintelligentone.fgotracker.domain.servant.factory.PlannerServantFactory;
+import com.github.theintelligentone.fgotracker.domain.servant.factory.PlannerServantViewFactory;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import com.github.theintelligentone.fgotracker.service.transformer.InventoryToViewTransformer;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.InventoryValueFactory;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerServantGrailValueFactory;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerServantMaterialValueFactory;
+import com.github.theintelligentone.fgotracker.ui.view.InventoryView;
+import com.github.theintelligentone.fgotracker.ui.view.PlannerServantView;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
+import javafx.beans.binding.IntegerBinding;
+import javafx.beans.binding.NumberBinding;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ObservableNumberValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -23,9 +29,11 @@ import javafx.scene.control.ScrollBar;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.util.converter.IntegerStringConverter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,37 +45,37 @@ public class PlannerController {
     private Tab plannerTab;
 
     @FXML
-    private TableView<Inventory> sumTable;
+    private TableView<InventoryView> sumTable;
 
     @FXML
-    private TableColumn<PlannerServant, String> label;
+    private TableColumn<PlannerServantView, String> label;
 
     @FXML
-    private TableColumn<PlannerServant, String> sumCurrent;
+    private TableColumn<PlannerServantView, String> sumCurrent;
 
     @FXML
-    private TableColumn<PlannerServant, String> sumDesired;
+    private TableColumn<PlannerServantView, String> sumDesired;
 
     @FXML
-    private TableView<PlannerServant> plannerTable;
+    private TableView<PlannerServantView> plannerTable;
 
     @FXML
-    private TableColumn<PlannerServant, ?> current;
+    private TableColumn<PlannerServantView, ?> current;
 
     @FXML
-    private TableColumn<PlannerServant, ?> desired;
+    private TableColumn<PlannerServantView, ?> desired;
 
     @FXML
-    private TableColumn<PlannerServant, Number> level;
+    private TableColumn<PlannerServantView, Number> level;
 
     @FXML
-    private TableColumn<PlannerServant, Number> skill1;
+    private TableColumn<PlannerServantView, Number> skill1;
 
     @FXML
-    private TableColumn<PlannerServant, Number> skill2;
+    private TableColumn<PlannerServantView, Number> skill2;
 
     @FXML
-    private TableColumn<PlannerServant, Number> skill3;
+    private TableColumn<PlannerServantView, Number> skill3;
 
     private DataManagementService dataManagementService;
     private boolean isLongTerm;
@@ -81,14 +89,14 @@ public class PlannerController {
         tableInit();
     }
 
-    private List<TableColumn<PlannerServant, Number>> createColumnsForAllMats() {
-        List<TableColumn<PlannerServant, Number>> columns = new ArrayList<>();
+    private List<TableColumn<PlannerServantView, Number>> createColumnsForAllMats() {
+        List<TableColumn<PlannerServantView, Number>> columns = new ArrayList<>();
         dataManagementService.getAllMaterials().forEach(mat -> addColumnForMaterial(columns, mat));
         return columns;
     }
 
-    private void addColumnForMaterial(List<TableColumn<PlannerServant, Number>> columns, UpgradeMaterial mat) {
-        TableColumn<PlannerServant, Number> newCol = new TableColumn<>();
+    private void addColumnForMaterial(List<TableColumn<PlannerServantView, Number>> columns, UpgradeMaterial mat) {
+        TableColumn<PlannerServantView, Number> newCol = new TableColumn<>();
         ImageView imageView = new ImageView(mat.getIconImage());
         newCol.setId(String.valueOf(mat.getId()));
         newCol.setPrefWidth(MainController.SHORT_CELL_WIDTH);
@@ -101,7 +109,7 @@ public class PlannerController {
         columns.add(newCol);
     }
 
-    private void resizeIconIfNeeded(UpgradeMaterial mat, TableColumn<PlannerServant, Number> newCol, ImageView imageView) {
+    private void resizeIconIfNeeded(UpgradeMaterial mat, TableColumn<PlannerServantView, Number> newCol, ImageView imageView) {
         if (!dataManagementService.isIconsResized()) {
             imageView.setPreserveRatio(true);
             imageView.setFitWidth(newCol.getWidth());
@@ -126,31 +134,32 @@ public class PlannerController {
     }
 
     private void setupSumTable() {
+        InventoryToViewTransformer transformer = new InventoryToViewTransformer();
         sumTable.getColumns().addAll(createColumnsForAllMatsForSum());
         sumTable.setMaxHeight(MainController.CELL_HEIGHT * 3);
         disableSumTableHeader();
         bindColumnWidths();
         sumTable.getStyleClass().add("sum-table");
         Inventory inventory = dataManagementService.getInventory();
-        sumTable.getItems().add(inventory);
+        sumTable.getItems().add(transformer.transform(inventory));
         Inventory planned = dataManagementService.createEmptyInventory();
         planned.setLabel("Plan");
         planned.setInventory(getSumOfNeededMats());
-        sumTable.getItems().add(planned);
+        sumTable.getItems().add(transformer.transform(planned));
         Inventory sum = dataManagementService.createEmptyInventory();
         sum.setLabel("Sum");
         sum.setInventory(createListOfRemainingMats(inventory, planned));
-        sumTable.getItems().add(sum);
+        sumTable.getItems().add(transformer.transform(sum));
     }
 
-    private List<TableColumn<Inventory, Number>> createColumnsForAllMatsForSum() {
-        List<TableColumn<Inventory, Number>> columns = new ArrayList<>();
+    private List<TableColumn<InventoryView, Number>> createColumnsForAllMatsForSum() {
+        List<TableColumn<InventoryView, Number>> columns = new ArrayList<>();
         dataManagementService.getAllMaterials().forEach(mat -> addSumColumnForMaterial(columns, mat));
         return columns;
     }
 
-    private void addSumColumnForMaterial(List<TableColumn<Inventory, Number>> columns, UpgradeMaterial mat) {
-        TableColumn<Inventory, Number> newCol = new TableColumn<>();
+    private void addSumColumnForMaterial(List<TableColumn<InventoryView, Number>> columns, UpgradeMaterial mat) {
+        TableColumn<InventoryView, Number> newCol = new TableColumn<>();
         newCol.setCellValueFactory(new InventoryValueFactory(mat.getId()));
         columns.add(newCol);
     }
@@ -158,8 +167,15 @@ public class PlannerController {
     private List<UpgradeMaterialCost> createListOfRemainingMats(Inventory inventory, Inventory planned) {
         ObservableList<UpgradeMaterialCost> result = FXCollections.observableArrayList();
         for (int index = 0; index < inventory.getInventory().size(); index++) {
+            final int currIndex = index;
             UpgradeMaterialCost mat = new UpgradeMaterialCost();
-            mat.setAmount(inventory.getInventory().get(index).getAmount() - planned.getInventory().get(index).getAmount());
+            SimpleIntegerProperty invAmount = new SimpleIntegerProperty(inventory.getInventory().get(index).getAmount());
+            invAmount.addListener((observable, oldValue, newValue) -> inventory.getInventory().get(0).setAmount(newValue.intValue()));
+            SimpleIntegerProperty planAmount = new SimpleIntegerProperty(planned.getInventory().get(currIndex).getAmount());
+            planAmount.addListener((observable, oldValue, newValue) -> planned.getInventory().get(0).setAmount(newValue.intValue()));
+            IntegerBinding sumBinding = Bindings.createIntegerBinding(() -> inventory.getInventory().get(currIndex).getAmount() - planned.getInventory().get(currIndex).getAmount(), invAmount, planAmount);
+            mat.setAmount(invAmount.intValue() - planAmount.intValue());
+            sumBinding.addListener((observable, oldValue, newValue) -> mat.setAmount(newValue.intValue()));
             mat.setId(inventory.getInventory().get(index).getId());
             mat.setItem(inventory.getInventory().get(index).getItem());
             result.add(mat);
@@ -173,15 +189,18 @@ public class PlannerController {
             UpgradeMaterialCost matCost = new UpgradeMaterialCost();
             matCost.setId(mat.getId());
             matCost.setItem(mat.getItem());
-            int sum = 0;
-            for (PlannerServant servant : plannerTable.getItems()) {
-                TableColumn<PlannerServant, Number> actualCol = (TableColumn<PlannerServant, Number>) plannerTable.getColumns().stream()
+            NumberBinding sum = Bindings.createIntegerBinding(() -> 0);
+            for (PlannerServantView servant : plannerTable.getItems()) {
+                TableColumn<PlannerServantView, Number> actualCol = (TableColumn<PlannerServantView, Number>) plannerTable.getColumns().stream()
                         .filter(col -> String.valueOf(mat.getItem().getId()).equalsIgnoreCase(col.getId()))
                         .findFirst().get();
-                ObservableValue<Number> value = actualCol.getCellObservableValue(servant);
-                sum += value != null ? value.getValue().intValue() : 0;
+                ObservableNumberValue value = (ObservableNumberValue) actualCol.getCellObservableValue(servant);
+                if (value != null) {
+                    sum = sum.add(value);
+                }
             }
-            matCost.setAmount(sum);
+            sum.addListener((observable, oldValue, newValue) -> matCost.setAmount(newValue.intValue()));
+            matCost.setAmount(sum.intValue());
             result.add(matCost);
         }
         return result;
@@ -203,9 +222,9 @@ public class PlannerController {
         });
     }
 
-    private ObservableValue<? extends Number> getTotalWidthOfParentColumn(TableColumn<PlannerServant, ?> column) {
+    private ObservableValue<? extends Number> getTotalWidthOfParentColumn(TableColumn<PlannerServantView, ?> column) {
         DoubleBinding result = Bindings.createDoubleBinding(() -> (double) 0);
-        for (TableColumn<PlannerServant, ?> col : column.getColumns()) {
+        for (TableColumn<PlannerServantView, ?> col : column.getColumns()) {
             result = result.add(col.widthProperty());
         }
         return result;
@@ -253,6 +272,10 @@ public class PlannerController {
         plannerTable.getColumns().get(0).setPrefWidth(MainController.NAME_CELL_WIDTH);
         initCurrentInfoColumns();
         initInfoColumn(desired);
+        desired.getColumns().forEach(col -> {
+            TableColumn<PlannerServantView, Integer> actualCol = (TableColumn<PlannerServantView, Integer>) col;
+            actualCol.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
+        });
     }
 
     public void loadTableData() {
@@ -265,42 +288,46 @@ public class PlannerController {
 
     private void initCurrentInfoColumns() {
         level.setCellValueFactory(param -> {
-            SimpleIntegerProperty level = null;
-            if (param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getBaseServant() != null) {
-                level = new SimpleIntegerProperty(param.getValue().getBaseServant().getLevel());
+            IntegerProperty level = null;
+            if (validServant(param)) {
+                level = param.getValue().getBaseServant().getValue().getLevel();
             }
             return level;
         });
         skill1.setCellValueFactory(param -> {
-            SimpleIntegerProperty skill1 = null;
-            if (param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getBaseServant() != null) {
-                skill1 = new SimpleIntegerProperty(param.getValue().getBaseServant().getSkillLevel1());
+            IntegerProperty skill1 = null;
+            if (validServant(param)) {
+                skill1 = param.getValue().getBaseServant().getValue().getSkillLevel1();
             }
             return skill1;
         });
         skill2.setCellValueFactory(param -> {
-            SimpleIntegerProperty skill2 = null;
-            if (param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getBaseServant() != null) {
-                skill2 = new SimpleIntegerProperty(param.getValue().getBaseServant().getSkillLevel1());
+            IntegerProperty skill2 = null;
+            if (validServant(param)) {
+                skill2 = param.getValue().getBaseServant().getValue().getSkillLevel1();
             }
             return skill2;
         });
         skill3.setCellValueFactory(param -> {
-            SimpleIntegerProperty skill3 = null;
-            if (param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getBaseServant() != null) {
-                skill3 = new SimpleIntegerProperty(param.getValue().getBaseServant().getSkillLevel1());
+            IntegerProperty skill3 = null;
+            if (validServant(param)) {
+                skill3 = param.getValue().getBaseServant().getValue().getSkillLevel1();
             }
             return skill3;
         });
         initInfoColumn(current);
     }
 
-    private void initInfoColumn(TableColumn<PlannerServant, ?> column) {
+    private boolean validServant(TableColumn.CellDataFeatures<PlannerServantView, Number> param) {
+        return param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getValue() != null && param.getValue().getBaseServant().getValue().getBaseServant() != null;
+    }
+
+    private void initInfoColumn(TableColumn<PlannerServantView, ?> column) {
         column.getColumns().get(0).setPrefWidth(MainController.SHORT_CELL_WIDTH);
         column.getColumns().stream().skip(1).forEach(col -> col.setPrefWidth(MainController.CHAR_CELL_WIDTH));
     }
 
-    private List<PlannerServant> createPlannerServantList() {
-        return new PlannerServantFactory().createForLTPlanner(dataManagementService.getUserServantList());
+    private List<PlannerServantView> createPlannerServantList() {
+        return new PlannerServantViewFactory().createForLTPlanner(dataManagementService.getUserServantList());
     }
 }

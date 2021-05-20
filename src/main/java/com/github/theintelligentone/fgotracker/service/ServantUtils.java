@@ -1,5 +1,6 @@
 package com.github.theintelligentone.fgotracker.service;
 
+import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.FgoFunction;
 import com.github.theintelligentone.fgotracker.ui.view.PlannerServantView;
@@ -40,9 +41,9 @@ public class ServantUtils {
 
     private int sumAllNeededSkillMats(PlannerServantView servant, long matId) {
         int result = 0;
-        result += sumNeededSkillMats(servant, servant.getBaseServant().getValue().getSkillLevel1(), servant.getDesSkill1().intValue(), matId);
-        result += sumNeededSkillMats(servant, servant.getBaseServant().getValue().getSkillLevel2(), servant.getDesSkill2().intValue(), matId);
-        result += sumNeededSkillMats(servant, servant.getBaseServant().getValue().getSkillLevel3(), servant.getDesSkill3().intValue(), matId);
+        result += sumNeededSkillMats(servant, servant.getBaseServant().getValue().getSkillLevel1().intValue(), servant.getDesSkill1().intValue(), matId);
+        result += sumNeededSkillMats(servant, servant.getBaseServant().getValue().getSkillLevel2().intValue(), servant.getDesSkill2().intValue(), matId);
+        result += sumNeededSkillMats(servant, servant.getBaseServant().getValue().getSkillLevel3().intValue(), servant.getDesSkill3().intValue(), matId);
         return result;
     }
 
@@ -51,24 +52,24 @@ public class ServantUtils {
                 .skip(currentLevel - 1).limit(desiredLevel - currentLevel)
                 .flatMap(mat -> mat.getItems().stream())
                 .filter(mat -> matId == mat.getItem().getId())
-                .mapToInt(mat -> mat.getAmount())
-                .reduce((amount1, amount2) -> amount1 + amount2).orElse(0);
+                .mapToInt(UpgradeMaterialCost::getAmount)
+                .reduce(Integer::sum).orElse(0);
     }
 
     private int sumNeededAscensionMats(PlannerServantView servant, long matId) {
-        int currentAscensionLevel = getAscensionFromRarityAndLevel(servant.getBaseServant().getValue().getLevel(), servant.getBaseServant().getValue().getRarity());
-        int desiredAscensionLevel = getAscensionFromRarityAndLevel(servant.getDesLevel().intValue(), servant.getBaseServant().getValue().getRarity());
+        int currentAscensionLevel = getAscensionFromRarityAndLevel(servant.getBaseServant().getValue().getLevel().intValue(), servant.getBaseServant().getValue().getRarity().getValue());
+        int desiredAscensionLevel = getAscensionFromRarityAndLevel(servant.getDesLevel().intValue(), servant.getBaseServant().getValue().getRarity().intValue());
         return servant.getAscensionMaterials().stream()
                 .skip(currentAscensionLevel).limit(Math.max(desiredAscensionLevel - currentAscensionLevel, 0))
                 .flatMap(mat -> mat.getItems().stream())
                 .filter(mat -> matId == mat.getItem().getId())
-                .mapToInt(mat -> mat.getAmount())
-                .reduce((amount1, amount2) -> amount1 + amount2).orElse(0);
+                .mapToInt(UpgradeMaterialCost::getAmount)
+                .reduce(Integer::sum).orElse(0);
     }
 
     public int sumNeededAscensionGrails(PlannerServantView servant) {
-        int currentAscensionLevel = getAscensionFromRarityAndLevel(servant.getBaseServant().getValue().getLevel(), servant.getBaseServant().getValue().getRarity());
-        int desiredAscensionLevel = getAscensionFromRarityAndLevel(servant.getDesLevel().intValue(), servant.getBaseServant().getValue().getRarity());
+        int currentAscensionLevel = getAscensionFromRarityAndLevel(servant.getBaseServant().getValue().getLevel().intValue(), servant.getBaseServant().getValue().getRarity().intValue());
+        int desiredAscensionLevel = getAscensionFromRarityAndLevel(servant.getDesLevel().intValue(), servant.getBaseServant().getValue().getRarity().intValue());
         return Math.min(desiredAscensionLevel - currentAscensionLevel - 4, 0);
     }
 

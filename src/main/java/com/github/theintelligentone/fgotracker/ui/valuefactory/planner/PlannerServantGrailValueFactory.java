@@ -1,19 +1,19 @@
 package com.github.theintelligentone.fgotracker.ui.valuefactory.planner;
 
-import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
-import com.github.theintelligentone.fgotracker.service.AscensionUtils;
+import com.github.theintelligentone.fgotracker.service.ServantUtils;
+import com.github.theintelligentone.fgotracker.ui.view.PlannerServantView;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
 
-public class PlannerServantGrailValueFactory implements Callback<TableColumn.CellDataFeatures<PlannerServant, Number>, ObservableValue<Number>> {
+public class PlannerServantGrailValueFactory implements Callback<TableColumn.CellDataFeatures<PlannerServantView, Number>, ObservableValue<Number>> {
 
     @Override
-    public ObservableValue<Number> call(TableColumn.CellDataFeatures<PlannerServant, Number> param) {
+    public ObservableValue<Number> call(TableColumn.CellDataFeatures<PlannerServantView, Number> param) {
         SimpleIntegerProperty result = null;
-        if (param.getValue().getBaseServant() != null) {
-            int matSum = new AscensionUtils().sumNeededAscensionGrails(param.getValue());
+        if (param.getValue().getBaseServant().getValue() != null) {
+            int matSum = new ServantUtils().sumNeededAscensionGrails(param.getValue());
             if (matSum > 0) {
                 result = new SimpleIntegerProperty(matSum);
             }

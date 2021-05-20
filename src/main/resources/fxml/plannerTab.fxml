@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.*?>
+<?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.control.cell.PropertyValueFactory?>
 <Tab xmlns="http://javafx.com/javafx"
      xmlns:fx="http://javafx.com/fxml"
      fx:id="plannerTab"
      fx:controller="com.github.theintelligentone.fgotracker.ui.controller.PlannerController">
     <VBox>
-        <TableView fx:id="sumTable">
+        <TableView fx:id="sumTable" editable="true">
             <columns>
                 <TableColumn fx:id="label"/>
                 <TableColumn fx:id="sumCurrent"/>
@@ -20,7 +20,7 @@
                 </TableColumn>
             </columns>
         </TableView>
-        <TableView fx:id="plannerTable" VBox.vgrow="ALWAYS">
+        <TableView fx:id="plannerTable" VBox.vgrow="ALWAYS" editable="true">
             <columns>
                 <TableColumn text="Name">
                     <cellValueFactory>
@@ -37,22 +37,22 @@
                 </TableColumn>
                 <TableColumn text="Desired" fx:id="desired">
                     <columns>
-                        <TableColumn fx:id="desLevel" text="LvL">
+                        <TableColumn editable="true" fx:id="desLevel" text="LvL">
                             <cellValueFactory>
                                 <PlannerServantValueFactory property="desLevel"/>
                             </cellValueFactory>
                         </TableColumn>
-                        <TableColumn fx:id="desSkill1" text="S1">
+                        <TableColumn editable="true" fx:id="desSkill1" text="S1">
                             <cellValueFactory>
                                 <PlannerServantValueFactory property="desSkill1"/>
                             </cellValueFactory>
                         </TableColumn>
-                        <TableColumn fx:id="desSkill2" text="S2">
+                        <TableColumn editable="true" fx:id="desSkill2" text="S2">
                             <cellValueFactory>
                                 <PlannerServantValueFactory property="desSkill2"/>
                             </cellValueFactory>
                         </TableColumn>
-                        <TableColumn fx:id="desSkill3" text="S3">
+                        <TableColumn editable="true" fx:id="desSkill3" text="S3">
                             <cellValueFactory>
                                 <PlannerServantValueFactory property="desSkill3"/>
                             </cellValueFactory>

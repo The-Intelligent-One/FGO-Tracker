@@ -20,8 +20,6 @@ public class UserServant {
     private int level;
     private boolean ascension;
     private int npLevel;
-    private String npType;
-    private String npTarget;
     private int bondLevel;
     private int skillLevel1;
     private int skillLevel2;

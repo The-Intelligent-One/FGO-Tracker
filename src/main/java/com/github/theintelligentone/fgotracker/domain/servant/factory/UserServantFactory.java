@@ -19,47 +19,6 @@ public class UserServantFactory {
                 .skillLevel1(1)
                 .skillLevel2(1)
                 .skillLevel3(1)
-                .npType(determineNpCard(baseServant))
-                .npTarget(determineNpTarget(baseServant))
                 .build();
-    }
-
-    public UserServant replaceBaseServant(UserServant servant, Servant newBaseServant) {
-        UserServant modifiedServant = servant;
-        if (servant.getBaseServant() != null) {
-            if (newBaseServant != null) {
-                modifiedServant.setBaseServant(newBaseServant);
-                modifiedServant.setSvtId(newBaseServant.getId());
-                modifiedServant.setRarity(newBaseServant.getRarity());
-                modifiedServant.setNpType(determineNpCard(newBaseServant));
-                modifiedServant.setNpTarget(determineNpTarget(newBaseServant));
-            }
-        } else {
-            modifiedServant = createUserServantFromBaseServant(newBaseServant);
-        }
-        return modifiedServant;
-    }
-
-    private String determineNpCard(Servant baseServant) {
-        String card = baseServant.getNoblePhantasms().get(baseServant.getNoblePhantasms().size() - 1).getCard();
-        return card.substring(0, 1).toUpperCase() + card.substring(1);
-    }
-
-    private String determineNpTarget(Servant baseServant) {
-        String target = "Support";
-        FgoFunction damageNp = findDamagingNpFunction(baseServant);
-        if (damageNp != null) {
-            target = damageIsAoE(damageNp) ? "AoE" : "ST";
-        }
-        return target;
-    }
-
-    private boolean damageIsAoE(FgoFunction damageNp) {
-        return "enemyAll".equalsIgnoreCase(damageNp.getFuncTargetType());
-    }
-
-    private FgoFunction findDamagingNpFunction(Servant baseServant) {
-        return baseServant.getNoblePhantasms().get(baseServant.getNoblePhantasms().size() - 1).getFunctions().stream()
-                .filter(fnc -> fnc.getFuncType().startsWith("damageNp")).findFirst().orElse(null);
     }
 }

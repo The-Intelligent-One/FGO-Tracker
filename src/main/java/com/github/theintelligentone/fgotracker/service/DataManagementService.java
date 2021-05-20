@@ -9,6 +9,8 @@ import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
+import com.github.theintelligentone.fgotracker.service.transformer.UserServantToViewTransformer;
+import com.github.theintelligentone.fgotracker.ui.view.UserServantView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
@@ -26,19 +28,21 @@ public class DataManagementService {
     public static Map<String, Map<Integer, CardPlacementData>> CARD_DATA;
     private final DataRequestService requestService;
     private final FileManagementService fileService;
+    private final UserServantToViewTransformer userServantToViewTransformer;
     private ObservableList<String> servantNameList = FXCollections.observableArrayList();
     private List<Servant> servantDataList;
     private List<UpgradeMaterial> materials;
     private Inventory inventory;
     private boolean iconsResized = false;
     @Getter
-    private ObservableList<UserServant> userServantList = FXCollections.observableArrayList();
+    private ObservableList<UserServantView> userServantList = FXCollections.observableArrayList();
     private long currentVersion;
 
     public DataManagementService() {
         ObjectMapper objectMapper = new ObjectMapper();
         this.requestService = new DataRequestService(objectMapper);
         this.fileService = new FileManagementService(objectMapper);
+        this.userServantToViewTransformer = new UserServantToViewTransformer();
     }
 
     public Inventory getInventory() {
@@ -76,7 +80,7 @@ public class DataManagementService {
         } else {
             loadFromCache();
         }
-        userServantList.addAll(createAssociatedUserServantList());
+        userServantList.addAll(userServantToViewTransformer.transformAll(createAssociatedUserServantList()));
         inventory = createInventoryWithAssociatedMatList();
         servantNameList.addAll(servantDataList.stream().map(Servant::getName).collect(Collectors.toList()));
     }
@@ -170,12 +174,13 @@ public class DataManagementService {
         List<String[]> importedData = fileService.importCsv(sourceFile);
         List<UserServant> importedServants = importedData.stream().map(importedData1 -> buildUserServantFromStringArray(importedData1, managerLookup)).collect(Collectors.toList());
         List<String> notFoundNames = importedServants.stream()
-                .filter(svt -> svt.getBaseServant() != null && svt.getNpTarget() == null)
+                .filter(svt -> svt.getBaseServant() != null && svt.getSvtId() == 0)
                 .map(svt -> svt.getBaseServant().getName())
                 .collect(Collectors.toList());
-        importedServants = importedServants.stream().filter(svt -> svt.getBaseServant() == null || svt.getNpTarget() != null).collect(Collectors.toList());
-        clearUnnecessaryEmptyRows(importedServants);
-        userServantList.setAll(importedServants);
+        importedServants = importedServants.stream().filter(svt -> svt.getBaseServant() == null || svt.getSvtId() != 0).collect(Collectors.toList());
+        ObservableList<UserServantView> trasnformedServants = userServantToViewTransformer.transformAll(importedServants);
+        clearUnnecessaryEmptyRows(trasnformedServants);
+        userServantList.setAll(trasnformedServants);
         return notFoundNames;
     }
 
@@ -209,11 +214,7 @@ public class DataManagementService {
     }
 
     private int convertToInt(String data) {
-        int result = 0;
-        if (data != null && !data.isEmpty()) {
-            result = Integer.parseInt(data);
-        }
-        return result;
+        return data != null && !data.isEmpty() ? Integer.parseInt(data) : 0;
     }
 
     private Servant findServantFromManager(String name, List<ManagerServant> managerLookup) {
@@ -235,28 +236,35 @@ public class DataManagementService {
         return filteredData;
     }
 
-    public void eraseUserServant(UserServant servant) {
-        userServantList.set(userServantList.indexOf(servant), new UserServant());
+    public void eraseUserServant(UserServantView servant) {
+        userServantList.set(userServantList.indexOf(servant), new UserServantView());
     }
 
-    public void replaceBaseServantInRow(int index, UserServant servant, String newServantName) {
-        UserServant modifiedServant = new UserServantFactory().replaceBaseServant(servant, findServantByName(newServantName));
-        userServantList.set(index, modifiedServant);
+    public void replaceBaseServantInRow(int index, UserServantView servant, String newServantName) {
+        Servant newBaseServant = findServantByName(newServantName);
+        if (servant.getBaseServant() == null || servant.getBaseServant().getValue() == null) {
+            userServantList.set(index, userServantToViewTransformer.transform(new UserServantFactory().createUserServantFromBaseServant(newBaseServant)));
+        } else {
+            servant.getSvtId().set(newBaseServant.getId());
+            servant.getRarity().set(newBaseServant.getRarity());
+            servant.getBaseServant().set(newBaseServant);
+            userServantList.set(index, servant);
+        }
     }
 
-    public void saveUserServant(UserServant servant) {
+    public void saveUserServant(UserServantView servant) {
         userServantList.add(servant);
     }
 
     public void saveUserState() {
         clearUnnecessaryEmptyRows(userServantList);
-        fileService.saveUserServants(userServantList);
+        fileService.saveUserServants(userServantToViewTransformer.transformAll(userServantList));
         fileService.saveInventory(inventory);
     }
 
-    private void clearUnnecessaryEmptyRows(List<UserServant> servantList) {
+    private void clearUnnecessaryEmptyRows(List<UserServantView> servantList) {
         int index = servantList.size() - 1;
-        while (!servantList.isEmpty() && servantList.get(index).getBaseServant() == null) {
+        while (!servantList.isEmpty() && servantList.get(index).getBaseServant().getValue() == null) {
             servantList.remove(index--);
         }
     }

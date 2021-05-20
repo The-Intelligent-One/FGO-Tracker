@@ -1,16 +1,18 @@
 package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
-import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AscensionCheckBoxTableCell;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
-import javafx.beans.property.SimpleBooleanProperty;
+import com.github.theintelligentone.fgotracker.ui.view.UserServantView;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableRow;
+import javafx.scene.control.TableView;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.IntegerStringConverter;
@@ -20,58 +22,66 @@ import java.util.stream.IntStream;
 public class RosterController {
     private static final String[] ONE_TO_FIVE = {"1", "2", "3", "4", "5"};
     private DataManagementService dataManagementService;
+    private ServantUtils servantUtils;
 
     @FXML
-    private TableView<UserServant> rosterTable;
+    private TableView<UserServantView> rosterTable;
 
     @FXML
-    private TableColumn<UserServant, Integer> rarityColumn;
+    private TableColumn<UserServantView, Integer> rarityColumn;
 
     @FXML
-    private TableColumn<UserServant, String> classColumn;
+    private TableColumn<UserServantView, String> classColumn;
 
     @FXML
-    private TableColumn<UserServant, String> attributeColumn;
+    private TableColumn<UserServantView, String> attributeColumn;
 
     @FXML
-    private TableColumn<UserServant, ?> deckColumn;
+    private TableColumn<UserServantView, ?> deckColumn;
 
     @FXML
-    private TableColumn<UserServant, ?> npColumn;
+    private TableColumn<UserServantView, ?> npColumn;
 
     @FXML
-    private TableColumn<UserServant, String> nameColumn;
+    private TableColumn<UserServantView, String> nameColumn;
 
     @FXML
-    private TableColumn<UserServant, Integer> levelColumn;
+    private TableColumn<UserServantView, String> npTypeColumn;
 
     @FXML
-    private TableColumn<UserServant, Integer> atkColumn;
+    private TableColumn<UserServantView, String> npTargetColumn;
 
     @FXML
-    private TableColumn<UserServant, Integer> hpColumn;
+    private TableColumn<UserServantView, Integer> levelColumn;
+
+    @FXML
+    private TableColumn<UserServantView, Integer> atkColumn;
+
+    @FXML
+    private TableColumn<UserServantView, Integer> hpColumn;
 
     // this need to be set to String for some reason. If I set it to Integer it freaks out in the edit commit event handler about casting during runtime
     @FXML
-    private TableColumn<UserServant, String> npLvlColumn;
+    private TableColumn<UserServantView, String> npLvlColumn;
 
     @FXML
-    private TableColumn<UserServant, Boolean> ascColumn;
+    private TableColumn<UserServantView, Boolean> ascColumn;
 
     @FXML
-    private TableColumn<UserServant, Integer> bondColumn;
+    private TableColumn<UserServantView, Integer> bondColumn;
 
     @FXML
-    private TableColumn<UserServant, Integer> skill1Column;
+    private TableColumn<UserServantView, Integer> skill1Column;
 
     @FXML
-    private TableColumn<UserServant, Integer> skill2Column;
+    private TableColumn<UserServantView, Integer> skill2Column;
 
     @FXML
-    private TableColumn<UserServant, Integer> skill3Column;
+    private TableColumn<UserServantView, Integer> skill3Column;
 
     public void initialize() {
         dataManagementService = MainApp.getDataManagementService();
+        servantUtils = new ServantUtils();
         tableSetup();
     }
 
@@ -91,12 +101,11 @@ public class RosterController {
 
     private void columnSetup() {
         rarityColumn.setPrefWidth(MainController.CHAR_CELL_WIDTH);
+        npColumnSetup();
         deckColumn.getColumns().forEach(column -> column.setPrefWidth(MainController.CHAR_CELL_WIDTH));
-        npColumn.getColumns().forEach(column -> column.setPrefWidth(MainController.MID_CELL_WIDTH));
         classColumnSetup();
         attributeColumnSetup();
         nameColumnSetup();
-        npLvlColumnSetup();
         levelColumnSetup();
         atkColumnSetup();
         hpColumnSetup();
@@ -107,12 +116,19 @@ public class RosterController {
         ascColumnSetup();
     }
 
+    private void npColumnSetup() {
+        npColumn.getColumns().forEach(column -> column.setPrefWidth(MainController.MID_CELL_WIDTH));
+        npTypeColumn.setCellValueFactory(param -> param.getValue().getBaseServant().getValue() != null ? new SimpleStringProperty(servantUtils.determineNpCard(param.getValue().getBaseServant().getValue())) : null);
+        npTargetColumn.setCellValueFactory(param -> param.getValue().getBaseServant().getValue() != null ? new SimpleStringProperty(servantUtils.determineNpTarget(param.getValue().getBaseServant().getValue())) : null);
+        npLvlColumnSetup();
+    }
+
     private void attributeColumnSetup() {
         attributeColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
         attributeColumn.setCellValueFactory(param -> {
             SimpleStringProperty name = new SimpleStringProperty();
-            if (param.getValue().getBaseServant() != null) {
-                String attribute = param.getValue().getBaseServant().getAttribute();
+            if (param.getValue().getBaseServant().getValue() != null) {
+                String attribute = param.getValue().getBaseServant().getValue().getAttribute();
                 name.set(attribute.substring(0, 1).toUpperCase() + attribute.substring(1));
             }
             return name;
@@ -123,8 +139,8 @@ public class RosterController {
         classColumn.setPrefWidth(MainController.LONG_CELL_WIDTH);
         classColumn.setCellValueFactory(param -> {
             SimpleStringProperty name = new SimpleStringProperty();
-            if (param.getValue().getBaseServant() != null) {
-                String className = param.getValue().getBaseServant().getClassName();
+            if (param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getValue() != null) {
+                String className = param.getValue().getBaseServant().getValue().getClassName();
                 name.set(className.substring(0, 1).toUpperCase() + className.substring(1));
             }
             return name;
@@ -134,57 +150,51 @@ public class RosterController {
     private void ascColumnSetup() {
         ascColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         ascColumn.setCellFactory(cell -> new AscensionCheckBoxTableCell());
-        ascColumn.setCellValueFactory(cellData -> {
-            UserServant servant = cellData.getValue();
-            SimpleBooleanProperty simpleBooleanProperty = new SimpleBooleanProperty(servant != null && servant.isAscension());
-            simpleBooleanProperty.addListener((observable, oldValue, newValue) -> cellData.getValue().setAscension(newValue));
-            return simpleBooleanProperty;
-        });
     }
 
     private void skill1ColumnSetup() {
-        skill1Column.setPrefWidth(MainController.CHAR_CELL_WIDTH);
+        skill1Column.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         skill1Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         skill1Column.setOnEditCommit(event -> {
             int input = event.getNewValue();
             if (input <= 10 && input >= 1) {
-                event.getRowValue().setSkillLevel1(input);
+                event.getRowValue().getSkillLevel1().set(input);
             }
             rosterTable.refresh();
         });
     }
 
     private void skill2ColumnSetup() {
-        skill2Column.setPrefWidth(MainController.CHAR_CELL_WIDTH);
+        skill2Column.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         skill2Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         skill2Column.setOnEditCommit(event -> {
             int input = event.getNewValue();
             if (input <= 10 && input >= 1) {
-                event.getRowValue().setSkillLevel2(input);
+                event.getRowValue().getSkillLevel2().set(input);
             }
             rosterTable.refresh();
         });
     }
 
     private void skill3ColumnSetup() {
-        skill3Column.setPrefWidth(MainController.CHAR_CELL_WIDTH);
+        skill3Column.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         skill3Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         skill3Column.setOnEditCommit(event -> {
             int input = event.getNewValue();
             if (input <= 10 && input >= 1) {
-                event.getRowValue().setSkillLevel3(input);
+                event.getRowValue().getSkillLevel3().set(input);
             }
             rosterTable.refresh();
         });
     }
 
     private void bondColumnSetup() {
-        bondColumn.setPrefWidth(MainController.CHAR_CELL_WIDTH);
+        bondColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         bondColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         bondColumn.setOnEditCommit(event -> {
             int input = event.getNewValue();
             if (input <= 15 && input >= 0) {
-                event.getRowValue().setBondLevel(input);
+                event.getRowValue().getBondLevel().set(input);
             }
             rosterTable.refresh();
         });
@@ -196,7 +206,7 @@ public class RosterController {
         levelColumn.setOnEditCommit(event -> {
             int input = event.getNewValue();
             if (input <= 100 && input >= 1) {
-                event.getRowValue().setLevel(input);
+                event.getRowValue().getLevel().set(input);
             }
             rosterTable.refresh();
         });
@@ -208,7 +218,7 @@ public class RosterController {
         atkColumn.setOnEditCommit(event -> {
             int input = event.getNewValue();
             if (input <= 2000 && input >= 0) {
-                event.getRowValue().setFouAtk(input);
+                event.getRowValue().getFouAtk().set(input);
             }
             rosterTable.refresh();
         });
@@ -220,7 +230,7 @@ public class RosterController {
         hpColumn.setOnEditCommit(event -> {
             int input = event.getNewValue();
             if (input <= 2000 && input >= 0) {
-                event.getRowValue().setFouHp(input);
+                event.getRowValue().getFouHp().set(input);
             }
             rosterTable.refresh();
         });
@@ -228,14 +238,14 @@ public class RosterController {
 
     private void npLvlColumnSetup() {
         npLvlColumn.setCellFactory(list -> {
-            ComboBoxTableCell<UserServant, String> tableCell = new ComboBoxTableCell<>(FXCollections.observableArrayList(ONE_TO_FIVE));
+            ComboBoxTableCell<UserServantView, String> tableCell = new ComboBoxTableCell<>(FXCollections.observableArrayList(ONE_TO_FIVE));
             tableCell.setComboBoxEditable(true);
             return tableCell;
         });
         npLvlColumn.setOnEditCommit(event -> {
             int input = Integer.parseInt(event.getNewValue());
             if (input <= 5 && input >= 1) {
-                event.getRowValue().setNpLevel(input);
+                event.getRowValue().getNpLevel().set(input);
             }
             rosterTable.refresh();
         });
@@ -253,8 +263,8 @@ public class RosterController {
         nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementService.getServantNameList()));
         nameColumn.setCellValueFactory(param -> {
             SimpleStringProperty name = new SimpleStringProperty();
-            if (param.getValue().getBaseServant() != null) {
-                name.set(param.getValue().getBaseServant().getName());
+            if (param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getValue() != null) {
+                name.set(param.getValue().getBaseServant().getValue().getName());
             }
             return name;
         });
@@ -263,7 +273,7 @@ public class RosterController {
     public void setup() {
         rosterTable.setItems(dataManagementService.getUserServantList());
         if (rosterTable.getItems().size() == 0) {
-            IntStream.range(0, 10).forEach(i -> dataManagementService.saveUserServant(new UserServant()));
+            IntStream.range(0, 10).forEach(i -> dataManagementService.saveUserServant(new UserServantView()));
         }
     }
 }

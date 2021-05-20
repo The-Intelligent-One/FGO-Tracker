@@ -51,16 +51,8 @@
             </TableColumn>
             <TableColumn fx:id="npColumn" text="NP">
                 <columns>
-                    <TableColumn text="Type">
-                        <cellValueFactory>
-                            <UserServantValueFactory property="npType"/>
-                        </cellValueFactory>
-                    </TableColumn>
-                    <TableColumn text="Target">
-                        <cellValueFactory>
-                            <UserServantValueFactory property="npTarget"/>
-                        </cellValueFactory>
-                    </TableColumn>
+                    <TableColumn fx:id="npTypeColumn" text="Type"/>
+                    <TableColumn fx:id="npTargetColumn" text="Target"/>
                     <TableColumn text="Damage">
                         <cellValueFactory>
                             <UserServantNpDamageValueFactory/>
@@ -81,7 +73,7 @@
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn fx:id="ascColumn" text="Asc"/>
-                    <TableColumn fx:id="bondColumn" text="B">
+                    <TableColumn fx:id="bondColumn" text="Bond">
                         <cellValueFactory>
                             <UserServantValueFactory property="bondLevel"/>
                         </cellValueFactory>

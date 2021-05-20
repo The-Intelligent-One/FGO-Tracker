@@ -1,13 +1,15 @@
 package com.github.theintelligentone.fgotracker.service.transformer;
 
+import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.ui.view.UserServantView;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,7 +30,28 @@ public class UserServantToViewTransformer {
         return result;
     }
 
-    public List<UserServantView> transformAll(Collection<UserServant> servants) {
+    public UserServant transform(UserServantView servant) {
+        return UserServant.builder()
+                .svtId(servant.getSvtId().getValue())
+                .ascension(servant.getAscension().getValue())
+                .rarity(servant.getRarity().getValue())
+                .baseServant(servant.getBaseServant().getValue())
+                .bondLevel(servant.getBondLevel().getValue())
+                .fouAtk(servant.getFouAtk().getValue())
+                .fouHp(servant.getFouHp().getValue())
+                .level(servant.getLevel().getValue())
+                .npLevel(servant.getNpLevel().getValue())
+                .skillLevel1(servant.getSkillLevel1().getValue())
+                .skillLevel2(servant.getSkillLevel2().getValue())
+                .skillLevel3(servant.getSkillLevel3().getValue())
+                .build();
+    }
+
+    public ObservableList<UserServantView> transformAll(List<UserServant> servants) {
+        return FXCollections.observableArrayList(servants.stream().map(this::transform).collect(Collectors.toList()));
+    }
+
+    public List<UserServant> transformAll(ObservableList<UserServantView> servants) {
         return servants.stream().map(this::transform).collect(Collectors.toList());
     }
 }

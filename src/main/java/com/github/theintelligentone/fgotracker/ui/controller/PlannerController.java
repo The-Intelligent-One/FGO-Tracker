@@ -12,6 +12,7 @@ import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerSe
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerServantMaterialValueFactory;
 import com.github.theintelligentone.fgotracker.ui.view.InventoryView;
 import com.github.theintelligentone.fgotracker.ui.view.PlannerServantView;
+import com.github.theintelligentone.fgotracker.ui.view.UpgradeMaterialCostView;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.IntegerBinding;
@@ -140,16 +141,18 @@ public class PlannerController {
         disableSumTableHeader();
         bindColumnWidths();
         sumTable.getStyleClass().add("sum-table");
-        Inventory inventory = dataManagementService.getInventory();
-        sumTable.getItems().add(transformer.transform(inventory));
-        Inventory planned = dataManagementService.createEmptyInventory();
-        planned.setLabel("Plan");
+        InventoryView inventory = dataManagementService.getInventory();
+        sumTable.getItems().add(inventory);
+        Inventory plannedBase = dataManagementService.createEmptyInventory();
+        plannedBase.setLabel("Plan");
+        InventoryView planned = transformer.transform(plannedBase);
         planned.setInventory(getSumOfNeededMats());
-        sumTable.getItems().add(transformer.transform(planned));
-        Inventory sum = dataManagementService.createEmptyInventory();
-        sum.setLabel("Sum");
+        sumTable.getItems().add(planned);
+        Inventory sumBase = dataManagementService.createEmptyInventory();
+        sumBase.setLabel("Sum");
+        InventoryView sum = transformer.transform(sumBase);
         sum.setInventory(createListOfRemainingMats(inventory, planned));
-        sumTable.getItems().add(transformer.transform(sum));
+        sumTable.getItems().add(sum);
     }
 
     private List<TableColumn<InventoryView, Number>> createColumnsForAllMatsForSum() {
@@ -164,18 +167,15 @@ public class PlannerController {
         columns.add(newCol);
     }
 
-    private List<UpgradeMaterialCost> createListOfRemainingMats(Inventory inventory, Inventory planned) {
-        ObservableList<UpgradeMaterialCost> result = FXCollections.observableArrayList();
+    private ObservableList<UpgradeMaterialCostView> createListOfRemainingMats(InventoryView inventory, InventoryView planned) {
+        ObservableList<UpgradeMaterialCostView> result = FXCollections.observableArrayList();
         for (int index = 0; index < inventory.getInventory().size(); index++) {
             final int currIndex = index;
-            UpgradeMaterialCost mat = new UpgradeMaterialCost();
-            SimpleIntegerProperty invAmount = new SimpleIntegerProperty(inventory.getInventory().get(index).getAmount());
-            invAmount.addListener((observable, oldValue, newValue) -> inventory.getInventory().get(0).setAmount(newValue.intValue()));
-            SimpleIntegerProperty planAmount = new SimpleIntegerProperty(planned.getInventory().get(currIndex).getAmount());
-            planAmount.addListener((observable, oldValue, newValue) -> planned.getInventory().get(0).setAmount(newValue.intValue()));
-            IntegerBinding sumBinding = Bindings.createIntegerBinding(() -> inventory.getInventory().get(currIndex).getAmount() - planned.getInventory().get(currIndex).getAmount(), invAmount, planAmount);
-            mat.setAmount(invAmount.intValue() - planAmount.intValue());
-            sumBinding.addListener((observable, oldValue, newValue) -> mat.setAmount(newValue.intValue()));
+            UpgradeMaterialCostView mat = new UpgradeMaterialCostView();
+            IntegerBinding sumBinding = Bindings.createIntegerBinding(() -> 0);
+            sumBinding.add(inventory.getInventory().get(currIndex).getAmount());
+            sumBinding.add(planned.getInventory().get(currIndex).getAmount());
+            mat.getAmount().bind(sumBinding);
             mat.setId(inventory.getInventory().get(index).getId());
             mat.setItem(inventory.getInventory().get(index).getItem());
             result.add(mat);
@@ -183,24 +183,24 @@ public class PlannerController {
         return result;
     }
 
-    private List<UpgradeMaterialCost> getSumOfNeededMats() {
-        List<UpgradeMaterialCost> result = new ArrayList<>();
-        for (UpgradeMaterialCost mat : dataManagementService.getInventory().getInventory()) {
-            UpgradeMaterialCost matCost = new UpgradeMaterialCost();
+    private ObservableList<UpgradeMaterialCostView> getSumOfNeededMats() {
+        ObservableList<UpgradeMaterialCostView> result = FXCollections.observableArrayList();
+        for (UpgradeMaterialCostView mat : dataManagementService.getInventory().getInventory()) {
+            UpgradeMaterialCostView matCost = new UpgradeMaterialCostView();
             matCost.setId(mat.getId());
             matCost.setItem(mat.getItem());
             NumberBinding sum = Bindings.createIntegerBinding(() -> 0);
             for (PlannerServantView servant : plannerTable.getItems()) {
                 TableColumn<PlannerServantView, Number> actualCol = (TableColumn<PlannerServantView, Number>) plannerTable.getColumns().stream()
-                        .filter(col -> String.valueOf(mat.getItem().getId()).equalsIgnoreCase(col.getId()))
+                        .filter(col -> String.valueOf(mat.getItem().getValue().getId()).equalsIgnoreCase(col.getId()))
                         .findFirst().get();
                 ObservableNumberValue value = (ObservableNumberValue) actualCol.getCellObservableValue(servant);
                 if (value != null) {
                     sum = sum.add(value);
                 }
             }
-            sum.addListener((observable, oldValue, newValue) -> matCost.setAmount(newValue.intValue()));
-            matCost.setAmount(sum.intValue());
+            sum.addListener((observable, oldValue, newValue) -> matCost.getAmount().set(newValue.intValue()));
+            matCost.getAmount().bind(sum);
             result.add(matCost);
         }
         return result;

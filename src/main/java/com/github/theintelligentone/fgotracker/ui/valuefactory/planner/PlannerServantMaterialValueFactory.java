@@ -3,7 +3,9 @@ package com.github.theintelligentone.fgotracker.ui.valuefactory.planner;
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.ui.view.PlannerServantView;
 import javafx.beans.NamedArg;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.value.ObservableIntegerValue;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
@@ -17,11 +19,12 @@ public class PlannerServantMaterialValueFactory implements Callback<TableColumn.
 
     @Override
     public ObservableValue<Number> call(TableColumn.CellDataFeatures<PlannerServantView, Number> param) {
-        SimpleIntegerProperty result = null;
+        ObservableIntegerValue result = null;
         if (param.getValue().getBaseServant().getValue() != null) {
-            int matSum = new ServantUtils().getPlannedMatUse(param.getValue(), matId);
+            ObservableIntegerValue plannedMatUse = new ServantUtils().getPlannedMatUse(param.getValue(), matId);
+            int matSum = plannedMatUse.intValue();
             if (matSum > 0) {
-                result = new SimpleIntegerProperty(matSum);
+                result = plannedMatUse;
             }
         }
         return result;

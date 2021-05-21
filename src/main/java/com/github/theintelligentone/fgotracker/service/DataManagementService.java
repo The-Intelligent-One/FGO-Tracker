@@ -9,7 +9,9 @@ import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
+import com.github.theintelligentone.fgotracker.service.transformer.InventoryToViewTransformer;
 import com.github.theintelligentone.fgotracker.service.transformer.UserServantToViewTransformer;
+import com.github.theintelligentone.fgotracker.ui.view.InventoryView;
 import com.github.theintelligentone.fgotracker.ui.view.UserServantView;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -29,10 +31,11 @@ public class DataManagementService {
     private final DataRequestService requestService;
     private final FileManagementService fileService;
     private final UserServantToViewTransformer userServantToViewTransformer;
-    private ObservableList<String> servantNameList = FXCollections.observableArrayList();
+    private final InventoryToViewTransformer inventoryToViewTransformer;
+    private ObservableList<String> servantNameList;
     private List<Servant> servantDataList;
     private List<UpgradeMaterial> materials;
-    private Inventory inventory;
+    private InventoryView inventory;
     private boolean iconsResized = false;
     @Getter
     private ObservableList<UserServantView> userServantList = FXCollections.observableArrayList();
@@ -43,9 +46,10 @@ public class DataManagementService {
         this.requestService = new DataRequestService(objectMapper);
         this.fileService = new FileManagementService(objectMapper);
         this.userServantToViewTransformer = new UserServantToViewTransformer();
+        this.inventoryToViewTransformer = new InventoryToViewTransformer();
     }
 
-    public Inventory getInventory() {
+    public InventoryView getInventory() {
         return inventory;
     }
 
@@ -71,6 +75,7 @@ public class DataManagementService {
 
     public void initApp() {
         userServantList = FXCollections.observableArrayList();
+        servantNameList = FXCollections.observableArrayList();
         refreshAllData();
     }
 
@@ -85,7 +90,7 @@ public class DataManagementService {
         servantNameList.addAll(servantDataList.stream().map(Servant::getName).collect(Collectors.toList()));
     }
 
-    private Inventory createInventoryWithAssociatedMatList() {
+    private InventoryView createInventoryWithAssociatedMatList() {
         Inventory inventory = fileService.loadInventory();
         if (inventory.getInventory().size() == 0) {
             inventory = createEmptyInventory();
@@ -95,7 +100,7 @@ public class DataManagementService {
             }
         }
         inventory.setLabel("Inventory");
-        return inventory;
+        return inventoryToViewTransformer.transform(inventory);
     }
 
     public Inventory createEmptyInventory() {
@@ -115,7 +120,7 @@ public class DataManagementService {
     private List<UserServant> createAssociatedUserServantList() {
         List<UserServant> userServants = fileService.loadUserData();
         userServants.forEach(svt -> {
-            if (svt.getSvtId() != 0l) {
+            if (svt.getSvtId() != 0L) {
                 svt.setBaseServant(findServantById(svt.getSvtId()));
             }
         });
@@ -259,7 +264,7 @@ public class DataManagementService {
     public void saveUserState() {
         clearUnnecessaryEmptyRows(userServantList);
         fileService.saveUserServants(userServantToViewTransformer.transformAll(userServantList));
-        fileService.saveInventory(inventory);
+        fileService.saveInventory(inventoryToViewTransformer.transform(inventory));
     }
 
     private void clearUnnecessaryEmptyRows(List<UserServantView> servantList) {

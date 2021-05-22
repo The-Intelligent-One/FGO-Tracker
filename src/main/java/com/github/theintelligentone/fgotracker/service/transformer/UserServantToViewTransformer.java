@@ -1,8 +1,7 @@
 package com.github.theintelligentone.fgotracker.service.transformer;
 
-import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
-import com.github.theintelligentone.fgotracker.ui.view.UserServantView;
+import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;

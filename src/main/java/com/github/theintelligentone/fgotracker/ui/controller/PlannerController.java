@@ -9,9 +9,9 @@ import com.github.theintelligentone.fgotracker.service.transformer.InventoryToVi
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.InventoryValueFactory;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerServantGrailValueFactory;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerServantMaterialValueFactory;
-import com.github.theintelligentone.fgotracker.ui.view.InventoryView;
-import com.github.theintelligentone.fgotracker.ui.view.PlannerServantView;
-import com.github.theintelligentone.fgotracker.ui.view.UpgradeMaterialCostView;
+import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
+import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
+import com.github.theintelligentone.fgotracker.domain.view.UpgradeMaterialCostView;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.IntegerBinding;

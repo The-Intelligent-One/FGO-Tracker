@@ -1,12 +1,8 @@
 package com.github.theintelligentone.fgotracker.service.transformer;
 
 import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
-import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
-import com.github.theintelligentone.fgotracker.ui.view.PlannerServantView;
-import com.github.theintelligentone.fgotracker.ui.view.UserServantView;
+import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableObjectValue;
 
 import java.util.List;
 import java.util.stream.Collectors;

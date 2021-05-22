@@ -1,4 +1,4 @@
-package com.github.theintelligentone.fgotracker.ui.view;
+package com.github.theintelligentone.fgotracker.domain.view;
 
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
 import javafx.beans.property.*;

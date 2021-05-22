@@ -1,6 +1,6 @@
 package com.github.theintelligentone.fgotracker.ui.valuefactory.roster;
 
-import com.github.theintelligentone.fgotracker.ui.view.UserServantView;
+import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import javafx.beans.NamedArg;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;

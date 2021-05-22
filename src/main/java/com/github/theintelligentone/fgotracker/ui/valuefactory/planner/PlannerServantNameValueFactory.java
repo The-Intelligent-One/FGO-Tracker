@@ -1,6 +1,6 @@
 package com.github.theintelligentone.fgotracker.ui.valuefactory.planner;
 
-import com.github.theintelligentone.fgotracker.ui.view.PlannerServantView;
+import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;

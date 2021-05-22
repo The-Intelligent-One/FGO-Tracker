@@ -1,7 +1,7 @@
 package com.github.theintelligentone.fgotracker.service.transformer;
 
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
-import com.github.theintelligentone.fgotracker.ui.view.InventoryView;
+import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import javafx.collections.FXCollections;
 
 import java.util.stream.Collectors;

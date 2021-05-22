@@ -1,7 +1,7 @@
 package com.github.theintelligentone.fgotracker.ui.valuefactory.planner;
 
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
-import com.github.theintelligentone.fgotracker.ui.view.PlannerServantView;
+import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import javafx.beans.NamedArg;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableIntegerValue;

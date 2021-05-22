@@ -3,7 +3,7 @@ package com.github.theintelligentone.fgotracker.service;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.FgoFunction;
-import com.github.theintelligentone.fgotracker.ui.view.PlannerServantView;
+import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;

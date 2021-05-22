@@ -1,7 +1,6 @@
 package com.github.theintelligentone.fgotracker.ui.valuefactory.planner;
 
-import com.github.theintelligentone.fgotracker.domain.item.Inventory;
-import com.github.theintelligentone.fgotracker.ui.view.InventoryView;
+import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableIntegerValue;
 import javafx.beans.value.ObservableValue;

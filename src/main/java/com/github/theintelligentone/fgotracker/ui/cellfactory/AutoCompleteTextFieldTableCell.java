@@ -123,7 +123,7 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
     }
 
     private void populatePopup(List<T> searchResult, String text) {
-        List<CustomMenuItem> menuItems = new ArrayList<>();
+        entriesPopup.getItems().clear();
         int count = Math.min(searchResult.size(), getMaxEntries());
         for (int i = 0; i < count; i++) {
             final String result = searchResult.get(i).toString();
@@ -154,10 +154,8 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
                 lastSelectedItem.set(itemObject);
                 entriesPopup.hide();
             });
-            menuItems.add(item);
+            entriesPopup.getItems().add(item);
         }
-        entriesPopup.getItems().clear();
-        entriesPopup.getItems().addAll(menuItems);
 
     }
 

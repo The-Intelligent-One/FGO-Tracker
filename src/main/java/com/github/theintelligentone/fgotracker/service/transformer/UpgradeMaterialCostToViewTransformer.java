@@ -1,7 +1,7 @@
 package com.github.theintelligentone.fgotracker.service.transformer;
 
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
-import com.github.theintelligentone.fgotracker.ui.view.UpgradeMaterialCostView;
+import com.github.theintelligentone.fgotracker.domain.view.UpgradeMaterialCostView;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;

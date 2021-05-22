@@ -1,6 +1,5 @@
-package com.github.theintelligentone.fgotracker.ui.view;
+package com.github.theintelligentone.fgotracker.domain.view;
 
-import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import javafx.collections.ObservableList;
 import lombok.Data;
 

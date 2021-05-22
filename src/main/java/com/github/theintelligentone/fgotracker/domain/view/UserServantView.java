@@ -1,9 +1,8 @@
-package com.github.theintelligentone.fgotracker.ui.view;
+package com.github.theintelligentone.fgotracker.domain.view;
 
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import javafx.beans.property.*;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 public class UserServantView {

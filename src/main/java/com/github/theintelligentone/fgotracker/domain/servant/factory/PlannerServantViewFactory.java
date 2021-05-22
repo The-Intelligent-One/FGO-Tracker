@@ -2,8 +2,8 @@ package com.github.theintelligentone.fgotracker.domain.servant.factory;
 
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
-import com.github.theintelligentone.fgotracker.ui.view.PlannerServantView;
-import com.github.theintelligentone.fgotracker.ui.view.UserServantView;
+import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
+import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 

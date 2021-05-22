@@ -21,7 +21,7 @@ public class PlannerServantValueFactory<T extends ObservableValue> extends Prope
 
     @Override
     public ObservableValue<T> call(TableColumn.CellDataFeatures<PlannerServantView, T> param) {
-        ObservableValue<T> call = null;
+        ObservableValue<T> call;
         if (param.getValue().getBaseServant().getValue() != null && param.getValue().getBaseServant().getValue().getBaseServant() != null) {
             call = super.call(param);
         } else {

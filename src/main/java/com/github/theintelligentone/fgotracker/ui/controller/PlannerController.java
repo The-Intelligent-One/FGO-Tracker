@@ -3,7 +3,6 @@ package com.github.theintelligentone.fgotracker.ui.controller;
 import com.github.theintelligentone.fgotracker.app.MainApp;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
-import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.PlannerServantViewFactory;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import com.github.theintelligentone.fgotracker.service.transformer.InventoryToViewTransformer;
@@ -18,7 +17,6 @@ import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.IntegerBinding;
 import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableNumberValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -26,10 +24,7 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.SnapshotParameters;
-import javafx.scene.control.ScrollBar;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
@@ -103,6 +98,17 @@ public class PlannerController {
         newCol.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         resizeIconIfNeeded(mat, newCol, imageView);
         newCol.setGraphic(imageView);
+        newCol.setCellFactory(param -> new TableCell<>() {
+            @Override
+            protected void updateItem(Number item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item.intValue() <= 0) {
+                    setText(null);
+                } else {
+                    setText(item.toString());
+                }
+            }
+        });
         newCol.setCellValueFactory(new PlannerServantMaterialValueFactory(mat.getId()));
         if (mat.getId() == HOLY_GRAIL_ID) {
             newCol.setCellValueFactory(new PlannerServantGrailValueFactory());
@@ -189,17 +195,18 @@ public class PlannerController {
             UpgradeMaterialCostView matCost = new UpgradeMaterialCostView();
             matCost.setId(mat.getId());
             matCost.setItem(mat.getItem());
-            NumberBinding sum = Bindings.createIntegerBinding(() -> 0);
+            ObservableList<ObservableNumberValue> neededValues = FXCollections.observableArrayList();
+            NumberBinding sum = Bindings.createIntegerBinding(() -> 0, neededValues);
             for (PlannerServantView servant : plannerTable.getItems()) {
                 TableColumn<PlannerServantView, Number> actualCol = (TableColumn<PlannerServantView, Number>) plannerTable.getColumns().stream()
                         .filter(col -> String.valueOf(mat.getItem().getValue().getId()).equalsIgnoreCase(col.getId()))
                         .findFirst().get();
-                ObservableNumberValue value = (ObservableNumberValue) actualCol.getCellObservableValue(servant);
-                if (value != null) {
-                    sum = sum.add(value);
+                ObservableNumberValue matAmount = (ObservableNumberValue) actualCol.getCellObservableValue(servant);
+                if (matAmount != null) {
+                    neededValues.add(matAmount);
+                    sum.add(matAmount);
                 }
             }
-            sum.addListener((observable, oldValue, newValue) -> matCost.getAmount().set(newValue.intValue()));
             matCost.getAmount().bind(sum);
             result.add(matCost);
         }
@@ -265,13 +272,15 @@ public class PlannerController {
     }
 
     private void tableInit() {
+        sumTable.setFixedCellSize(MainController.CELL_HEIGHT);
         initPlannerTable();
     }
 
     private void initPlannerTable() {
+        plannerTable.setFixedCellSize(MainController.CELL_HEIGHT);
         plannerTable.getColumns().get(0).setPrefWidth(MainController.NAME_CELL_WIDTH);
         initCurrentInfoColumns();
-        initInfoColumn(desired);
+        desired.getColumns().stream().forEach(col1 -> col1.setPrefWidth(MainController.SHORT_CELL_WIDTH));
         desired.getColumns().forEach(col -> {
             TableColumn<PlannerServantView, Integer> actualCol = (TableColumn<PlannerServantView, Integer>) col;
             actualCol.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
@@ -315,16 +324,11 @@ public class PlannerController {
             }
             return skill3;
         });
-        initInfoColumn(current);
+        current.getColumns().stream().forEach(col -> col.setPrefWidth(MainController.SHORT_CELL_WIDTH));
     }
 
     private boolean validServant(TableColumn.CellDataFeatures<PlannerServantView, Number> param) {
         return param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getValue() != null && param.getValue().getBaseServant().getValue().getBaseServant() != null;
-    }
-
-    private void initInfoColumn(TableColumn<PlannerServantView, ?> column) {
-        column.getColumns().get(0).setPrefWidth(MainController.SHORT_CELL_WIDTH);
-        column.getColumns().stream().skip(1).forEach(col -> col.setPrefWidth(MainController.CHAR_CELL_WIDTH));
     }
 
     private List<PlannerServantView> createPlannerServantList() {

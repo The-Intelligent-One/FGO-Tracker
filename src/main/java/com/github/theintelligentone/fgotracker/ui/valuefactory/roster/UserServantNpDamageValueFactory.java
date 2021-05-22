@@ -23,7 +23,7 @@ public class UserServantNpDamageValueFactory implements Callback<TableColumn.Cel
         if (param.getValue().getBaseServant().getValue() != null) {
             damage.set(calculateNpDamage(param.getValue()));
         }
-        return damage.getValue() > 0 ? damage : null;
+        return damage;
     }
 
     private int calculateNpDamage(UserServantView servant) {

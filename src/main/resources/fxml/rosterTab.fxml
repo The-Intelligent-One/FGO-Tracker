@@ -53,7 +53,7 @@
                 <columns>
                     <TableColumn fx:id="npTypeColumn" text="Type"/>
                     <TableColumn fx:id="npTargetColumn" text="Target"/>
-                    <TableColumn text="Damage">
+                    <TableColumn fx:id="npDamageColumn" text="Damage">
                         <cellValueFactory>
                             <UserServantNpDamageValueFactory/>
                         </cellValueFactory>

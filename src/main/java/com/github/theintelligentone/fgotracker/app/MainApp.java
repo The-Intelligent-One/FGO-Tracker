@@ -40,10 +40,10 @@ public class MainApp extends Application {
         double screenWidth = Screen.getPrimary().getBounds().getMaxX() * 3 / 4;
         Parent root = loader.load();
         mainController = loader.getController();
+        Alert loadingAlert = initServantData();
         mainController.initTables();
         Scene scene = new Scene(root);
         scene.getStylesheets().add("tableStyle.css");
-        Alert loadingAlert = initServantData();
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.setTitle("FGO Tracker");

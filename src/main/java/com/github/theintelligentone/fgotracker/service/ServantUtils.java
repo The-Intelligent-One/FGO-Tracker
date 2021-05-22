@@ -4,9 +4,7 @@ import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.FgoFunction;
 import com.github.theintelligentone.fgotracker.ui.view.PlannerServantView;
-import javafx.beans.binding.Bindings;
-import javafx.beans.binding.IntegerBinding;
-import javafx.beans.binding.NumberBinding;
+import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableIntegerValue;
@@ -59,7 +57,9 @@ public class ServantUtils {
     }
 
     private ObservableIntegerValue sumNeededSkillMats(PlannerServantView servant, ObservableIntegerValue currentLevel, ObservableIntegerValue desiredLevel, long matId) {
-        ObservableList<ObservableIntegerValue> neededValues = FXCollections.observableArrayList(currentLevel, desiredLevel);
+        ObservableList<ObservableIntegerValue> neededValues = FXCollections.observableArrayList(param -> new Observable[]{param});
+        neededValues.add(currentLevel);
+        neededValues.add(desiredLevel);
         IntegerProperty skillMatSum = new SimpleIntegerProperty(calculateSkillMat(servant, matId, currentLevel.intValue(), desiredLevel.intValue()));
         neededValues.addListener((ListChangeListener<? super ObservableIntegerValue>) c -> {
             skillMatSum.set(calculateSkillMat(servant, matId, c.getList().get(0).intValue(), c.getList().get(1).intValue()));
@@ -79,7 +79,9 @@ public class ServantUtils {
     private ObservableIntegerValue sumNeededAscensionMats(PlannerServantView servant, long matId) {
         ObservableIntegerValue currentAscensionLevel = getAscensionFromRarityAndLevel(servant.getBaseServant().getValue().getLevel(), servant.getBaseServant().getValue().getBaseServant().getValue().getRarity());
         ObservableIntegerValue desiredAscensionLevel = getAscensionFromRarityAndLevel(servant.getDesLevel(), servant.getBaseServant().getValue().getBaseServant().getValue().getRarity());
-        ObservableList<ObservableIntegerValue> neededValues = FXCollections.observableArrayList(currentAscensionLevel, desiredAscensionLevel);
+        ObservableList<ObservableIntegerValue> neededValues = FXCollections.observableArrayList(param -> new Observable[]{param});
+        neededValues.add(currentAscensionLevel);
+        neededValues.add(desiredAscensionLevel);
         IntegerProperty ascMatSum = new SimpleIntegerProperty(calculateAscMats(servant, matId, currentAscensionLevel.intValue(), desiredAscensionLevel.intValue()));
         neededValues.addListener((ListChangeListener<? super ObservableIntegerValue>) c -> {
             ascMatSum.set(calculateAscMats(servant, matId, c.getList().get(0).intValue(), c.getList().get(1).intValue()));
@@ -97,11 +99,24 @@ public class ServantUtils {
     }
 
     public ObservableIntegerValue sumNeededAscensionGrails(PlannerServantView servant) {
-        ObservableIntegerValue currentAscensionLevel = getAscensionFromRarityAndLevel(servant.getBaseServant().getValue().getLevel(), servant.getBaseServant().getValue().getBaseServant().getValue().getRarity());
-        ObservableIntegerValue desiredAscensionLevel = getAscensionFromRarityAndLevel(servant.getDesLevel(), servant.getBaseServant().getValue().getBaseServant().getValue().getRarity());
-        NumberBinding grailLevels = Bindings.createIntegerBinding(desiredAscensionLevel::intValue, desiredAscensionLevel).subtract(currentAscensionLevel).subtract(4);
-        IntegerBinding neededGrails = Bindings.createIntegerBinding(() -> Math.min(grailLevels.intValue(), 0), currentAscensionLevel, desiredAscensionLevel);
+        IntegerProperty currentLevel = servant.getBaseServant().getValue().getLevel();
+        IntegerProperty desiredLevel = servant.getDesLevel();
+        IntegerProperty neededGrails = new SimpleIntegerProperty(calculateNeededGrails(servant, servant.getBaseServant().getValue().getLevel(), servant.getDesLevel()));
+        ObservableList<IntegerProperty> neededValues = FXCollections.observableArrayList(param -> new Observable[]{param});
+        neededValues.add(currentLevel);
+        neededValues.add(desiredLevel);
+        neededValues.addListener((ListChangeListener<? super IntegerProperty>) observable -> {
+            int plannedGrails = calculateNeededGrails(servant, observable.getList().get(0), observable.getList().get(1));
+            neededGrails.set(plannedGrails);
+        });
         return neededGrails;
+    }
+
+    private int calculateNeededGrails(PlannerServantView servant, ObservableIntegerValue currentLevel, ObservableIntegerValue desiredLevel) {
+        int currentAscLevel = Math.max(getAscensionFromRarityAndLevel(currentLevel, servant.getBaseServant().getValue().getBaseServant().getValue().getRarity()).intValue() - 4, 0);
+        int desiredAscLevel = Math.max(getAscensionFromRarityAndLevel(desiredLevel, servant.getBaseServant().getValue().getBaseServant().getValue().getRarity()).intValue() - 4, 0);
+        int plannedGrails = Math.max(desiredAscLevel - currentAscLevel, 0);
+        return plannedGrails;
     }
 
     public String determineNpCard(Servant baseServant) {

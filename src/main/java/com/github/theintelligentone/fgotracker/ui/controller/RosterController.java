@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
+import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableRow;
 import javafx.scene.control.TableView;
@@ -52,6 +53,9 @@ public class RosterController {
     private TableColumn<UserServantView, String> npTargetColumn;
 
     @FXML
+    private TableColumn<UserServantView, Integer> npDamageColumn;
+
+    @FXML
     private TableColumn<UserServantView, Integer> levelColumn;
 
     @FXML
@@ -87,7 +91,7 @@ public class RosterController {
 
     public void tableSetup() {
         rosterTable.getSelectionModel().setCellSelectionEnabled(true);
-        columnSetup();
+        rosterTable.setFixedCellSize(MainController.CELL_HEIGHT);
         PseudoClass lastRow = PseudoClass.getPseudoClass("last-row");
         rosterTable.setRowFactory(tv -> new TableRow<>() {
             @Override
@@ -97,6 +101,7 @@ public class RosterController {
                         index >= 0 && index == rosterTable.getItems().size() - 1);
             }
         });
+        columnSetup();
     }
 
     private void columnSetup() {
@@ -118,8 +123,31 @@ public class RosterController {
 
     private void npColumnSetup() {
         npColumn.getColumns().forEach(column -> column.setPrefWidth(MainController.MID_CELL_WIDTH));
-        npTypeColumn.setCellValueFactory(param -> param.getValue().getBaseServant().getValue() != null ? new SimpleStringProperty(servantUtils.determineNpCard(param.getValue().getBaseServant().getValue())) : null);
-        npTargetColumn.setCellValueFactory(param -> param.getValue().getBaseServant().getValue() != null ? new SimpleStringProperty(servantUtils.determineNpTarget(param.getValue().getBaseServant().getValue())) : null);
+        npTypeColumn.setCellValueFactory(param -> {
+            SimpleStringProperty result = new SimpleStringProperty();
+            if (param.getValue().getBaseServant().getValue() != null) {
+                result.set(servantUtils.determineNpCard(param.getValue().getBaseServant().getValue()));
+            }
+            return result;
+        });
+        npTargetColumn.setCellValueFactory(param -> {
+            SimpleStringProperty result = new SimpleStringProperty();
+            if (param.getValue().getBaseServant().getValue() != null) {
+                result.set(servantUtils.determineNpTarget(param.getValue().getBaseServant().getValue()));
+            }
+            return result;
+        });
+        npDamageColumn.setCellFactory(param -> new TableCell<>() {
+            @Override
+            protected void updateItem(Integer item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item <= 0) {
+                    setText(null);
+                } else {
+                    setText(item.toString());
+                }
+            }
+        });
         npLvlColumnSetup();
     }
 
@@ -258,9 +286,9 @@ public class RosterController {
                 dataManagementService.eraseUserServant(event.getRowValue());
             } else {
                 dataManagementService.replaceBaseServantInRow(event.getTablePosition().getRow(), event.getRowValue(), event.getNewValue());
+                event.getTableView().refresh();
             }
         });
-        nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementService.getServantNameList()));
         nameColumn.setCellValueFactory(param -> {
             SimpleStringProperty name = new SimpleStringProperty();
             if (param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getValue() != null) {
@@ -275,5 +303,6 @@ public class RosterController {
         if (rosterTable.getItems().size() == 0) {
             IntStream.range(0, 10).forEach(i -> dataManagementService.saveUserServant(new UserServantView()));
         }
+        nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementService.getServantNameList()));
     }
 }

@@ -17,7 +17,7 @@ public class MainController {
     public static final double MID_CELL_WIDTH = 60;
     public static final double SHORT_CELL_WIDTH = 40;
     public static final double CHAR_CELL_WIDTH = 20;
-    public static final int CELL_HEIGHT = 24;
+    public static final int CELL_HEIGHT = 30;
 
     @FXML
     private RosterController rosterTabController;

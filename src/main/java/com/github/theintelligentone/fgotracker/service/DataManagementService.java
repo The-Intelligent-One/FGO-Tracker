@@ -247,13 +247,15 @@ public class DataManagementService {
 
     public void replaceBaseServantInRow(int index, UserServantView servant, String newServantName) {
         Servant newBaseServant = findServantByName(newServantName);
-        if (servant.getBaseServant() == null || servant.getBaseServant().getValue() == null) {
-            userServantList.set(index, userServantToViewTransformer.transform(new UserServantFactory().createUserServantFromBaseServant(newBaseServant)));
-        } else {
-            servant.getSvtId().set(newBaseServant.getId());
-            servant.getRarity().set(newBaseServant.getRarity());
-            servant.getBaseServant().set(newBaseServant);
-            userServantList.set(index, servant);
+        if (newBaseServant != null) {
+            if (servant.getBaseServant() == null || servant.getBaseServant().getValue() == null) {
+                userServantList.set(index, userServantToViewTransformer.transform(new UserServantFactory().createUserServantFromBaseServant(newBaseServant)));
+            } else {
+                servant.getSvtId().set(newBaseServant.getId());
+                servant.getRarity().set(newBaseServant.getRarity());
+                servant.getBaseServant().set(newBaseServant);
+                userServantList.set(index, servant);
+            }
         }
     }
 

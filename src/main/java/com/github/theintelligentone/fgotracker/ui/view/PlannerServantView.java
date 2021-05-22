@@ -1,12 +1,7 @@
 package com.github.theintelligentone.fgotracker.ui.view;
 
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ObservableIntegerValue;
-import javafx.beans.value.ObservableLongValue;
-import javafx.beans.value.ObservableObjectValue;
+import javafx.beans.property.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,12 +12,12 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class PlannerServantView {
-    private ObservableLongValue svtId;
-    private ObservableObjectValue<UserServantView> baseServant;
-    private ObservableIntegerValue desLevel;
-    private ObservableIntegerValue desSkill1;
-    private ObservableIntegerValue desSkill2;
-    private ObservableIntegerValue desSkill3;
+    private LongProperty svtId;
+    private ObjectProperty<UserServantView> baseServant;
+    private IntegerProperty desLevel;
+    private IntegerProperty desSkill1;
+    private IntegerProperty desSkill2;
+    private IntegerProperty desSkill3;
     private List<UpgradeCost> ascensionMaterials;
     private List<UpgradeCost> skillMaterials;
 
@@ -35,19 +30,19 @@ public class PlannerServantView {
         this.desSkill3 = new SimpleIntegerProperty(0);
     }
 
-    public ObservableIntegerValue desLevelProperty() {
+    public IntegerProperty desLevelProperty() {
         return desLevel;
     }
 
-    public ObservableIntegerValue desSkill1Property() {
+    public IntegerProperty desSkill1Property() {
         return desSkill1;
     }
 
-    public ObservableIntegerValue desSkill2Property() {
+    public IntegerProperty desSkill2Property() {
         return desSkill2;
     }
 
-    public ObservableIntegerValue desSkill3Property() {
+    public IntegerProperty desSkill3Property() {
         return desSkill3;
     }
 }

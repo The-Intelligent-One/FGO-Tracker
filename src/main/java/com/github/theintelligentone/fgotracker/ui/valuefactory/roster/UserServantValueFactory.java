@@ -1,6 +1,5 @@
 package com.github.theintelligentone.fgotracker.ui.valuefactory.roster;
 
-import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.ui.view.UserServantView;
 import javafx.beans.NamedArg;
 import javafx.beans.value.ObservableValue;
@@ -22,7 +21,7 @@ public class UserServantValueFactory<T> extends PropertyValueFactory<UserServant
 
     @Override
     public ObservableValue<T> call(TableColumn.CellDataFeatures<UserServantView, T> param) {
-        ObservableValue<T> call = null;
+        ObservableValue<T> call;
         if (param.getValue().getBaseServant().getValue() != null) {
             call = super.call(param);
         } else {

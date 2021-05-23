@@ -1,6 +1,7 @@
 package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
+import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -35,7 +36,7 @@ public class MainController {
     }
 
     public void addNewRow() {
-        dataManagementService.saveUserServant(null);
+        dataManagementService.saveUserServant(new UserServantView());
     }
 
     public void tableSetup() {

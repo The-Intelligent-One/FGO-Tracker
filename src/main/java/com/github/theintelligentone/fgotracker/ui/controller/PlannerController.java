@@ -17,6 +17,7 @@ import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.IntegerBinding;
+import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableNumberValue;
@@ -177,15 +178,17 @@ public class PlannerController {
     }
 
     private ObservableList<UpgradeMaterialCostView> createListOfRemainingMats(InventoryView inventory, InventoryView planned) {
-        ObservableList<UpgradeMaterialCostView> result = FXCollections.observableArrayList();
+        ObservableList<UpgradeMaterialCostView> result = FXCollections.observableArrayList(param -> new Observable[]{param.getAmount()});
         for (int index = 0; index < inventory.getInventory().size(); index++) {
+            UpgradeMaterialCostView matAmount = inventory.getInventory().get(index);
+            UpgradeMaterialCostView matPlan = planned.getInventory().get(index);
             UpgradeMaterialCostView mat = new UpgradeMaterialCostView();
-            IntegerBinding sumBinding = Bindings.createIntegerBinding(() -> 0);
-            sumBinding.add(inventory.getInventory().get(index).getAmount());
-            sumBinding.add(planned.getInventory().get(index).getAmount());
+            mat.setId(matAmount.getId());
+            mat.setItem(matAmount.getItem());
+            NumberBinding sumBinding = Bindings.createIntegerBinding(() -> 0, matAmount.getAmount(), matPlan.getAmount());
+            sumBinding = sumBinding.add(matAmount.getAmount());
+            sumBinding = sumBinding.subtract(matPlan.getAmount());
             mat.getAmount().bind(sumBinding);
-            mat.setId(inventory.getInventory().get(index).getId());
-            mat.setItem(inventory.getInventory().get(index).getItem());
             result.add(mat);
         }
         return result;
@@ -197,7 +200,7 @@ public class PlannerController {
             UpgradeMaterialCostView matCost = new UpgradeMaterialCostView();
             matCost.setId(mat.getId());
             matCost.setItem(mat.getItem());
-            int sumValue = getPlannedMatUseSum(plannerTable.getItems(),mat);
+            int sumValue = getPlannedMatUseSum(plannerTable.getItems(), mat);
             IntegerProperty sum = new SimpleIntegerProperty(sumValue);
             plannerTable.getItems().addListener((ListChangeListener<? super PlannerServantView>) c -> {
                 sum.set(getPlannedMatUseSum((List<PlannerServantView>) c.getList(), mat));

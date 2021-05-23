@@ -1,11 +1,11 @@
 package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
+import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AscensionCheckBoxTableCell;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
-import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.css.PseudoClass;
@@ -184,10 +184,7 @@ public class RosterController {
         skill1Column.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         skill1Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         skill1Column.setOnEditCommit(event -> {
-            int input = event.getNewValue();
-            if (input <= 10 && input >= 1) {
-                event.getRowValue().getSkillLevel1().set(input);
-            }
+            event.getRowValue().getSkillLevel1().set(servantUtils.getNewValueIfValid(event, 1, 10));
             rosterTable.refresh();
         });
     }
@@ -196,10 +193,7 @@ public class RosterController {
         skill2Column.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         skill2Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         skill2Column.setOnEditCommit(event -> {
-            int input = event.getNewValue();
-            if (input <= 10 && input >= 1) {
-                event.getRowValue().getSkillLevel2().set(input);
-            }
+            event.getRowValue().getSkillLevel2().set(servantUtils.getNewValueIfValid(event, 1, 10));
             rosterTable.refresh();
         });
     }
@@ -208,10 +202,7 @@ public class RosterController {
         skill3Column.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         skill3Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         skill3Column.setOnEditCommit(event -> {
-            int input = event.getNewValue();
-            if (input <= 10 && input >= 1) {
-                event.getRowValue().getSkillLevel3().set(input);
-            }
+            event.getRowValue().getSkillLevel3().set(servantUtils.getNewValueIfValid(event, 1, 10));
             rosterTable.refresh();
         });
     }
@@ -220,10 +211,7 @@ public class RosterController {
         bondColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         bondColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         bondColumn.setOnEditCommit(event -> {
-            int input = event.getNewValue();
-            if (input <= 15 && input >= 0) {
-                event.getRowValue().getBondLevel().set(input);
-            }
+            event.getRowValue().getBondLevel().set(servantUtils.getNewValueIfValid(event, 0, 15));
             rosterTable.refresh();
         });
     }
@@ -232,10 +220,7 @@ public class RosterController {
         levelColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         levelColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         levelColumn.setOnEditCommit(event -> {
-            int input = event.getNewValue();
-            if (input <= 100 && input >= 1) {
-                event.getRowValue().getLevel().set(input);
-            }
+            event.getRowValue().getLevel().set(servantUtils.getNewValueIfValid(event, 1, 100));
             rosterTable.refresh();
         });
     }
@@ -244,10 +229,7 @@ public class RosterController {
         atkColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
         atkColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         atkColumn.setOnEditCommit(event -> {
-            int input = event.getNewValue();
-            if (input <= 2000 && input >= 0) {
-                event.getRowValue().getFouAtk().set(input);
-            }
+            event.getRowValue().getFouAtk().set(servantUtils.getNewValueIfValid(event, 0, 2000));
             rosterTable.refresh();
         });
     }
@@ -256,10 +238,7 @@ public class RosterController {
         hpColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
         hpColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         hpColumn.setOnEditCommit(event -> {
-            int input = event.getNewValue();
-            if (input <= 2000 && input >= 0) {
-                event.getRowValue().getFouHp().set(input);
-            }
+            event.getRowValue().getFouHp().set(servantUtils.getNewValueIfValid(event, 0, 2000));
             rosterTable.refresh();
         });
     }

@@ -20,7 +20,7 @@
                 </TableColumn>
             </columns>
         </TableView>
-        <TableView fx:id="plannerTable" VBox.vgrow="ALWAYS" editable="true">
+        <TableView fx:id="plannerTable" VBox.vgrow="ALWAYS">
             <columns>
                 <TableColumn text="Name">
                     <cellValueFactory>

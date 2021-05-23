@@ -11,6 +11,7 @@ import javafx.beans.value.ObservableIntegerValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.control.TableColumn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -110,6 +111,15 @@ public class ServantUtils {
             neededGrails.set(plannedGrails);
         });
         return neededGrails;
+    }
+
+    public int getNewValueIfValid(TableColumn.CellEditEvent<?, Integer> event, int max, int min) {
+        int result = event.getOldValue();
+        int input = event.getNewValue();
+        if (input <= max && input >= min) {
+            result = input;
+        }
+        return result;
     }
 
     private int calculateNeededGrails(PlannerServantView servant, ObservableIntegerValue currentLevel, ObservableIntegerValue desiredLevel) {

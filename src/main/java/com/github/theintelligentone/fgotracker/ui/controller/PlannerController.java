@@ -16,7 +16,6 @@ import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerSe
 import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.binding.IntegerBinding;
 import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -78,6 +77,7 @@ public class PlannerController {
     private TableColumn<PlannerServantView, Number> skill3;
 
     private DataManagementService dataManagementService;
+    private ServantUtils servantUtils;
     private boolean isLongTerm;
 
     public void setLongTerm(boolean longTerm) {
@@ -86,6 +86,7 @@ public class PlannerController {
 
     public void initialize() {
         dataManagementService = MainApp.getDataManagementService();
+        servantUtils = new ServantUtils();
         tableInit();
     }
 
@@ -165,15 +166,27 @@ public class PlannerController {
         sumTable.getItems().add(sum);
     }
 
-    private List<TableColumn<InventoryView, Number>> createColumnsForAllMatsForSum() {
-        List<TableColumn<InventoryView, Number>> columns = new ArrayList<>();
+    private List<TableColumn<InventoryView, Integer>> createColumnsForAllMatsForSum() {
+        List<TableColumn<InventoryView, Integer>> columns = new ArrayList<>();
         dataManagementService.getAllMaterials().forEach(mat -> addSumColumnForMaterial(columns, mat));
         return columns;
     }
 
-    private void addSumColumnForMaterial(List<TableColumn<InventoryView, Number>> columns, UpgradeMaterial mat) {
-        TableColumn<InventoryView, Number> newCol = new TableColumn<>();
+    private void addSumColumnForMaterial(List<TableColumn<InventoryView, Integer>> columns, UpgradeMaterial mat) {
+        TableColumn<InventoryView, Integer> newCol = new TableColumn<>();
+        newCol.setEditable(true);
+        newCol.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         newCol.setCellValueFactory(new InventoryValueFactory(mat.getId()));
+        newCol.setOnEditCommit(event -> {
+            if (event.getRowValue().getLabel().equalsIgnoreCase("Inventory")) {
+                long matId = ((InventoryValueFactory) event.getTableColumn().getCellValueFactory()).getMatId();
+                event.getRowValue().getInventory().stream()
+                        .filter(material -> matId == material.getId().longValue())
+                        .findFirst().get()
+                        .getAmount().set(servantUtils.getNewValueIfValid(event, 99999, 0));
+                event.getTableView().refresh();
+            }
+        });
         columns.add(newCol);
     }
 
@@ -261,6 +274,7 @@ public class PlannerController {
             loadLtTableData();
         } else {
             loadTableData();
+            plannerTable.setEditable(true);
         }
     }
 
@@ -284,6 +298,10 @@ public class PlannerController {
     private void initPlannerTable() {
         plannerTable.setFixedCellSize(MainController.CELL_HEIGHT);
         plannerTable.getColumns().get(0).setPrefWidth(MainController.NAME_CELL_WIDTH);
+        desired.getColumns().get(0).setOnEditCommit(event -> {
+            event.getRowValue().getDesLevel().set(servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, 100, 1));
+            plannerTable.refresh();
+        });
         initCurrentInfoColumns();
         desired.getColumns().stream().forEach(col1 -> col1.setPrefWidth(MainController.SHORT_CELL_WIDTH));
         desired.getColumns().forEach(col -> {

@@ -1,13 +1,15 @@
 package com.github.theintelligentone.fgotracker.ui.valuefactory.planner;
 
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.value.ObservableIntegerValue;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
 import javafx.util.Callback;
+import lombok.Getter;
 
-public class InventoryValueFactory implements Callback<TableColumn.CellDataFeatures<InventoryView, Number>, ObservableValue<Number>> {
+public class InventoryValueFactory implements Callback<TableColumn.CellDataFeatures<InventoryView, Integer>, ObservableValue<Integer>> {
+    @Getter
     private long matId;
 
     public InventoryValueFactory(long matId) {
@@ -15,11 +17,12 @@ public class InventoryValueFactory implements Callback<TableColumn.CellDataFeatu
     }
 
     @Override
-    public ObservableValue<Number> call(TableColumn.CellDataFeatures<InventoryView, Number> param) {
+    public ObservableValue<Integer> call(TableColumn.CellDataFeatures<InventoryView, Integer> param) {
         return getAmountOfMaterial(param.getValue());
     }
 
-    private ObservableIntegerValue getAmountOfMaterial(InventoryView inventory) {
-        return inventory.getInventory().stream().filter(mat -> mat.getId().longValue() == matId).map(mat -> mat.getAmount()).findFirst().orElse(new SimpleIntegerProperty(0));
+    private ObservableValue<Integer> getAmountOfMaterial(InventoryView inventory) {
+        IntegerProperty property = inventory.getInventory().stream().filter(mat -> mat.getId().longValue() == matId).map(mat -> mat.getAmount()).findFirst().get();
+        return property != null ? property.asObject() : new SimpleIntegerProperty(0).asObject();
     }
 }

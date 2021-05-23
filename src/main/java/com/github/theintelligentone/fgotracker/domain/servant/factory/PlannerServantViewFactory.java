@@ -1,11 +1,15 @@
 package com.github.theintelligentone.fgotracker.domain.servant.factory;
 
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
-import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
+import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import javafx.beans.Observable;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 
 import java.util.Comparator;
 import java.util.List;
@@ -16,8 +20,14 @@ public class PlannerServantViewFactory {
 
     private static final int MAX_SKILL_LEVEL = 10;
 
-    public List<PlannerServantView> createForLTPlanner(List<UserServantView> servants) {
-        return servants.stream().map(this::createFromUserServantForLTPlanner).collect(Collectors.toList());
+    public ObservableList<PlannerServantView> createForLTPlanner(ObservableList<UserServantView> servants) {
+        ObservableList<PlannerServantView> result = FXCollections.observableArrayList(param -> new Observable[]{param.getBaseServant(), param.getDesLevel(), param.getDesSkill1(), param.getDesSkill2(), param.getDesSkill3()});
+        result.addAll(servants.stream().map(this::createFromUserServantForLTPlanner).collect(Collectors.toList()));
+        servants.addListener((ListChangeListener<? super UserServantView>) c -> {
+            result.clear();
+            result.addAll(c.getList().stream().map(this::createFromUserServantForLTPlanner).collect(Collectors.toList()));
+        });
+        return result;
     }
 
     public List<PlannerServantView> createFromEachUserServant(List<UserServantView> servants) {

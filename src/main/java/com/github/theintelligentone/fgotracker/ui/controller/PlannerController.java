@@ -4,22 +4,25 @@ import com.github.theintelligentone.fgotracker.app.MainApp;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.PlannerServantViewFactory;
+import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
+import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
+import com.github.theintelligentone.fgotracker.domain.view.UpgradeMaterialCostView;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.service.transformer.InventoryToViewTransformer;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.InventoryValueFactory;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerServantGrailValueFactory;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerServantMaterialValueFactory;
-import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
-import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
-import com.github.theintelligentone.fgotracker.domain.view.UpgradeMaterialCostView;
+import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.binding.IntegerBinding;
-import javafx.beans.binding.NumberBinding;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableNumberValue;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
@@ -176,11 +179,10 @@ public class PlannerController {
     private ObservableList<UpgradeMaterialCostView> createListOfRemainingMats(InventoryView inventory, InventoryView planned) {
         ObservableList<UpgradeMaterialCostView> result = FXCollections.observableArrayList();
         for (int index = 0; index < inventory.getInventory().size(); index++) {
-            final int currIndex = index;
             UpgradeMaterialCostView mat = new UpgradeMaterialCostView();
             IntegerBinding sumBinding = Bindings.createIntegerBinding(() -> 0);
-            sumBinding.add(inventory.getInventory().get(currIndex).getAmount());
-            sumBinding.add(planned.getInventory().get(currIndex).getAmount());
+            sumBinding.add(inventory.getInventory().get(index).getAmount());
+            sumBinding.add(planned.getInventory().get(index).getAmount());
             mat.getAmount().bind(sumBinding);
             mat.setId(inventory.getInventory().get(index).getId());
             mat.setItem(inventory.getInventory().get(index).getItem());
@@ -190,27 +192,28 @@ public class PlannerController {
     }
 
     private ObservableList<UpgradeMaterialCostView> getSumOfNeededMats() {
-        ObservableList<UpgradeMaterialCostView> result = FXCollections.observableArrayList();
+        ObservableList<UpgradeMaterialCostView> result = FXCollections.observableArrayList(param -> new Observable[]{param.getAmount()});
         for (UpgradeMaterialCostView mat : dataManagementService.getInventory().getInventory()) {
             UpgradeMaterialCostView matCost = new UpgradeMaterialCostView();
             matCost.setId(mat.getId());
             matCost.setItem(mat.getItem());
-            ObservableList<ObservableNumberValue> neededValues = FXCollections.observableArrayList();
-            NumberBinding sum = Bindings.createIntegerBinding(() -> 0, neededValues);
-            for (PlannerServantView servant : plannerTable.getItems()) {
-                TableColumn<PlannerServantView, Number> actualCol = (TableColumn<PlannerServantView, Number>) plannerTable.getColumns().stream()
-                        .filter(col -> String.valueOf(mat.getItem().getValue().getId()).equalsIgnoreCase(col.getId()))
-                        .findFirst().get();
-                ObservableNumberValue matAmount = (ObservableNumberValue) actualCol.getCellObservableValue(servant);
-                if (matAmount != null) {
-                    neededValues.add(matAmount);
-                    sum.add(matAmount);
-                }
-            }
+            int sumValue = getPlannedMatUseSum(plannerTable.getItems(),mat);
+            IntegerProperty sum = new SimpleIntegerProperty(sumValue);
+            plannerTable.getItems().addListener((ListChangeListener<? super PlannerServantView>) c -> {
+                sum.set(getPlannedMatUseSum((List<PlannerServantView>) c.getList(), mat));
+            });
             matCost.getAmount().bind(sum);
             result.add(matCost);
         }
         return result;
+    }
+
+    private int getPlannedMatUseSum(List<PlannerServantView> servants, UpgradeMaterialCostView mat) {
+        return servants.stream()
+                .filter(servant -> servant.getBaseServant().getValue() != null)
+                .map(servant -> new ServantUtils().getPlannedMatUse(servant, mat.getId().longValue()))
+                .mapToInt(ObservableNumberValue::intValue)
+                .reduce(Integer::sum).orElse(0);
     }
 
     private void disableSumTableHeader() {
@@ -246,11 +249,11 @@ public class PlannerController {
     }
 
     private void tabSetup() {
-        refreshTableData();
+        setupTableData();
         plannerTab.setOnSelectionChanged(event -> refreshOnTabSelected());
     }
 
-    private void refreshTableData() {
+    private void setupTableData() {
         if (isLongTerm) {
             loadLtTableData();
         } else {
@@ -260,7 +263,6 @@ public class PlannerController {
 
     private void refreshOnTabSelected() {
         if (plannerTab.isSelected() && dataManagementService.isDataLoaded()) {
-            refreshTableData();
             syncScrollbars();
         }
     }
@@ -292,7 +294,7 @@ public class PlannerController {
     }
 
     public void loadLtTableData() {
-        plannerTable.setItems(FXCollections.observableArrayList(createPlannerServantList()));
+        plannerTable.setItems(createPlannerServantList());
     }
 
     private void initCurrentInfoColumns() {
@@ -324,14 +326,14 @@ public class PlannerController {
             }
             return skill3;
         });
-        current.getColumns().stream().forEach(col -> col.setPrefWidth(MainController.SHORT_CELL_WIDTH));
+        current.getColumns().forEach(col -> col.setPrefWidth(MainController.SHORT_CELL_WIDTH));
     }
 
     private boolean validServant(TableColumn.CellDataFeatures<PlannerServantView, Number> param) {
         return param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getValue() != null && param.getValue().getBaseServant().getValue().getBaseServant() != null;
     }
 
-    private List<PlannerServantView> createPlannerServantList() {
+    private ObservableList<PlannerServantView> createPlannerServantList() {
         return new PlannerServantViewFactory().createForLTPlanner(dataManagementService.getUserServantList());
     }
 }

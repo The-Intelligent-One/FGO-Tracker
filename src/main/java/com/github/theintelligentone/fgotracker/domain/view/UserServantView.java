@@ -26,6 +26,7 @@ public class UserServantView {
         this.fouAtk = new SimpleIntegerProperty(0);
         this.fouHp = new SimpleIntegerProperty(0);
         this.level = new SimpleIntegerProperty(0);
+        this.npLevel = new SimpleIntegerProperty(0);
         this.ascension = new SimpleBooleanProperty(false);
         this.bondLevel = new SimpleIntegerProperty(0);
         this.skillLevel1 = new SimpleIntegerProperty(0);

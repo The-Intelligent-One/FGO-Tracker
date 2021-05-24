@@ -35,9 +35,6 @@ public class MainController {
         dataManagementService = MainApp.getDataManagementService();
     }
 
-    public void addNewRow() {
-        dataManagementService.saveUserServant(new UserServantView());
-    }
 
     public void tableSetup() {
         rosterTabController.setup();
@@ -88,10 +85,6 @@ public class MainController {
 
     public void tearDown() {
         dataManagementService.saveUserState();
-    }
-
-    public void add10NewRow() {
-        IntStream.range(0, 10).forEach(number -> this.addNewRow());
     }
 
     public void saveUserData() {

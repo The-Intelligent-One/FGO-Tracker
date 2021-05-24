@@ -6,14 +6,12 @@ import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AscensionCheckBoxTableCell;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
+import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.util.converter.IntegerStringConverter;
@@ -93,15 +91,40 @@ public class RosterController {
         rosterTable.getSelectionModel().setCellSelectionEnabled(true);
         rosterTable.setFixedCellSize(MainController.CELL_HEIGHT);
         PseudoClass lastRow = PseudoClass.getPseudoClass("last-row");
-        rosterTable.setRowFactory(tv -> new TableRow<>() {
-            @Override
-            public void updateIndex(int index) {
-                super.updateIndex(index);
-                pseudoClassStateChanged(lastRow,
-                        index >= 0 && index == rosterTable.getItems().size() - 1);
-            }
+        rosterTable.setRowFactory(tableView -> {
+            TableRow<UserServantView> row = new TableRow<>() {
+                @Override
+                public void updateIndex(int index) {
+                    super.updateIndex(index);
+                    pseudoClassStateChanged(lastRow,
+                            index >= 0 && index == rosterTable.getItems().size() - 1);
+                }
+            };
+            createContextMenuForTableRow(row);
+            return row;
         });
         columnSetup();
+    }
+
+    private void createContextMenuForTableRow(TableRow<UserServantView> row) {
+        MenuItem removeRowButton = new MenuItem("Delete row");
+        removeRowButton.setOnAction(event -> dataManagementService.removeUserServant(row.getItem()));
+        MenuItem clearRowButton = new MenuItem("Clear row");
+        clearRowButton.setOnAction(event -> dataManagementService.eraseUserServant(row.getItem()));
+        MenuItem addRowButton = new MenuItem("Insert new row");
+        addRowButton.setOnAction(event -> dataManagementService.saveUserServant(row.getTableView().getItems().indexOf(row.getItem()), new UserServantView()));
+        MenuItem addMultipleRowsButton = new MenuItem("Add X new rows");
+        addMultipleRowsButton.setOnAction(event -> {
+            TextInputDialog prompt = new TextInputDialog("10");
+            prompt.setContentText("How many new rows to add?");
+            prompt.setTitle("Add X new rows");
+            prompt.setHeaderText("");
+            prompt.showAndWait().ifPresent(s -> {
+                IntStream.range(0, Integer.parseInt(s)).forEach(i -> dataManagementService.saveUserServant(new UserServantView()));
+            });
+        });
+        ContextMenu menu = new ContextMenu(addRowButton, addMultipleRowsButton, clearRowButton, removeRowButton);
+        row.contextMenuProperty().bind(Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(menu));
     }
 
     private void columnSetup() {

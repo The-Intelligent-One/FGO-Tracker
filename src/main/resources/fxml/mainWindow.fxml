@@ -6,10 +6,6 @@
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="com.github.theintelligentone.fgotracker.ui.controller.MainController">
     <MenuBar>
-        <Menu text="Roster Table">
-            <MenuItem onAction="#addNewRow" text="Add New Row"/>
-            <MenuItem onAction="#add10NewRow" text="Add 10 New Row"/>
-        </Menu>
         <Menu>
             <graphic>
                 <Label onMouseClicked="#importFromCsv" text="Import"/>

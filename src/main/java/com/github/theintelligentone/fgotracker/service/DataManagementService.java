@@ -9,13 +9,12 @@ import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
-import com.github.theintelligentone.fgotracker.service.transformer.InventoryToViewTransformer;
-import com.github.theintelligentone.fgotracker.service.transformer.UserServantToViewTransformer;
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
+import com.github.theintelligentone.fgotracker.service.transformer.InventoryToViewTransformer;
+import com.github.theintelligentone.fgotracker.service.transformer.UserServantToViewTransformer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import lombok.Getter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -23,9 +22,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class DataManagementService {
     public static final int[] MAX_LEVELS = {65, 60, 65, 70, 80, 90};
+    private static final int MIN_TABLE_SIZE = 30;
     public static Map<String, Integer> CLASS_ATTACK_MULTIPLIER;
     public static Map<String, Map<Integer, CardPlacementData>> CARD_DATA;
     private final DataRequestService requestService;
@@ -37,16 +38,21 @@ public class DataManagementService {
     private List<UpgradeMaterial> materials;
     private InventoryView inventory;
     private boolean iconsResized = false;
-    @Getter
     private ObservableList<UserServantView> userServantList = FXCollections.observableArrayList();
     private long currentVersion;
-
     public DataManagementService() {
         ObjectMapper objectMapper = new ObjectMapper();
         this.requestService = new DataRequestService(objectMapper);
         this.fileService = new FileManagementService(objectMapper);
         this.userServantToViewTransformer = new UserServantToViewTransformer();
         this.inventoryToViewTransformer = new InventoryToViewTransformer();
+    }
+
+    public ObservableList<UserServantView> getUserServantList() {
+        if (userServantList.size() < MIN_TABLE_SIZE) {
+            IntStream.range(0, MIN_TABLE_SIZE - userServantList.size()).forEach(i -> saveUserServant(new UserServantView()));
+        }
+        return userServantList;
     }
 
     public InventoryView getInventory() {
@@ -245,6 +251,10 @@ public class DataManagementService {
         userServantList.set(userServantList.indexOf(servant), new UserServantView());
     }
 
+    public void removeUserServant(UserServantView servant) {
+        userServantList.remove(servant);
+    }
+
     public void replaceBaseServantInRow(int index, UserServantView servant, String newServantName) {
         Servant newBaseServant = findServantByName(newServantName);
         if (newBaseServant != null) {
@@ -261,6 +271,10 @@ public class DataManagementService {
 
     public void saveUserServant(UserServantView servant) {
         userServantList.add(servant);
+    }
+
+    public void saveUserServant(int index, UserServantView servant) {
+        userServantList.add(index, servant);
     }
 
     public void saveUserState() {

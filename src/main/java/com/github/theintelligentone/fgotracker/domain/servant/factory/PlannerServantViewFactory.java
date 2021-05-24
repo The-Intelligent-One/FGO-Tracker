@@ -38,7 +38,7 @@ public class PlannerServantViewFactory {
         return createFromUserServant(servants.get(index));
     }
 
-    private PlannerServantView createFromUserServant(UserServantView servant) {
+    public PlannerServantView createFromUserServant(UserServantView servant) {
         PlannerServantView result = new PlannerServantView();
         if (servant.getBaseServant() != null && servant.getBaseServant().getValue() != null) {
             result = PlannerServantView.builder()

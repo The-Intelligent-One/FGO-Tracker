@@ -10,6 +10,7 @@ import com.github.theintelligentone.fgotracker.domain.view.UpgradeMaterialCostVi
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.service.transformer.InventoryToViewTransformer;
+import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.InventoryValueFactory;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerServantGrailValueFactory;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerServantMaterialValueFactory;
@@ -24,6 +25,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.SnapshotParameters;
@@ -36,6 +38,7 @@ import javafx.util.converter.IntegerStringConverter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class PlannerController {
     private static final int HOLY_GRAIL_ID = 7999;
@@ -47,16 +50,19 @@ public class PlannerController {
     private TableView<InventoryView> sumTable;
 
     @FXML
-    private TableColumn<PlannerServantView, String> label;
+    private TableColumn<InventoryView, String> label;
 
     @FXML
-    private TableColumn<PlannerServantView, String> sumCurrent;
+    private TableColumn<InventoryView, String> sumCurrent;
 
     @FXML
-    private TableColumn<PlannerServantView, String> sumDesired;
+    private TableColumn<InventoryView, String> sumDesired;
 
     @FXML
     private TableView<PlannerServantView> plannerTable;
+
+    @FXML
+    private TableColumn<PlannerServantView, String> nameColumn;
 
     @FXML
     private TableColumn<PlannerServantView, ?> current;
@@ -92,7 +98,7 @@ public class PlannerController {
 
     private List<TableColumn<PlannerServantView, Number>> createColumnsForAllMats() {
         List<TableColumn<PlannerServantView, Number>> columns = new ArrayList<>();
-        dataManagementService.getAllMaterials().forEach(mat -> addColumnForMaterial(columns, mat));
+        dataManagementService.getMaterials().forEach(mat -> addColumnForMaterial(columns, mat));
         return columns;
     }
 
@@ -168,7 +174,7 @@ public class PlannerController {
 
     private List<TableColumn<InventoryView, Integer>> createColumnsForAllMatsForSum() {
         List<TableColumn<InventoryView, Integer>> columns = new ArrayList<>();
-        dataManagementService.getAllMaterials().forEach(mat -> addSumColumnForMaterial(columns, mat));
+        dataManagementService.getMaterials().forEach(mat -> addSumColumnForMaterial(columns, mat));
         return columns;
     }
 
@@ -239,7 +245,7 @@ public class PlannerController {
     }
 
     private void bindColumnWidths() {
-        label.prefWidthProperty().bind(plannerTable.getColumns().get(0).widthProperty());
+        label.prefWidthProperty().bind(nameColumn.widthProperty());
         sumCurrent.prefWidthProperty().bind(getTotalWidthOfParentColumn(current));
         sumDesired.prefWidthProperty().bind(getTotalWidthOfParentColumn(desired));
         sumTable.getColumns().stream().skip(3).forEach(col -> {
@@ -275,7 +281,42 @@ public class PlannerController {
         } else {
             loadTableData();
             plannerTable.setEditable(true);
+            plannerTable.setRowFactory(param -> {
+                PseudoClass lastRow = PseudoClass.getPseudoClass("last-row");
+                TableRow<PlannerServantView> row = new TableRow<>() {
+                    @Override
+                    public void updateIndex(int index) {
+                        super.updateIndex(index);
+                        pseudoClassStateChanged(lastRow,
+                                index >= 0 && index == plannerTable.getItems().size() - 1);
+                    }
+                };
+                createContextMenuForTableRow(row);
+                return row;
+            });
+            nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementService.getUserServantNameList()));
         }
+    }
+
+    private void createContextMenuForTableRow(TableRow<PlannerServantView> row) {
+        MenuItem removeRowButton = new MenuItem("Delete row");
+        removeRowButton.setOnAction(event -> dataManagementService.removePlannerServant(row.getItem()));
+        MenuItem clearRowButton = new MenuItem("Clear row");
+        clearRowButton.setOnAction(event -> dataManagementService.erasePlannerServant(row.getItem()));
+        MenuItem addRowButton = new MenuItem("Insert new row");
+        addRowButton.setOnAction(event -> dataManagementService.savePlannerServant(row.getTableView().getItems().indexOf(row.getItem()), new PlannerServantView()));
+        MenuItem addMultipleRowsButton = new MenuItem("Add X new rows");
+        addMultipleRowsButton.setOnAction(event -> {
+            TextInputDialog prompt = new TextInputDialog("10");
+            prompt.setContentText("How many new rows to add?");
+            prompt.setTitle("Add X new rows");
+            prompt.setHeaderText("");
+            prompt.showAndWait().ifPresent(s -> {
+                IntStream.range(0, Integer.parseInt(s)).forEach(i -> dataManagementService.savePlannerServant(new PlannerServantView()));
+            });
+        });
+        ContextMenu menu = new ContextMenu(addRowButton, addMultipleRowsButton, clearRowButton, removeRowButton);
+        row.contextMenuProperty().bind(Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(menu));
     }
 
     private void refreshOnTabSelected() {
@@ -297,7 +338,15 @@ public class PlannerController {
 
     private void initPlannerTable() {
         plannerTable.setFixedCellSize(MainController.CELL_HEIGHT);
-        plannerTable.getColumns().get(0).setPrefWidth(MainController.NAME_CELL_WIDTH);
+        nameColumn.setPrefWidth(MainController.NAME_CELL_WIDTH);
+        nameColumn.setOnEditCommit(event -> {
+            if (event.getNewValue().isEmpty()) {
+                dataManagementService.erasePlannerServant(event.getRowValue());
+            } else {
+                dataManagementService.replaceBaseServantInPlannerRow(event.getTablePosition().getRow(), event.getRowValue(), event.getNewValue());
+                event.getTableView().refresh();
+            }
+        });
         desired.getColumns().get(0).setOnEditCommit(event -> {
             event.getRowValue().getDesLevel().set(servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, 100, 1));
             plannerTable.refresh();
@@ -311,7 +360,7 @@ public class PlannerController {
     }
 
     public void loadTableData() {
-        plannerTable.setItems(FXCollections.observableArrayList());
+        plannerTable.setItems(dataManagementService.getPlannerServantList());
     }
 
     public void loadLtTableData() {
@@ -336,14 +385,14 @@ public class PlannerController {
         skill2.setCellValueFactory(param -> {
             IntegerProperty skill2 = null;
             if (validServant(param)) {
-                skill2 = param.getValue().getBaseServant().getValue().getSkillLevel1();
+                skill2 = param.getValue().getBaseServant().getValue().getSkillLevel2();
             }
             return skill2;
         });
         skill3.setCellValueFactory(param -> {
             IntegerProperty skill3 = null;
             if (validServant(param)) {
-                skill3 = param.getValue().getBaseServant().getValue().getSkillLevel1();
+                skill3 = param.getValue().getBaseServant().getValue().getSkillLevel3();
             }
             return skill3;
         });

@@ -7,6 +7,7 @@ import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
+import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.opencsv.CSVReader;
@@ -34,6 +35,7 @@ public class FileManagementService {
     private static final String CLASS_ATTACK_FILE = "cache/classAttack.json";
     private static final String CARD_DATA_FILE = "cache/cardData.json";
     private static final String USER_DATA_FILE = "userdata/servants.json";
+    private static final String PLANNED_DATA_FILE = "userdata/planned.json";
     private static final String MANAGER_DB_PATH = "/managerDB-v1.3.2.csv";
     private static final String PNG_FORMAT = "png";
     private static final String INVENTORY_FILE = "userdata/inventory.json";
@@ -85,6 +87,11 @@ public class FileManagementService {
         saveDataToFile(servants, file);
     }
 
+    public void savePlannerServants(List<PlannerServant> servants) {
+        File file = new File(BASE_DATA_PATH, PLANNED_DATA_FILE);
+        saveDataToFile(servants, file);
+    }
+
     public void saveInventory(Inventory inventory) {
         File file = new File(BASE_DATA_PATH, INVENTORY_FILE);
         saveDataToFile(inventory.getInventory(), file);
@@ -128,6 +135,19 @@ public class FileManagementService {
     public List<UserServant> loadUserData() {
         File file = new File(BASE_DATA_PATH, USER_DATA_FILE);
         List<UserServant> basicDataList = new ArrayList<>();
+        if (file.length() != 0) {
+            try {
+                basicDataList = objectMapper.readValue(file, new TypeReference<>() {});
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return basicDataList;
+    }
+
+    public List<PlannerServant> loadPlannedServantData(){
+        File file = new File(BASE_DATA_PATH, PLANNED_DATA_FILE);
+        List<PlannerServant> basicDataList = new ArrayList<>();
         if (file.length() != 0) {
             try {
                 basicDataList = objectMapper.readValue(file, new TypeReference<>() {});

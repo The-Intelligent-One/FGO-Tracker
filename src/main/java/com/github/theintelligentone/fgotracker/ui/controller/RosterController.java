@@ -90,8 +90,8 @@ public class RosterController {
     public void tableSetup() {
         rosterTable.getSelectionModel().setCellSelectionEnabled(true);
         rosterTable.setFixedCellSize(MainController.CELL_HEIGHT);
-        PseudoClass lastRow = PseudoClass.getPseudoClass("last-row");
         rosterTable.setRowFactory(tableView -> {
+            PseudoClass lastRow = PseudoClass.getPseudoClass("last-row");
             TableRow<UserServantView> row = new TableRow<>() {
                 @Override
                 public void updateIndex(int index) {

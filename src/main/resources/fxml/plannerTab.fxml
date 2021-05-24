@@ -22,7 +22,7 @@
         </TableView>
         <TableView fx:id="plannerTable" VBox.vgrow="ALWAYS">
             <columns>
-                <TableColumn text="Name">
+                <TableColumn fx:id="nameColumn" text="Name">
                     <cellValueFactory>
                         <PlannerServantNameValueFactory/>
                     </cellValueFactory>

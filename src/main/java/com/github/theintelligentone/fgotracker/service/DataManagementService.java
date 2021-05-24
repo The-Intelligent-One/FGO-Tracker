@@ -6,21 +6,24 @@ import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
+import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
+import com.github.theintelligentone.fgotracker.domain.servant.factory.PlannerServantViewFactory;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
+import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import com.github.theintelligentone.fgotracker.service.transformer.InventoryToViewTransformer;
+import com.github.theintelligentone.fgotracker.service.transformer.PlannerServantToViewTransformer;
 import com.github.theintelligentone.fgotracker.service.transformer.UserServantToViewTransformer;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import lombok.Getter;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -33,19 +36,37 @@ public class DataManagementService {
     private final FileManagementService fileService;
     private final UserServantToViewTransformer userServantToViewTransformer;
     private final InventoryToViewTransformer inventoryToViewTransformer;
+    private final PlannerServantToViewTransformer plannerServantToViewTransformer;
+
+    @Getter
     private ObservableList<String> servantNameList;
-    private List<Servant> servantDataList;
+    @Getter
+    private ObservableList<String> userServantNameList;
+    @Getter
     private List<UpgradeMaterial> materials;
+    @Getter
     private InventoryView inventory;
+    @Getter
     private boolean iconsResized = false;
-    private ObservableList<UserServantView> userServantList = FXCollections.observableArrayList();
+    private ObservableList<UserServantView> userServantList;
+    private ObservableList<PlannerServantView> plannerServantList;
+    private List<Servant> servantDataList;
     private long currentVersion;
+
     public DataManagementService() {
         ObjectMapper objectMapper = new ObjectMapper();
         this.requestService = new DataRequestService(objectMapper);
         this.fileService = new FileManagementService(objectMapper);
         this.userServantToViewTransformer = new UserServantToViewTransformer();
         this.inventoryToViewTransformer = new InventoryToViewTransformer();
+        this.plannerServantToViewTransformer = new PlannerServantToViewTransformer();
+    }
+
+    public ObservableList<PlannerServantView> getPlannerServantList() {
+        if (plannerServantList.size() < MIN_TABLE_SIZE) {
+            IntStream.range(0, MIN_TABLE_SIZE - plannerServantList.size()).forEach(i -> savePlannerServant(new PlannerServantView()));
+        }
+        return plannerServantList;
     }
 
     public ObservableList<UserServantView> getUserServantList() {
@@ -55,33 +76,29 @@ public class DataManagementService {
         return userServantList;
     }
 
-    public InventoryView getInventory() {
-        return inventory;
-    }
-
-    public Servant findServantByName(String name) {
-        return servantDataList.stream().filter(svt -> name.equalsIgnoreCase(svt.getName())).findFirst().orElse(null);
-    }
-
-    public ObservableList<String> getServantNameList() {
-        return servantNameList;
-    }
-
-    public List<UpgradeMaterial> getAllMaterials() {
-        return materials;
-    }
-
     public boolean isDataLoaded() {
         return servantDataList != null && !servantDataList.isEmpty();
     }
 
-    public boolean isIconsResized() {
-        return iconsResized;
-    }
-
     public void initApp() {
         userServantList = FXCollections.observableArrayList();
+        plannerServantList = FXCollections.observableArrayList();
+        userServantList.addListener((ListChangeListener<? super UserServantView>) c -> {
+            long[] ids = c.getList().stream().mapToLong(svt -> svt.getSvtId().get()).toArray();
+            plannerServantList.stream()
+                    .filter(svt -> svt.getBaseServant().getValue() != null)
+                    .filter(svt -> !Arrays.asList(ids).contains(svt.getSvtId().longValue()))
+                    .forEach(plannerServantList::remove);
+        });
+        userServantList.addListener((ListChangeListener<? super UserServantView>) c -> {
+            userServantNameList.clear();
+            userServantNameList.addAll(c.getList().stream()
+                    .filter(svt -> svt.getBaseServant().getValue() != null)
+                    .map(svt -> svt.getBaseServant().getValue().getName())
+                    .collect(Collectors.toList()));
+        });
         servantNameList = FXCollections.observableArrayList();
+        userServantNameList = FXCollections.observableArrayList();
         refreshAllData();
     }
 
@@ -91,8 +108,9 @@ public class DataManagementService {
         } else {
             loadFromCache();
         }
-        userServantList.addAll(userServantToViewTransformer.transformAll(createAssociatedUserServantList()));
+        userServantList.addAll(createAssociatedUserServantList());
         inventory = createInventoryWithAssociatedMatList();
+        plannerServantList.addAll(createAssociatedPlannerServantList());
         servantNameList.addAll(servantDataList.stream().map(Servant::getName).collect(Collectors.toList()));
     }
 
@@ -123,14 +141,24 @@ public class DataManagementService {
         return inventory;
     }
 
-    private List<UserServant> createAssociatedUserServantList() {
+    private List<UserServantView> createAssociatedUserServantList() {
         List<UserServant> userServants = fileService.loadUserData();
         userServants.forEach(svt -> {
             if (svt.getSvtId() != 0L) {
                 svt.setBaseServant(findServantById(svt.getSvtId()));
             }
         });
-        return userServants;
+        return userServantToViewTransformer.transformAll(userServants);
+    }
+
+    private List<PlannerServantView> createAssociatedPlannerServantList() {
+        List<PlannerServant> plannerServants = fileService.loadPlannedServantData();
+        plannerServants.forEach(svt -> {
+            if (svt.getSvtId() != 0L) {
+                svt.setBaseServant(userServantToViewTransformer.transform(findUserServantById(svt.getSvtId())));
+            }
+        });
+        return plannerServantToViewTransformer.transformAll(plannerServants);
     }
 
     private void loadFromCache() {
@@ -180,6 +208,21 @@ public class DataManagementService {
         return servantDataList.stream().filter(svt -> svtId == svt.getId()).findFirst().get();
     }
 
+    public Servant findServantByName(String name) {
+        return servantDataList.stream().filter(svt -> name.equalsIgnoreCase(svt.getName())).findFirst().orElse(null);
+    }
+
+    private UserServantView findUserServantById(long svtId) {
+        return userServantList.stream().filter(svt -> svtId == svt.getSvtId().longValue()).findFirst().get();
+    }
+
+    public UserServantView findUserServantByName(String name) {
+        return userServantList.stream()
+                .filter(svt -> svt.getBaseServant().getValue() != null)
+                .filter(svt -> name.equalsIgnoreCase(svt.getBaseServant().getValue().getName()))
+                .findFirst().orElse(null);
+    }
+
     public List<String> importUserServantsFromCsv(File sourceFile) {
         List<ManagerServant> managerLookup = fileService.loadManagerLookupTable();
         List<String[]> importedData = fileService.importCsv(sourceFile);
@@ -190,30 +233,30 @@ public class DataManagementService {
                 .collect(Collectors.toList());
         importedServants = importedServants.stream().filter(svt -> svt.getBaseServant() == null || svt.getSvtId() != 0).collect(Collectors.toList());
         ObservableList<UserServantView> trasnformedServants = userServantToViewTransformer.transformAll(importedServants);
-        clearUnnecessaryEmptyRows(trasnformedServants);
+        clearUnnecessaryEmptyUserRows(trasnformedServants);
         userServantList.setAll(trasnformedServants);
         return notFoundNames;
     }
 
     private UserServant buildUserServantFromStringArray(String[] importedData, List<ManagerServant> managerLookup) {
-        Map<String, String> filteredData = filterData(importedData);
+        Map<String, String> processedData = processedUserServantData(importedData);
         UserServant servant = new UserServant();
-        if (!filteredData.get("name").isEmpty()) {
-            Servant baseServant = findServantFromManager(filteredData.get("name"), managerLookup);
+        if (!processedData.get("name").isEmpty()) {
+            Servant baseServant = findServantFromManager(processedData.get("name"), managerLookup);
             if (baseServant.getName() != null && !baseServant.getName().isEmpty()) {
                 servant = new UserServantFactory().createUserServantFromBaseServant(baseServant);
-                if (!filteredData.get("npLevel").isEmpty()) {
-                    servant.setNpLevel(convertToInt(filteredData.get("npLevel").substring(2)));
+                if (!processedData.get("npLevel").isEmpty()) {
+                    servant.setNpLevel(convertToInt(processedData.get("npLevel").substring(2)));
                 }
-                if (!filteredData.get("level").isEmpty()) {
-                    servant.setLevel(convertToInt(filteredData.get("level").substring(4)));
+                if (!processedData.get("level").isEmpty()) {
+                    servant.setLevel(convertToInt(processedData.get("level").substring(4)));
                 }
-                servant.setSkillLevel1(Math.max(convertToInt(filteredData.get("skill1")), 1));
-                servant.setSkillLevel2(Math.max(convertToInt(filteredData.get("skill2")), 1));
-                servant.setSkillLevel3(Math.max(convertToInt(filteredData.get("skill3")), 1));
-                servant.setFouHp(convertToInt(filteredData.get("fouHp")));
-                servant.setFouAtk(convertToInt(filteredData.get("fouAtk")));
-                servant.setBondLevel(convertToInt(filteredData.get("bond")));
+                servant.setSkillLevel1(Math.max(convertToInt(processedData.get("skill1")), 1));
+                servant.setSkillLevel2(Math.max(convertToInt(processedData.get("skill2")), 1));
+                servant.setSkillLevel3(Math.max(convertToInt(processedData.get("skill3")), 1));
+                servant.setFouHp(convertToInt(processedData.get("fouHp")));
+                servant.setFouAtk(convertToInt(processedData.get("fouAtk")));
+                servant.setBondLevel(convertToInt(processedData.get("bond")));
             } else {
                 baseServant = new Servant();
                 baseServant.setName(importedData[0]);
@@ -233,26 +276,50 @@ public class DataManagementService {
         return servantDataList.stream().filter(svt -> svt.getCollectionNo() == managerServant.getCollectionNo()).findFirst().orElse(new Servant());
     }
 
-    private Map<String, String> filterData(String[] importedData) {
-        Map<String, String> filteredData = new HashMap<>();
-        filteredData.put("name", importedData[0]);
-        filteredData.put("npLevel", importedData[14]);
-        filteredData.put("level", importedData[15]);
-        filteredData.put("skill1", importedData[16]);
-        filteredData.put("skill2", importedData[17]);
-        filteredData.put("skill3", importedData[18]);
-        filteredData.put("fouHp", importedData[19]);
-        filteredData.put("fouAtk", importedData[20]);
-        filteredData.put("bond", importedData[21]);
-        return filteredData;
+    private Map<String, String> processedUserServantData(String[] importedData) {
+        Map<String, String> processedData = new HashMap<>();
+        processedData.put("name", importedData[0]);
+        processedData.put("npLevel", importedData[14]);
+        processedData.put("level", importedData[15]);
+        processedData.put("skill1", importedData[16]);
+        processedData.put("skill2", importedData[17]);
+        processedData.put("skill3", importedData[18]);
+        processedData.put("fouHp", importedData[19]);
+        processedData.put("fouAtk", importedData[20]);
+        processedData.put("bond", importedData[21]);
+        return processedData;
     }
 
     public void eraseUserServant(UserServantView servant) {
         userServantList.set(userServantList.indexOf(servant), new UserServantView());
     }
 
+    public void erasePlannerServant(PlannerServantView servant) {
+        plannerServantList.set(plannerServantList.indexOf(servant), new PlannerServantView());
+    }
+
     public void removeUserServant(UserServantView servant) {
         userServantList.remove(servant);
+    }
+
+    public void removePlannerServant(PlannerServantView servant) {
+        plannerServantList.remove(servant);
+    }
+
+    public void savePlannerServant(PlannerServantView plannerServantView) {
+        plannerServantList.add(plannerServantView);
+    }
+
+    public void savePlannerServant(int index, PlannerServantView plannerServantView) {
+        plannerServantList.add(index, plannerServantView);
+    }
+
+    public void saveUserServant(UserServantView servant) {
+        userServantList.add(servant);
+    }
+
+    public void saveUserServant(int index, UserServantView servant) {
+        userServantList.add(index, servant);
     }
 
     public void replaceBaseServantInRow(int index, UserServantView servant, String newServantName) {
@@ -269,21 +336,35 @@ public class DataManagementService {
         }
     }
 
-    public void saveUserServant(UserServantView servant) {
-        userServantList.add(servant);
-    }
-
-    public void saveUserServant(int index, UserServantView servant) {
-        userServantList.add(index, servant);
+    public void replaceBaseServantInPlannerRow(int index, PlannerServantView servant, String newServantName) {
+        UserServantView newBaseServant = findUserServantByName(newServantName);
+        if (newBaseServant != null) {
+            if (servant.getBaseServant().getValue() == null) {
+                plannerServantList.set(index, new PlannerServantViewFactory().createFromUserServant(newBaseServant));
+            } else {
+                servant.getSvtId().set(newBaseServant.getSvtId().longValue());
+                servant.getBaseServant().set(newBaseServant);
+                plannerServantList.set(index, servant);
+            }
+        }
     }
 
     public void saveUserState() {
-        clearUnnecessaryEmptyRows(userServantList);
+        clearUnnecessaryEmptyUserRows(userServantList);
+        clearUnnecessaryEmptyPlannerRows(plannerServantList);
         fileService.saveUserServants(userServantToViewTransformer.transformAll(userServantList));
         fileService.saveInventory(inventoryToViewTransformer.transform(inventory));
+        fileService.savePlannerServants(plannerServantToViewTransformer.transformAllFromViews(plannerServantList));
     }
 
-    private void clearUnnecessaryEmptyRows(List<UserServantView> servantList) {
+    private void clearUnnecessaryEmptyUserRows(List<UserServantView> servantList) {
+        int index = servantList.size() - 1;
+        while (!servantList.isEmpty() && servantList.get(index).getBaseServant().getValue() == null) {
+            servantList.remove(index--);
+        }
+    }
+
+    private void clearUnnecessaryEmptyPlannerRows(List<PlannerServantView> servantList) {
         int index = servantList.size() - 1;
         while (!servantList.isEmpty() && servantList.get(index).getBaseServant().getValue() == null) {
             servantList.remove(index--);

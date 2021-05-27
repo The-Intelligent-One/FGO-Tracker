@@ -23,13 +23,34 @@ import javafx.collections.ObservableList;
 import lombok.Getter;
 
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class DataManagementService {
     public static final int[] MAX_LEVELS = {65, 60, 65, 70, 80, 90};
     private static final int MIN_TABLE_SIZE = 30;
+    private static final Map<String, Integer> ROSTER_IMPORT_INDEX_MAP = Map.of("name", 0,
+            "npLevel", 14,
+            "level", 15,
+            "skill1", 16,
+            "skill2", 17,
+            "skill3", 18,
+            "fouHp", 19,
+            "fouAtk", 20,
+            "bond", 21);
+    private static final Map<String, Integer> PLANNER_IMPORT_INDEX_MAP = Map.of("name", 0,
+            "npLevel", 14,
+            "level", 15,
+            "skill1", 16,
+            "skill2", 17,
+            "skill3", 18,
+            "fouHp", 19,
+            "fouAtk", 20,
+            "bond", 21);
     public static Map<String, Integer> CLASS_ATTACK_MULTIPLIER;
     public static Map<String, Map<Integer, CardPlacementData>> CARD_DATA;
     private final DataRequestService requestService;
@@ -64,14 +85,16 @@ public class DataManagementService {
 
     public ObservableList<PlannerServantView> getPlannerServantList() {
         if (plannerServantList.size() < MIN_TABLE_SIZE) {
-            IntStream.range(0, MIN_TABLE_SIZE - plannerServantList.size()).forEach(i -> savePlannerServant(new PlannerServantView()));
+            IntStream.range(0, MIN_TABLE_SIZE - plannerServantList.size()).forEach(
+                    i -> savePlannerServant(new PlannerServantView()));
         }
         return plannerServantList;
     }
 
     public ObservableList<UserServantView> getUserServantList() {
         if (userServantList.size() < MIN_TABLE_SIZE) {
-            IntStream.range(0, MIN_TABLE_SIZE - userServantList.size()).forEach(i -> saveUserServant(new UserServantView()));
+            IntStream.range(0, MIN_TABLE_SIZE - userServantList.size()).forEach(
+                    i -> saveUserServant(new UserServantView()));
         }
         return userServantList;
     }
@@ -225,41 +248,41 @@ public class DataManagementService {
 
     public List<String> importUserServantsFromCsv(File sourceFile) {
         List<ManagerServant> managerLookup = fileService.loadManagerLookupTable();
-        List<String[]> importedData = fileService.importCsv(sourceFile);
-        List<UserServant> importedServants = importedData.stream().map(importedData1 -> buildUserServantFromStringArray(importedData1, managerLookup)).collect(Collectors.toList());
+        List<String[]> importedData = fileService.importRosterCsv(sourceFile);
+        List<UserServant> importedServants = importedData.stream().map(
+                importedData1 -> buildUserServantFromStringArray(importedData1, managerLookup)).collect(
+                Collectors.toList());
         List<String> notFoundNames = importedServants.stream()
                 .filter(svt -> svt.getBaseServant() != null && svt.getSvtId() == 0)
                 .map(svt -> svt.getBaseServant().getName())
                 .collect(Collectors.toList());
-        importedServants = importedServants.stream().filter(svt -> svt.getBaseServant() == null || svt.getSvtId() != 0).collect(Collectors.toList());
-        ObservableList<UserServantView> trasnformedServants = userServantToViewTransformer.transformAll(importedServants);
+        importedServants = importedServants.stream().filter(
+                svt -> svt.getBaseServant() == null || svt.getSvtId() != 0).collect(Collectors.toList());
+        ObservableList<UserServantView> trasnformedServants = userServantToViewTransformer.transformAll(
+                importedServants);
         clearUnnecessaryEmptyUserRows(trasnformedServants);
         userServantList.setAll(trasnformedServants);
         return notFoundNames;
     }
 
     private UserServant buildUserServantFromStringArray(String[] importedData, List<ManagerServant> managerLookup) {
-        Map<String, String> processedData = processedUserServantData(importedData);
         UserServant servant = new UserServant();
-        if (!processedData.get("name").isEmpty()) {
-            Servant baseServant = findServantFromManager(processedData.get("name"), managerLookup);
+        String servantName = importedData[ROSTER_IMPORT_INDEX_MAP.get("name")];
+        if (!servantName.isEmpty()) {
+            Servant baseServant = findServantFromManager(servantName, managerLookup);
             if (baseServant.getName() != null && !baseServant.getName().isEmpty()) {
                 servant = new UserServantFactory().createUserServantFromBaseServant(baseServant);
-                if (!processedData.get("npLevel").isEmpty()) {
-                    servant.setNpLevel(convertToInt(processedData.get("npLevel").substring(2)));
-                }
-                if (!processedData.get("level").isEmpty()) {
-                    servant.setLevel(convertToInt(processedData.get("level").substring(4)));
-                }
-                servant.setSkillLevel1(Math.max(convertToInt(processedData.get("skill1")), 1));
-                servant.setSkillLevel2(Math.max(convertToInt(processedData.get("skill2")), 1));
-                servant.setSkillLevel3(Math.max(convertToInt(processedData.get("skill3")), 1));
-                servant.setFouHp(convertToInt(processedData.get("fouHp")));
-                servant.setFouAtk(convertToInt(processedData.get("fouAtk")));
-                servant.setBondLevel(convertToInt(processedData.get("bond")));
+                servant.setNpLevel(getValueFromImportedRosterData(importedData, "npLevel", 1, 5));
+                servant.setLevel(getValueFromImportedRosterData(importedData, "level", 1, 100));
+                servant.setSkillLevel1(getValueFromImportedRosterData(importedData, "skill1", 1, 10));
+                servant.setSkillLevel2(getValueFromImportedRosterData(importedData, "skill2", 1, 10));
+                servant.setSkillLevel3(getValueFromImportedRosterData(importedData, "skill3", 1, 10));
+                servant.setFouHp(getValueFromImportedRosterData(importedData, "fouHp", 0, 2000));
+                servant.setFouAtk(getValueFromImportedRosterData(importedData, "fouAtk", 0, 2000));
+                servant.setBondLevel(getValueFromImportedRosterData(importedData, "bond", 0, 15));
             } else {
                 baseServant = new Servant();
-                baseServant.setName(importedData[0]);
+                baseServant.setName(servantName);
                 servant = new UserServant();
                 servant.setBaseServant(baseServant);
             }
@@ -267,27 +290,26 @@ public class DataManagementService {
         return servant;
     }
 
+    private int getValueFromImportedRosterData(String[] importedData, String propertyName, int min, int max) {
+        String stringValue = importedData[ROSTER_IMPORT_INDEX_MAP.get(propertyName)];
+        if (propertyName.equalsIgnoreCase("level")) {
+            stringValue = stringValue.substring(4);
+        }
+        if (propertyName.equalsIgnoreCase("npLevel")) {
+            stringValue = stringValue.substring(2);
+        }
+        return Math.max(Math.min(convertToInt(stringValue), max), min);
+    }
+
     private int convertToInt(String data) {
         return data != null && !data.isEmpty() ? Integer.parseInt(data) : 0;
     }
 
     private Servant findServantFromManager(String name, List<ManagerServant> managerLookup) {
-        ManagerServant managerServant = managerLookup.stream().filter(svt -> name.equalsIgnoreCase(svt.getName())).findFirst().get();
-        return servantDataList.stream().filter(svt -> svt.getCollectionNo() == managerServant.getCollectionNo()).findFirst().orElse(new Servant());
-    }
-
-    private Map<String, String> processedUserServantData(String[] importedData) {
-        Map<String, String> processedData = new HashMap<>();
-        processedData.put("name", importedData[0]);
-        processedData.put("npLevel", importedData[14]);
-        processedData.put("level", importedData[15]);
-        processedData.put("skill1", importedData[16]);
-        processedData.put("skill2", importedData[17]);
-        processedData.put("skill3", importedData[18]);
-        processedData.put("fouHp", importedData[19]);
-        processedData.put("fouAtk", importedData[20]);
-        processedData.put("bond", importedData[21]);
-        return processedData;
+        ManagerServant managerServant = managerLookup.stream().filter(
+                svt -> name.equalsIgnoreCase(svt.getName())).findFirst().get();
+        return servantDataList.stream().filter(
+                svt -> svt.getCollectionNo() == managerServant.getCollectionNo()).findFirst().orElse(new Servant());
     }
 
     public void eraseUserServant(UserServantView servant) {
@@ -326,7 +348,8 @@ public class DataManagementService {
         Servant newBaseServant = findServantByName(newServantName);
         if (newBaseServant != null) {
             if (servant.getBaseServant() == null || servant.getBaseServant().getValue() == null) {
-                userServantList.set(index, userServantToViewTransformer.transform(new UserServantFactory().createUserServantFromBaseServant(newBaseServant)));
+                userServantList.set(index, userServantToViewTransformer.transform(
+                        new UserServantFactory().createUserServantFromBaseServant(newBaseServant)));
             } else {
                 servant.getSvtId().set(newBaseServant.getId());
                 servant.getRarity().set(newBaseServant.getRarity());

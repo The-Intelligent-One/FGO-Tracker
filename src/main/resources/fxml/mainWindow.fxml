@@ -8,7 +8,12 @@
     <MenuBar>
         <Menu>
             <graphic>
-                <Label onMouseClicked="#importFromCsv" text="Import"/>
+                <Label onMouseClicked="#importUserServantsFromCsv" text="Import"/>
+            </graphic>
+        </Menu>
+        <Menu>
+            <graphic>
+                <Label onMouseClicked="#importInventoryFromCsv" text="Import Inv"/>
             </graphic>
         </Menu>
         <Menu>

@@ -1,7 +1,6 @@
 package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
-import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -10,7 +9,6 @@ import javafx.stage.Stage;
 
 import java.io.File;
 import java.util.List;
-import java.util.stream.IntStream;
 
 public class MainController {
     public static final double NAME_CELL_WIDTH = 200;
@@ -42,20 +40,44 @@ public class MainController {
         ltPlannerController.setup();
     }
 
-    public void importFromCsv() {
+    public void importUserServantsFromCsv() {
         if (dataManagementService.isDataLoaded()) {
-            displayFileChooserForUserForCsvImport();
+            displayFileChooserForUserCsvImport();
         } else {
             showNotLoadedYetAlert();
         }
     }
 
-    private void displayFileChooserForUserForCsvImport() {
+    public void importInventoryFromCsv() {
+        if (dataManagementService.isDataLoaded()) {
+            displayFileChooserForInventoryCsvImport();
+        } else {
+            showNotLoadedYetAlert();
+        }
+    }
+
+    private void displayFileChooserForInventoryCsvImport() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("CSV to import");
         File csvFile = fileChooser.showOpenDialog(Stage.getWindows().get(0));
         if (csvFile != null) {
-            loadDataFromCsv(csvFile);
+            loadInventoryDataFromCsv(csvFile);
+        }
+    }
+
+    private void loadInventoryDataFromCsv(File csvFile) {
+        List<String> notFoundNames = dataManagementService.importInventoryFromCsv(csvFile);
+        if (notFoundNames != null && !notFoundNames.isEmpty()) {
+            displayNotFoundAlert(notFoundNames);
+        }
+    }
+
+    private void displayFileChooserForUserCsvImport() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("CSV to import");
+        File csvFile = fileChooser.showOpenDialog(Stage.getWindows().get(0));
+        if (csvFile != null) {
+            loadRosterDataFromCsv(csvFile);
         }
     }
 
@@ -65,8 +87,15 @@ public class MainController {
         loadingAlert.show();
     }
 
-    private void loadDataFromCsv(File csvFile) {
+    private void loadRosterDataFromCsv(File csvFile) {
         List<String> notFoundNames = dataManagementService.importUserServantsFromCsv(csvFile);
+        if (notFoundNames != null && !notFoundNames.isEmpty()) {
+            displayNotFoundAlert(notFoundNames);
+        }
+    }
+
+    private void loadPlannerDataFromCsv(File csvFile) {
+        List<String> notFoundNames = dataManagementService.importPlannerServantsFromCsv(csvFile);
         if (notFoundNames != null && !notFoundNames.isEmpty()) {
             displayNotFoundAlert(notFoundNames);
         }

@@ -267,8 +267,11 @@ public class FileManagementService {
 
     private Map<String, Integer> transformToInventoryMap(List<String[]> strings) {
         Map<String, Integer> result = new HashMap<>();
-        for (int i = 0; i < strings.get(0).length; i++) {
-            result.put(strings.get(1)[i], Integer.parseInt(strings.get(0)[i]));
+        for (int i = 13; i < strings.get(0).length; i++) {
+            if (!strings.get(1)[i].isEmpty()) {
+                String amountAsString = strings.get(0)[i].isEmpty() ? "0" : strings.get(0)[i].replaceAll("[\\D.]", "");
+                result.put(strings.get(1)[i], Integer.parseInt(amountAsString));
+            }
         }
         return result;
     }

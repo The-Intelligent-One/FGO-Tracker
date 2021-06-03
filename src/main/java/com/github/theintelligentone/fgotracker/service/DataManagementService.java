@@ -25,6 +25,7 @@ import lombok.Getter;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,6 +43,9 @@ public class DataManagementService {
             "fouHp", 19,
             "fouAtk", 20,
             "bond", 21);
+    private static final Map<String, String> MAT_NAME_TRANSLATE_MAP = Map.of("blue", "gem",
+            "red", "magic gem",
+            "gold", "secret gem");
     public static Map<String, Integer> CLASS_ATTACK_MULTIPLIER;
     public static Map<String, Map<Integer, CardPlacementData>> CARD_DATA;
     private final DataRequestService requestService;
@@ -391,27 +395,48 @@ public class DataManagementService {
 
     public List<String> importInventoryFromCsv(File sourceFile) {
         Map<String, Integer> importedData = fileService.importInventoryCsv(sourceFile);
+        Map<String, Integer> processedData = new HashMap<>();
         List<String> notFoundNames = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : importedData.entrySet()) {
-            String matName = materialNameFound(entry.getKey());
+            String matName = findMaterialName(entry.getKey());
             if (!matName.isEmpty()) {
-                importedData.put(matName, entry.getValue());
+                processedData.put(matName, entry.getValue());
             } else {
                 notFoundNames.add(entry.getKey());
             }
         }
-        for (UpgradeMaterialCostView mat :
-                inventory.getInventory()) {
-            mat.getAmount().set(importedData.get(mat.getItem().getValue().getName()));
+        for (UpgradeMaterialCostView mat : inventory.getInventory()) {
+            Integer amount = processedData.get(mat.getItem().getValue().getName());
+            if (amount != null) {
+                mat.getAmount().set(amount);
+            }
         }
         return notFoundNames;
     }
 
-    private String materialNameFound(String key) {
+    private String findMaterialName(String matName) {
+        String[] normalizedMatName = normalizeMatName(matName);
         return materials.stream()
                 .map(UpgradeMaterial::getName)
-                .filter(name -> name.toLowerCase().contains(key.toLowerCase()))
+                .filter(name -> containsAll(normalizedMatName, name))
                 .findFirst().orElse("");
+    }
+
+    private boolean containsAll(String[] matName, String name) {
+        boolean valid = true;
+        for (String word : matName) {
+            valid = valid && name.toLowerCase().contains(word.toLowerCase());
+        }
+        return valid;
+    }
+
+    private String[] normalizeMatName(String matName) {
+        String processedName = matName.replaceAll("([a-z])([A-Z])", "$1 $2");
+        String firstWord = processedName.split(" ")[0];
+        if (MAT_NAME_TRANSLATE_MAP.containsKey(firstWord)) {
+            processedName = processedName.replace(firstWord, MAT_NAME_TRANSLATE_MAP.get(firstWord));
+        }
+        return processedName.split(" ");
     }
 
     public List<String> importPlannerServantsFromCsv(File sourceFile) {

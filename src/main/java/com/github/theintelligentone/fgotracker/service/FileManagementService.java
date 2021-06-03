@@ -20,10 +20,7 @@ import javax.imageio.ImageIO;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class FileManagementService {
@@ -145,7 +142,7 @@ public class FileManagementService {
         return basicDataList;
     }
 
-    public List<PlannerServant> loadPlannedServantData(){
+    public List<PlannerServant> loadPlannedServantData() {
         File file = new File(BASE_DATA_PATH, PLANNED_DATA_FILE);
         List<PlannerServant> basicDataList = new ArrayList<>();
         if (file.length() != 0) {
@@ -224,17 +221,26 @@ public class FileManagementService {
     }
 
     public List<String[]> importRosterCsv(File sourceFile) {
-        FileReader fileReader = null;
-        try {
-            fileReader = new FileReader(sourceFile);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        CSVReader csvReader = new CSVReaderBuilder(fileReader)
-                .withSkipLines(2)
-                .build();
         List<String[]> strings = new ArrayList<>();
         try {
+            FileReader fileReader = new FileReader(sourceFile);
+            CSVReader csvReader = new CSVReaderBuilder(fileReader)
+                    .withSkipLines(2)
+                    .build();
+            strings = csvReader.readAll();
+        } catch (IOException | CsvException e) {
+            e.printStackTrace();
+        }
+        return strings;
+    }
+
+    public List<String[]> importPlannerCsv(File sourceFile) {
+        List<String[]> strings = new ArrayList<>();
+        try {
+            FileReader fileReader = new FileReader(sourceFile);
+            CSVReader csvReader = new CSVReaderBuilder(fileReader)
+                    .withSkipLines(12)
+                    .build();
             strings = csvReader.readAll();
         } catch (IOException | CsvException e) {
             e.printStackTrace();
@@ -243,17 +249,12 @@ public class FileManagementService {
     }
 
     public Map<String, Integer> importInventoryCsv(File sourceFile) {
-        FileReader fileReader = null;
-        try {
-            fileReader = new FileReader(sourceFile);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        CSVReader csvReader = new CSVReaderBuilder(fileReader)
-                .withSkipLines(7)
-                .build();
         List<String[]> strings = new ArrayList<>();
         try {
+            FileReader fileReader = new FileReader(sourceFile);
+            CSVReader csvReader = new CSVReaderBuilder(fileReader)
+                    .withSkipLines(7)
+                    .build();
             strings.add(csvReader.readNext());
             csvReader.readNext();
             csvReader.readNext();
@@ -273,7 +274,8 @@ public class FileManagementService {
     }
 
     public List<ManagerServant> loadManagerLookupTable() {
-        Reader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream(MANAGER_DB_PATH)));
+        Reader reader = new BufferedReader(new InputStreamReader(
+                Objects.requireNonNull(getClass().getResourceAsStream(MANAGER_DB_PATH))));
         CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
         List<String[]> strings = new ArrayList<>();
         try {

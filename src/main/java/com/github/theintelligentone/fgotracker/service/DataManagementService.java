@@ -409,28 +409,51 @@ public class DataManagementService {
 
     private String materialNameFound(String key) {
         return materials.stream()
-                .filter(mat -> mat.getName().toLowerCase().contains(key.toLowerCase()))
                 .map(UpgradeMaterial::getName)
+                .filter(name -> name.toLowerCase().contains(key.toLowerCase()))
                 .findFirst().orElse("");
     }
 
-    // TODO
     public List<String> importPlannerServantsFromCsv(File sourceFile) {
         List<ManagerServant> managerLookup = fileService.loadManagerLookupTable();
         List<String[]> importedData = fileService.importRosterCsv(sourceFile);
-        List<UserServant> importedServants = importedData.stream().map(
-                csvLine -> buildUserServantFromStringArray(csvLine, managerLookup)).collect(
+        List<PlannerServantView> importedServants = importedData.stream().map(
+                csvLine -> buildPlannerServantFromStringArray(csvLine, managerLookup)).collect(
                 Collectors.toList());
         List<String> notFoundNames = importedServants.stream()
-                .filter(svt -> svt.getBaseServant() != null && svt.getSvtId() == 0)
+                .filter(svt -> svt.getBaseServant() != null && svt.getSvtId().getValue() == 0)
                 .map(svt -> svt.getBaseServant().getName())
                 .collect(Collectors.toList());
         importedServants = importedServants.stream().filter(
-                svt -> svt.getBaseServant() == null || svt.getSvtId() != 0).collect(Collectors.toList());
-        ObservableList<UserServantView> trasnformedServants = userServantToViewTransformer.transformAll(
-                importedServants);
-        clearUnnecessaryEmptyUserRows(trasnformedServants);
-        userServantList.setAll(trasnformedServants);
+                svt -> svt.getBaseServant() == null || svt.getSvtId().getValue() != 0).collect(Collectors.toList());
+        clearUnnecessaryEmptyPlannerRows(importedServants);
+        plannerServantList.setAll(importedServants);
         return notFoundNames;
+    }
+
+    private PlannerServantView buildPlannerServantFromStringArray(String[] importedData, List<ManagerServant> managerLookup) {
+        String servantName = importedData[4];
+        PlannerServantView servant = new PlannerServantView();
+        if (!servantName.isEmpty()) {
+            Servant baseServant = findServantFromManager(servantName, managerLookup);
+            UserServantView baseUserServant = new UserServantView();
+            if (baseServant.getName() != null && !baseServant.getName().isEmpty()) {
+                baseUserServant = findUserServantByName(baseServant.getName());
+            }
+            if (baseUserServant != null) {
+                servant = new PlannerServantViewFactory().createFromUserServant(baseUserServant);
+                servant.getDesLevel().set(Math.max(Math.min(convertToInt(importedData[9]), 100), 1));
+                servant.getDesSkill1().set(Math.max(Math.min(convertToInt(importedData[10]), 10), 1));
+                servant.getDesSkill2().set(Math.max(Math.min(convertToInt(importedData[11]), 10), 1));
+                servant.getDesSkill3().set(Math.max(Math.min(convertToInt(importedData[12]), 10), 1));
+            } else {
+                baseServant = new Servant();
+                baseServant.setName(servantName);
+                baseUserServant.getBaseServant().set(baseServant);
+                servant = new PlannerServantView();
+                servant.getBaseServant().set(baseUserServant);
+            }
+        }
+        return servant;
     }
 }

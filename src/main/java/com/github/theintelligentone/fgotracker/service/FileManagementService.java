@@ -223,7 +223,7 @@ public class FileManagementService {
         file.createNewFile();
     }
 
-    public List<String[]> importCsv(File sourceFile) {
+    public List<String[]> importRosterCsv(File sourceFile) {
         FileReader fileReader = null;
         try {
             fileReader = new FileReader(sourceFile);
@@ -240,6 +240,36 @@ public class FileManagementService {
             e.printStackTrace();
         }
         return strings;
+    }
+
+    public Map<String, Integer> importInventoryCsv(File sourceFile) {
+        FileReader fileReader = null;
+        try {
+            fileReader = new FileReader(sourceFile);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        CSVReader csvReader = new CSVReaderBuilder(fileReader)
+                .withSkipLines(7)
+                .build();
+        List<String[]> strings = new ArrayList<>();
+        try {
+            strings.add(csvReader.readNext());
+            csvReader.readNext();
+            csvReader.readNext();
+            strings.add(csvReader.readNext());
+        } catch (IOException | CsvException e) {
+            e.printStackTrace();
+        }
+        return transformToInventoryMap(strings);
+    }
+
+    private Map<String, Integer> transformToInventoryMap(List<String[]> strings) {
+        Map<String, Integer> result = new HashMap<>();
+        for (int i = 0; i < strings.get(0).length; i++) {
+            result.put(strings.get(1)[i], Integer.parseInt(strings.get(0)[i]));
+        }
+        return result;
     }
 
     public List<ManagerServant> loadManagerLookupTable() {

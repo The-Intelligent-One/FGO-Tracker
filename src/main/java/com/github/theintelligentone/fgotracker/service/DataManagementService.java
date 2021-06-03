@@ -13,6 +13,7 @@ import com.github.theintelligentone.fgotracker.domain.servant.factory.PlannerSer
 import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
+import com.github.theintelligentone.fgotracker.domain.view.UpgradeMaterialCostView;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import com.github.theintelligentone.fgotracker.service.transformer.InventoryToViewTransformer;
 import com.github.theintelligentone.fgotracker.service.transformer.PlannerServantToViewTransformer;
@@ -24,7 +25,6 @@ import lombok.Getter;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,15 +34,6 @@ public class DataManagementService {
     public static final int[] MAX_LEVELS = {65, 60, 65, 70, 80, 90};
     private static final int MIN_TABLE_SIZE = 30;
     private static final Map<String, Integer> ROSTER_IMPORT_INDEX_MAP = Map.of("name", 0,
-            "npLevel", 14,
-            "level", 15,
-            "skill1", 16,
-            "skill2", 17,
-            "skill3", 18,
-            "fouHp", 19,
-            "fouAtk", 20,
-            "bond", 21);
-    private static final Map<String, Integer> PLANNER_IMPORT_INDEX_MAP = Map.of("name", 0,
             "npLevel", 14,
             "level", 15,
             "skill1", 16,
@@ -104,13 +95,18 @@ public class DataManagementService {
     }
 
     public void initApp() {
+        initDataLists();
+        refreshAllData();
+    }
+
+    private void initDataLists() {
         userServantList = FXCollections.observableArrayList();
         plannerServantList = FXCollections.observableArrayList();
         userServantList.addListener((ListChangeListener<? super UserServantView>) c -> {
-            long[] ids = c.getList().stream().mapToLong(svt -> svt.getSvtId().get()).toArray();
+            List<Long> ids = c.getList().stream().map(svt -> svt.getSvtId().get()).collect(Collectors.toList());
             plannerServantList.stream()
                     .filter(svt -> svt.getBaseServant().getValue() != null)
-                    .filter(svt -> !Arrays.asList(ids).contains(svt.getSvtId().longValue()))
+                    .filter(svt -> !ids.contains(svt.getSvtId().longValue()))
                     .forEach(plannerServantList::remove);
         });
         userServantList.addListener((ListChangeListener<? super UserServantView>) c -> {
@@ -122,7 +118,6 @@ public class DataManagementService {
         });
         servantNameList = FXCollections.observableArrayList();
         userServantNameList = FXCollections.observableArrayList();
-        refreshAllData();
     }
 
     public void refreshAllData() {
@@ -250,7 +245,7 @@ public class DataManagementService {
         List<ManagerServant> managerLookup = fileService.loadManagerLookupTable();
         List<String[]> importedData = fileService.importRosterCsv(sourceFile);
         List<UserServant> importedServants = importedData.stream().map(
-                importedData1 -> buildUserServantFromStringArray(importedData1, managerLookup)).collect(
+                csvLine -> buildUserServantFromStringArray(csvLine, managerLookup)).collect(
                 Collectors.toList());
         List<String> notFoundNames = importedServants.stream()
                 .filter(svt -> svt.getBaseServant() != null && svt.getSvtId() == 0)
@@ -293,10 +288,10 @@ public class DataManagementService {
     private int getValueFromImportedRosterData(String[] importedData, String propertyName, int min, int max) {
         String stringValue = importedData[ROSTER_IMPORT_INDEX_MAP.get(propertyName)];
         if (propertyName.equalsIgnoreCase("level")) {
-            stringValue = stringValue.substring(4);
+            stringValue = stringValue.isEmpty() ? stringValue : stringValue.substring(4);
         }
         if (propertyName.equalsIgnoreCase("npLevel")) {
-            stringValue = stringValue.substring(2);
+            stringValue = stringValue.isEmpty() ? stringValue : stringValue.substring(2);
         }
         return Math.max(Math.min(convertToInt(stringValue), max), min);
     }
@@ -392,5 +387,50 @@ public class DataManagementService {
         while (!servantList.isEmpty() && servantList.get(index).getBaseServant().getValue() == null) {
             servantList.remove(index--);
         }
+    }
+
+    public List<String> importInventoryFromCsv(File sourceFile) {
+        Map<String, Integer> importedData = fileService.importInventoryCsv(sourceFile);
+        List<String> notFoundNames = new ArrayList<>();
+        for (Map.Entry<String, Integer> entry : importedData.entrySet()) {
+            String matName = materialNameFound(entry.getKey());
+            if (!matName.isEmpty()) {
+                importedData.put(matName, entry.getValue());
+            } else {
+                notFoundNames.add(entry.getKey());
+            }
+        }
+        for (UpgradeMaterialCostView mat :
+                inventory.getInventory()) {
+            mat.getAmount().set(importedData.get(mat.getItem().getValue().getName()));
+        }
+        return notFoundNames;
+    }
+
+    private String materialNameFound(String key) {
+        return materials.stream()
+                .filter(mat -> mat.getName().toLowerCase().contains(key.toLowerCase()))
+                .map(UpgradeMaterial::getName)
+                .findFirst().orElse("");
+    }
+
+    // TODO
+    public List<String> importPlannerServantsFromCsv(File sourceFile) {
+        List<ManagerServant> managerLookup = fileService.loadManagerLookupTable();
+        List<String[]> importedData = fileService.importRosterCsv(sourceFile);
+        List<UserServant> importedServants = importedData.stream().map(
+                csvLine -> buildUserServantFromStringArray(csvLine, managerLookup)).collect(
+                Collectors.toList());
+        List<String> notFoundNames = importedServants.stream()
+                .filter(svt -> svt.getBaseServant() != null && svt.getSvtId() == 0)
+                .map(svt -> svt.getBaseServant().getName())
+                .collect(Collectors.toList());
+        importedServants = importedServants.stream().filter(
+                svt -> svt.getBaseServant() == null || svt.getSvtId() != 0).collect(Collectors.toList());
+        ObservableList<UserServantView> trasnformedServants = userServantToViewTransformer.transformAll(
+                importedServants);
+        clearUnnecessaryEmptyUserRows(trasnformedServants);
+        userServantList.setAll(trasnformedServants);
+        return notFoundNames;
     }
 }

@@ -1,7 +1,7 @@
 package com.github.theintelligentone.fgotracker.ui.valuefactory.planner;
 
-import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
+import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableIntegerValue;
 import javafx.beans.value.ObservableValue;
@@ -13,7 +13,7 @@ public class PlannerServantGrailValueFactory implements Callback<TableColumn.Cel
     @Override
     public ObservableValue<Number> call(TableColumn.CellDataFeatures<PlannerServantView, Number> param) {
         ObservableIntegerValue result = new SimpleIntegerProperty();
-        if (param.getValue().getBaseServant().getValue() != null) {
+        if (param.getValue().getBaseServant().getValue() != null && param.getValue().getBaseServant().getValue().getBaseServant().getValue() != null) {
             result = new ServantUtils().sumNeededAscensionGrails(param.getValue());
         }
         return result;

@@ -197,7 +197,8 @@ public class PlannerController {
     }
 
     private ObservableList<UpgradeMaterialCostView> createListOfRemainingMats(InventoryView inventory, InventoryView planned) {
-        ObservableList<UpgradeMaterialCostView> result = FXCollections.observableArrayList(param -> new Observable[]{param.getAmount()});
+        ObservableList<UpgradeMaterialCostView> result = FXCollections.observableArrayList(
+                param -> new Observable[]{param.getAmount()});
         for (int index = 0; index < inventory.getInventory().size(); index++) {
             UpgradeMaterialCostView matAmount = inventory.getInventory().get(index);
             UpgradeMaterialCostView matPlan = planned.getInventory().get(index);
@@ -214,7 +215,8 @@ public class PlannerController {
     }
 
     private ObservableList<UpgradeMaterialCostView> getSumOfNeededMats() {
-        ObservableList<UpgradeMaterialCostView> result = FXCollections.observableArrayList(param -> new Observable[]{param.getAmount()});
+        ObservableList<UpgradeMaterialCostView> result = FXCollections.observableArrayList(
+                param -> new Observable[]{param.getAmount()});
         for (UpgradeMaterialCostView mat : dataManagementService.getInventory().getInventory()) {
             UpgradeMaterialCostView matCost = new UpgradeMaterialCostView();
             matCost.setId(mat.getId());
@@ -231,9 +233,10 @@ public class PlannerController {
     }
 
     private int getPlannedMatUseSum(List<PlannerServantView> servants, UpgradeMaterialCostView mat) {
+        ServantUtils servantUtils = new ServantUtils();
         return servants.stream()
-                .filter(servant -> servant.getBaseServant().getValue() != null)
-                .map(servant -> new ServantUtils().getPlannedMatUse(servant, mat.getId().longValue()))
+                .filter(servant -> servant.getBaseServant().getValue() != null && servant.getBaseServant().getValue().getBaseServant().getValue() != null)
+                .map(servant -> servantUtils.getPlannedMatUse(servant, mat.getId().longValue()))
                 .mapToInt(ObservableNumberValue::intValue)
                 .reduce(Integer::sum).orElse(0);
     }
@@ -294,7 +297,8 @@ public class PlannerController {
                 createContextMenuForTableRow(row);
                 return row;
             });
-            nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementService.getUserServantNameList()));
+            nameColumn.setCellFactory(
+                    AutoCompleteTextFieldTableCell.forTableColumn(dataManagementService.getUserServantNameList()));
         }
     }
 
@@ -304,16 +308,17 @@ public class PlannerController {
         MenuItem clearRowButton = new MenuItem("Clear row");
         clearRowButton.setOnAction(event -> dataManagementService.erasePlannerServant(row.getItem()));
         MenuItem addRowButton = new MenuItem("Insert new row");
-        addRowButton.setOnAction(event -> dataManagementService.savePlannerServant(row.getTableView().getItems().indexOf(row.getItem()), new PlannerServantView()));
+        addRowButton.setOnAction(
+                event -> dataManagementService.savePlannerServant(row.getTableView().getItems().indexOf(row.getItem()),
+                        new PlannerServantView()));
         MenuItem addMultipleRowsButton = new MenuItem("Add X new rows");
         addMultipleRowsButton.setOnAction(event -> {
             TextInputDialog prompt = new TextInputDialog("10");
             prompt.setContentText("How many new rows to add?");
             prompt.setTitle("Add X new rows");
             prompt.setHeaderText("");
-            prompt.showAndWait().ifPresent(s -> {
-                IntStream.range(0, Integer.parseInt(s)).forEach(i -> dataManagementService.savePlannerServant(new PlannerServantView()));
-            });
+            prompt.showAndWait().ifPresent(s -> IntStream.range(0, Integer.parseInt(s)).forEach(
+                    i -> dataManagementService.savePlannerServant(new PlannerServantView())));
         });
         ContextMenu menu = new ContextMenu(addRowButton, addMultipleRowsButton, clearRowButton, removeRowButton);
         row.contextMenuProperty().bind(Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(menu));
@@ -326,8 +331,10 @@ public class PlannerController {
     }
 
     private void syncScrollbars() {
-        ScrollBar sumTableBar = sumTable.lookupAll(".scroll-bar").stream().map(node -> (ScrollBar) node).filter(scrollBar -> scrollBar.getOrientation() == Orientation.HORIZONTAL).findFirst().get();
-        ScrollBar plannerTableBar = plannerTable.lookupAll(".scroll-bar").stream().map(node -> (ScrollBar) node).filter(scrollBar -> scrollBar.getOrientation() == Orientation.HORIZONTAL).findFirst().get();
+        ScrollBar sumTableBar = sumTable.lookupAll(".scroll-bar").stream().map(node -> (ScrollBar) node).filter(
+                scrollBar -> scrollBar.getOrientation() == Orientation.HORIZONTAL).findFirst().get();
+        ScrollBar plannerTableBar = plannerTable.lookupAll(".scroll-bar").stream().map(node -> (ScrollBar) node).filter(
+                scrollBar -> scrollBar.getOrientation() == Orientation.HORIZONTAL).findFirst().get();
         sumTableBar.valueProperty().bindBidirectional(plannerTableBar.valueProperty());
     }
 
@@ -343,16 +350,18 @@ public class PlannerController {
             if (event.getNewValue().isEmpty()) {
                 dataManagementService.erasePlannerServant(event.getRowValue());
             } else {
-                dataManagementService.replaceBaseServantInPlannerRow(event.getTablePosition().getRow(), event.getRowValue(), event.getNewValue());
+                dataManagementService.replaceBaseServantInPlannerRow(event.getTablePosition().getRow(), event.getRowValue(),
+                        event.getNewValue());
                 event.getTableView().refresh();
             }
         });
         desired.getColumns().get(0).setOnEditCommit(event -> {
-            event.getRowValue().getDesLevel().set(servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, 100, 1));
+            event.getRowValue().getDesLevel().set(
+                    servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, 100, 1));
             plannerTable.refresh();
         });
         initCurrentInfoColumns();
-        desired.getColumns().stream().forEach(col1 -> col1.setPrefWidth(MainController.SHORT_CELL_WIDTH));
+        desired.getColumns().forEach(col1 -> col1.setPrefWidth(MainController.SHORT_CELL_WIDTH));
         desired.getColumns().forEach(col -> {
             TableColumn<PlannerServantView, Integer> actualCol = (TableColumn<PlannerServantView, Integer>) col;
             actualCol.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));

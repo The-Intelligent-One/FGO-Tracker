@@ -10,7 +10,7 @@ public class PlannerServantNameValueFactory implements Callback<TableColumn.Cell
     @Override
     public ObservableValue<String> call(TableColumn.CellDataFeatures<PlannerServantView, String> param) {
         SimpleStringProperty name = new SimpleStringProperty();
-        if (param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getValue() != null) {
+        if (param.getValue().getBaseServant().getValue() != null && param.getValue().getBaseServant().getValue().getBaseServant().getValue() != null) {
             name.set(param.getValue().getBaseServant().getValue().getBaseServant().getValue().getName());
         }
         return name;

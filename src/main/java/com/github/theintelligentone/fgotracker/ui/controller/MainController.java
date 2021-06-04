@@ -56,6 +56,23 @@ public class MainController {
         }
     }
 
+    public void importPlannerServantsFromCsv() {
+        if (dataManagementService.isDataLoaded()) {
+            displayFileChooserForPlannerCsvImport();
+        } else {
+            showNotLoadedYetAlert();
+        }
+    }
+
+    private void displayFileChooserForPlannerCsvImport() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("CSV to import");
+        File csvFile = fileChooser.showOpenDialog(Stage.getWindows().get(0));
+        if (csvFile != null) {
+            loadPlannerDataFromCsv(csvFile);
+        }
+    }
+
     private void displayFileChooserForInventoryCsvImport() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("CSV to import");

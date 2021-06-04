@@ -17,8 +17,6 @@ import lombok.Getter;
 
 public class MainApp extends Application {
     private static final String MAIN_WINDOW_FXML = "/fxml/mainWindow.fxml";
-    private static final double AUTO_WIDTH = 1040;
-    private static final double AUTO_HEIGHT = 1000;
     @Getter
     private static DataManagementService dataManagementService;
     private FXMLLoader loader;
@@ -29,7 +27,7 @@ public class MainApp extends Application {
     }
 
     @Override
-    public void init() throws Exception {
+    public void init() {
         dataManagementService = new DataManagementService();
         loader = new FXMLLoader(getClass().getResource(MAIN_WINDOW_FXML));
     }
@@ -50,6 +48,7 @@ public class MainApp extends Application {
         primaryStage.setHeight(screenHeight);
         primaryStage.setWidth(screenWidth);
         primaryStage.show();
+        primaryStage.setOnCloseRequest(event -> mainController.tearDown());
         loadingAlert.show();
     }
 
@@ -60,7 +59,7 @@ public class MainApp extends Application {
         loadingAlert.setContentText("Servant data loading");
         Task loadingTask = new Task() {
             @Override
-            protected Object call() throws Exception {
+            protected Object call() {
                 dataManagementService.initApp();
                 this.succeeded();
                 return null;
@@ -71,13 +70,11 @@ public class MainApp extends Application {
             loadingAlert.setResult(ButtonType.CANCEL);
             loadingAlert.close();
         });
-        loadingTask.setOnFailed(event -> Platform.exit());
+        loadingTask.setOnFailed(event -> {
+            loadingTask.getException().printStackTrace();
+            Platform.exit();
+        });
         new Thread(loadingTask).start();
         return loadingAlert;
-    }
-
-    @Override
-    public void stop() {
-        mainController.tearDown();
     }
 }

@@ -45,7 +45,10 @@ public class DataManagementService {
             "bond", 21);
     private static final Map<String, String> MAT_NAME_TRANSLATE_MAP = Map.of("blue", "gem",
             "red", "magic gem",
-            "gold", "secret gem");
+            "gold", "secret gem",
+            "Permafrost", "ice",
+            "Seashell", "shell",
+            "Stinger", "needle");
     public static Map<String, Integer> CLASS_ATTACK_MULTIPLIER;
     public static Map<String, Map<Integer, CardPlacementData>> CARD_DATA;
     private final DataRequestService requestService;
@@ -441,16 +444,16 @@ public class DataManagementService {
 
     public List<String> importPlannerServantsFromCsv(File sourceFile) {
         List<ManagerServant> managerLookup = fileService.loadManagerLookupTable();
-        List<String[]> importedData = fileService.importRosterCsv(sourceFile);
+        List<String[]> importedData = fileService.importPlannerCsv(sourceFile);
         List<PlannerServantView> importedServants = importedData.stream().map(
                 csvLine -> buildPlannerServantFromStringArray(csvLine, managerLookup)).collect(
                 Collectors.toList());
         List<String> notFoundNames = importedServants.stream()
-                .filter(svt -> svt.getBaseServant() != null && svt.getSvtId().getValue() == 0)
-                .map(svt -> svt.getBaseServant().getName())
+                .filter(svt -> svt.getBaseServant().getValue() != null && svt.getSvtId().getValue() == 0)
+                .map(svt -> svt.getBaseServant().getValue().getBaseServant().getValue().getName())
                 .collect(Collectors.toList());
         importedServants = importedServants.stream().filter(
-                svt -> svt.getBaseServant() == null || svt.getSvtId().getValue() != 0).collect(Collectors.toList());
+                svt -> svt.getBaseServant().getValue() == null || svt.getSvtId().getValue() != 0).collect(Collectors.toList());
         clearUnnecessaryEmptyPlannerRows(importedServants);
         plannerServantList.setAll(importedServants);
         return notFoundNames;
@@ -461,7 +464,7 @@ public class DataManagementService {
         PlannerServantView servant = new PlannerServantView();
         if (!servantName.isEmpty()) {
             Servant baseServant = findServantFromManager(servantName, managerLookup);
-            UserServantView baseUserServant = new UserServantView();
+            UserServantView baseUserServant = null;
             if (baseServant.getName() != null && !baseServant.getName().isEmpty()) {
                 baseUserServant = findUserServantByName(baseServant.getName());
             }
@@ -472,6 +475,7 @@ public class DataManagementService {
                 servant.getDesSkill2().set(Math.max(Math.min(convertToInt(importedData[11]), 10), 1));
                 servant.getDesSkill3().set(Math.max(Math.min(convertToInt(importedData[12]), 10), 1));
             } else {
+                baseUserServant = userServantToViewTransformer.transform(new UserServant());
                 baseServant = new Servant();
                 baseServant.setName(servantName);
                 baseUserServant.getBaseServant().set(baseServant);

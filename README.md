@@ -1,4 +1,4 @@
-TODO: images, KOFI, license, issue labeling, new issues (region, import to context, insert above)
+TODO: images, KOFI, license, issue labeling, feature poll, new issues (region, import to context, insert above)
 
 # FGO-Tracker
 ## Introduction

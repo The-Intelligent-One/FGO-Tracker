@@ -14,8 +14,12 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 
+import java.io.File;
+import java.util.List;
 import java.util.stream.IntStream;
 
 public class RosterController {
@@ -107,24 +111,73 @@ public class RosterController {
     }
 
     private void createContextMenuForTableRow(TableRow<UserServantView> row) {
+        MenuItem importButton = new MenuItem("Import roster from csv");
+        importButton.setOnAction(event -> importUserServantsFromCsv());
         MenuItem removeRowButton = new MenuItem("Delete row");
         removeRowButton.setOnAction(event -> dataManagementService.removeUserServant(row.getItem()));
         MenuItem clearRowButton = new MenuItem("Clear row");
         clearRowButton.setOnAction(event -> dataManagementService.eraseUserServant(row.getItem()));
-        MenuItem addRowButton = new MenuItem("Insert new row");
-        addRowButton.setOnAction(event -> dataManagementService.saveUserServant(row.getTableView().getItems().indexOf(row.getItem()), new UserServantView()));
+        MenuItem addRowAboveButton = new MenuItem("Insert row above");
+        addRowAboveButton.setOnAction(
+                event -> dataManagementService.saveUserServant(row.getTableView().getItems().indexOf(row.getItem()),
+                        new UserServantView()));
+        MenuItem addRowBelowButton = new MenuItem("Insert row below");
+        addRowBelowButton.setOnAction(
+                event -> dataManagementService.saveUserServant(row.getTableView().getItems().indexOf(row.getItem()) + 1,
+                        new UserServantView()));
         MenuItem addMultipleRowsButton = new MenuItem("Add X new rows");
         addMultipleRowsButton.setOnAction(event -> {
             TextInputDialog prompt = new TextInputDialog("10");
             prompt.setContentText("How many new rows to add?");
             prompt.setTitle("Add X new rows");
             prompt.setHeaderText("");
-            prompt.showAndWait().ifPresent(s -> {
-                IntStream.range(0, Integer.parseInt(s)).forEach(i -> dataManagementService.saveUserServant(new UserServantView()));
-            });
+            prompt.showAndWait().ifPresent(s -> IntStream.range(0, Integer.parseInt(s)).forEach(
+                    i -> dataManagementService.saveUserServant(new UserServantView())));
         });
-        ContextMenu menu = new ContextMenu(addRowButton, addMultipleRowsButton, clearRowButton, removeRowButton);
+        ContextMenu menu = new ContextMenu(importButton, addRowAboveButton, addRowBelowButton, addMultipleRowsButton,
+                clearRowButton, removeRowButton);
         row.contextMenuProperty().bind(Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(menu));
+    }
+
+    private void importUserServantsFromCsv() {
+        if (dataManagementService.isDataLoaded()) {
+            displayFileChooserForUserCsvImport();
+        } else {
+            showNotLoadedYetAlert();
+        }
+    }
+
+    private void displayFileChooserForUserCsvImport() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("CSV to import");
+        File csvFile = fileChooser.showOpenDialog(Stage.getWindows().get(0));
+        if (csvFile != null) {
+            loadRosterDataFromCsv(csvFile);
+        }
+    }
+
+    private void showNotLoadedYetAlert() {
+        Alert loadingAlert = new Alert(Alert.AlertType.WARNING);
+        loadingAlert.setContentText("Servant data still loading.");
+        loadingAlert.show();
+    }
+
+    private void loadRosterDataFromCsv(File csvFile) {
+        List<String> notFoundNames = dataManagementService.importUserServantsFromCsv(csvFile);
+        if (notFoundNames != null && !notFoundNames.isEmpty()) {
+            displayNotFoundAlert(notFoundNames);
+        }
+    }
+
+    private void displayNotFoundAlert(List<String> notFoundNames) {
+        StringBuilder stringBuilder = new StringBuilder();
+        Alert notFoundAlert = new Alert(Alert.AlertType.WARNING);
+        notFoundNames.forEach(str -> {
+            stringBuilder.append(str);
+            stringBuilder.append("\n");
+        });
+        notFoundAlert.setContentText(stringBuilder.toString());
+        notFoundAlert.show();
     }
 
     private void columnSetup() {
@@ -207,8 +260,10 @@ public class RosterController {
         skill1Column.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         skill1Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         skill1Column.setOnEditCommit(event -> {
-            event.getRowValue().getSkillLevel1().set(servantUtils.getNewValueIfValid(event, 1, 10));
-            rosterTable.refresh();
+            if (event.getRowValue().getSvtId().longValue() != 0) {
+                event.getRowValue().getSkillLevel1().set(servantUtils.getNewValueIfValid(event, 1, 10));
+                rosterTable.refresh();
+            }
         });
     }
 
@@ -216,8 +271,10 @@ public class RosterController {
         skill2Column.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         skill2Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         skill2Column.setOnEditCommit(event -> {
-            event.getRowValue().getSkillLevel2().set(servantUtils.getNewValueIfValid(event, 1, 10));
-            rosterTable.refresh();
+            if (event.getRowValue().getSvtId().longValue() != 0) {
+                event.getRowValue().getSkillLevel2().set(servantUtils.getNewValueIfValid(event, 1, 10));
+                rosterTable.refresh();
+            }
         });
     }
 
@@ -225,8 +282,10 @@ public class RosterController {
         skill3Column.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         skill3Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         skill3Column.setOnEditCommit(event -> {
-            event.getRowValue().getSkillLevel3().set(servantUtils.getNewValueIfValid(event, 1, 10));
-            rosterTable.refresh();
+            if (event.getRowValue().getSvtId().longValue() != 0) {
+                event.getRowValue().getSkillLevel3().set(servantUtils.getNewValueIfValid(event, 1, 10));
+                rosterTable.refresh();
+            }
         });
     }
 
@@ -234,8 +293,10 @@ public class RosterController {
         bondColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         bondColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         bondColumn.setOnEditCommit(event -> {
-            event.getRowValue().getBondLevel().set(servantUtils.getNewValueIfValid(event, 0, 15));
-            rosterTable.refresh();
+            if (event.getRowValue().getSvtId().longValue() != 0) {
+                event.getRowValue().getBondLevel().set(servantUtils.getNewValueIfValid(event, 0, 15));
+                rosterTable.refresh();
+            }
         });
     }
 
@@ -243,8 +304,10 @@ public class RosterController {
         levelColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         levelColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         levelColumn.setOnEditCommit(event -> {
-            event.getRowValue().getLevel().set(servantUtils.getNewValueIfValid(event, 1, 100));
-            rosterTable.refresh();
+            if (event.getRowValue().getSvtId().longValue() != 0) {
+                event.getRowValue().getLevel().set(servantUtils.getNewValueIfValid(event, 1, 100));
+                rosterTable.refresh();
+            }
         });
     }
 
@@ -252,8 +315,10 @@ public class RosterController {
         atkColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
         atkColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         atkColumn.setOnEditCommit(event -> {
-            event.getRowValue().getFouAtk().set(servantUtils.getNewValueIfValid(event, 0, 2000));
-            rosterTable.refresh();
+            if (event.getRowValue().getSvtId().longValue() != 0) {
+                event.getRowValue().getFouAtk().set(servantUtils.getNewValueIfValid(event, 0, 2000));
+                rosterTable.refresh();
+            }
         });
     }
 
@@ -261,23 +326,28 @@ public class RosterController {
         hpColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
         hpColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         hpColumn.setOnEditCommit(event -> {
-            event.getRowValue().getFouHp().set(servantUtils.getNewValueIfValid(event, 0, 2000));
-            rosterTable.refresh();
+            if (event.getRowValue().getSvtId().longValue() != 0) {
+                event.getRowValue().getFouHp().set(servantUtils.getNewValueIfValid(event, 0, 2000));
+                rosterTable.refresh();
+            }
         });
     }
 
     private void npLvlColumnSetup() {
         npLvlColumn.setCellFactory(list -> {
-            ComboBoxTableCell<UserServantView, String> tableCell = new ComboBoxTableCell<>(FXCollections.observableArrayList(ONE_TO_FIVE));
+            ComboBoxTableCell<UserServantView, String> tableCell = new ComboBoxTableCell<>(
+                    FXCollections.observableArrayList(ONE_TO_FIVE));
             tableCell.setComboBoxEditable(true);
             return tableCell;
         });
         npLvlColumn.setOnEditCommit(event -> {
-            int input = Integer.parseInt(event.getNewValue());
-            if (input <= 5 && input >= 1) {
-                event.getRowValue().getNpLevel().set(input);
+            if (event.getRowValue().getSvtId().longValue() != 0) {
+                int input = Integer.parseInt(event.getNewValue());
+                if (input <= 5 && input >= 1) {
+                    event.getRowValue().getNpLevel().set(input);
+                }
+                rosterTable.refresh();
             }
-            rosterTable.refresh();
         });
     }
 
@@ -287,7 +357,8 @@ public class RosterController {
             if (event.getNewValue().isEmpty()) {
                 dataManagementService.eraseUserServant(event.getRowValue());
             } else {
-                dataManagementService.replaceBaseServantInRow(event.getTablePosition().getRow(), event.getRowValue(), event.getNewValue());
+                dataManagementService.replaceBaseServantInRow(event.getTablePosition().getRow(), event.getRowValue(),
+                        event.getNewValue());
                 event.getTableView().refresh();
             }
         });

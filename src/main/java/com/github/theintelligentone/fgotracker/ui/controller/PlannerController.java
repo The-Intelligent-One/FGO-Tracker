@@ -34,8 +34,11 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -223,9 +226,8 @@ public class PlannerController {
             matCost.setItem(mat.getItem());
             int sumValue = getPlannedMatUseSum(plannerTable.getItems(), mat);
             IntegerProperty sum = new SimpleIntegerProperty(sumValue);
-            plannerTable.getItems().addListener((ListChangeListener<? super PlannerServantView>) c -> {
-                sum.set(getPlannedMatUseSum((List<PlannerServantView>) c.getList(), mat));
-            });
+            plannerTable.getItems().addListener((ListChangeListener<? super PlannerServantView>) c -> sum.set(
+                    getPlannedMatUseSum((List<PlannerServantView>) c.getList(), mat)));
             matCost.getAmount().bind(sum);
             result.add(matCost);
         }
@@ -281,6 +283,19 @@ public class PlannerController {
     private void setupTableData() {
         if (isLongTerm) {
             loadLtTableData();
+            plannerTable.setRowFactory(param -> {
+                PseudoClass lastRow = PseudoClass.getPseudoClass("last-row");
+                TableRow<PlannerServantView> row = new TableRow<>() {
+                    @Override
+                    public void updateIndex(int index) {
+                        super.updateIndex(index);
+                        pseudoClassStateChanged(lastRow,
+                                index >= 0 && index == plannerTable.getItems().size() - 1);
+                    }
+                };
+                createContextMenuForTableRow(row);
+                return row;
+            });
         } else {
             loadTableData();
             plannerTable.setEditable(true);
@@ -303,13 +318,21 @@ public class PlannerController {
     }
 
     private void createContextMenuForTableRow(TableRow<PlannerServantView> row) {
+        MenuItem importInventoryButton = new MenuItem("Import inventory from csv");
+        importInventoryButton.setOnAction(event -> importInventoryFromCsv());
+        MenuItem importPlannerServantsButton = new MenuItem("Import servants for planner from CSV");
+        importPlannerServantsButton.setOnAction(event -> importPlannerServantsFromCsv());
         MenuItem removeRowButton = new MenuItem("Delete row");
         removeRowButton.setOnAction(event -> dataManagementService.removePlannerServant(row.getItem()));
         MenuItem clearRowButton = new MenuItem("Clear row");
         clearRowButton.setOnAction(event -> dataManagementService.erasePlannerServant(row.getItem()));
-        MenuItem addRowButton = new MenuItem("Insert new row");
-        addRowButton.setOnAction(
+        MenuItem addRowAboveButton = new MenuItem("Insert row above");
+        addRowAboveButton.setOnAction(
                 event -> dataManagementService.savePlannerServant(row.getTableView().getItems().indexOf(row.getItem()),
+                        new PlannerServantView()));
+        MenuItem addRowBelowButton = new MenuItem("Insert row below");
+        addRowBelowButton.setOnAction(
+                event -> dataManagementService.savePlannerServant(row.getTableView().getItems().indexOf(row.getItem()) + 1,
                         new PlannerServantView()));
         MenuItem addMultipleRowsButton = new MenuItem("Add X new rows");
         addMultipleRowsButton.setOnAction(event -> {
@@ -320,7 +343,11 @@ public class PlannerController {
             prompt.showAndWait().ifPresent(s -> IntStream.range(0, Integer.parseInt(s)).forEach(
                     i -> dataManagementService.savePlannerServant(new PlannerServantView())));
         });
-        ContextMenu menu = new ContextMenu(addRowButton, addMultipleRowsButton, clearRowButton, removeRowButton);
+        ContextMenu menu = new ContextMenu(importInventoryButton);
+        if (!isLongTerm) {
+            menu.getItems().addAll(importPlannerServantsButton, addRowAboveButton, addRowBelowButton, addMultipleRowsButton,
+                    clearRowButton, removeRowButton);
+        }
         row.contextMenuProperty().bind(Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(menu));
     }
 
@@ -339,11 +366,13 @@ public class PlannerController {
     }
 
     private void tableInit() {
+        sumTable.getSelectionModel().setCellSelectionEnabled(true);
         sumTable.setFixedCellSize(MainController.CELL_HEIGHT);
         initPlannerTable();
     }
 
     private void initPlannerTable() {
+        plannerTable.getSelectionModel().setCellSelectionEnabled(true);
         plannerTable.setFixedCellSize(MainController.CELL_HEIGHT);
         nameColumn.setPrefWidth(MainController.NAME_CELL_WIDTH);
         nameColumn.setOnEditCommit(event -> {
@@ -356,9 +385,11 @@ public class PlannerController {
             }
         });
         desired.getColumns().get(0).setOnEditCommit(event -> {
-            event.getRowValue().getDesLevel().set(
-                    servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, 100, 1));
-            plannerTable.refresh();
+            if (event.getRowValue().getSvtId().longValue() != 0) {
+                event.getRowValue().getDesLevel().set(
+                        servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, 100, 1));
+                plannerTable.refresh();
+            }
         });
         initCurrentInfoColumns();
         desired.getColumns().forEach(col1 -> col1.setPrefWidth(MainController.SHORT_CELL_WIDTH));
@@ -406,6 +437,71 @@ public class PlannerController {
             return skill3;
         });
         current.getColumns().forEach(col -> col.setPrefWidth(MainController.SHORT_CELL_WIDTH));
+    }
+
+    private void importInventoryFromCsv() {
+        if (dataManagementService.isDataLoaded()) {
+            displayFileChooserForInventoryCsvImport();
+        } else {
+            showNotLoadedYetAlert();
+        }
+    }
+
+    private void importPlannerServantsFromCsv() {
+        if (dataManagementService.isDataLoaded()) {
+            displayFileChooserForPlannerCsvImport();
+        } else {
+            showNotLoadedYetAlert();
+        }
+    }
+
+    private void displayFileChooserForPlannerCsvImport() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("CSV to import");
+        File csvFile = fileChooser.showOpenDialog(Stage.getWindows().get(0));
+        if (csvFile != null) {
+            loadPlannerDataFromCsv(csvFile);
+        }
+    }
+
+    private void displayFileChooserForInventoryCsvImport() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("CSV to import");
+        File csvFile = fileChooser.showOpenDialog(Stage.getWindows().get(0));
+        if (csvFile != null) {
+            loadInventoryDataFromCsv(csvFile);
+        }
+    }
+
+    private void loadInventoryDataFromCsv(File csvFile) {
+        List<String> notFoundNames = dataManagementService.importInventoryFromCsv(csvFile);
+        if (notFoundNames != null && !notFoundNames.isEmpty()) {
+            displayNotFoundAlert(notFoundNames);
+        }
+    }
+
+    private void loadPlannerDataFromCsv(File csvFile) {
+        List<String> notFoundNames = dataManagementService.importPlannerServantsFromCsv(csvFile);
+        if (notFoundNames != null && !notFoundNames.isEmpty()) {
+            displayNotFoundAlert(notFoundNames);
+        }
+    }
+
+    private void displayNotFoundAlert(List<String> notFoundNames) {
+        StringBuilder stringBuilder = new StringBuilder();
+        Alert notFoundAlert = new Alert(Alert.AlertType.WARNING);
+        notFoundNames.forEach(str -> {
+            stringBuilder.append(str);
+            stringBuilder.append("\n");
+        });
+        notFoundAlert.setContentText(stringBuilder.toString());
+        notFoundAlert.show();
+    }
+
+    private void showNotLoadedYetAlert() {
+        Alert loadingAlert = new Alert(Alert.AlertType.WARNING);
+        loadingAlert.setContentText("Servant data still loading.");
+        loadingAlert.show();
     }
 
     private boolean validServant(TableColumn.CellDataFeatures<PlannerServantView, Number> param) {

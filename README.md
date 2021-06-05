@@ -15,15 +15,17 @@ If the answer is yes to either of those, than this app is for you! That last par
 
 ## Full Usage
 ### General info
-Download whichever release you want from the releases (stable release is the rarer, more stable version that only gets updated when a full functionality has been tested enough to seem mostly bug free, while the beta version is the new stuff that works _in theory_) and extract it, preferably to its own folder. You will see an exe file and a "jre" folder. To start the app, just run the exe.
+Download whichever release you want from the releases (stable release is the less frequent, more stable version that only gets updated when a full functionality has been tested enough to seem mostly bug free, while the beta version is the new stuff that works _in theory_) and extract it, preferably to its own folder. You will see an exe file and a "jre" folder. To start the app, just run the exe.
 
-When the app starts it will check if there's a newer version of the data from the Atlas DB than what's currently saved, and if so will download it and save it. On subsequent starts, if the saved data is up to date, it will load it from the file, significantly speeding up the startup time (in other words, the first time you start will be kinda slow, but otherwise the app starts up fast, except for the occasions when the DB had an update). This includes the images for the material icons, and anything else that might use images later.
+When the app starts it will check if there's a newer version of the data from the [Atlas DB](https://apps.atlasacademy.io/db/) than what's currently saved, and if so will download it and save it. On subsequent starts, if the saved data is up to date, it will load it from the file, significantly speeding up the startup time (in other words, the first time you start will be kinda slow, but otherwise the app starts up fast, except for the occasions when the DB had an update). This includes the images for the material icons, and anything else that might use images later.
 
 The app also saves your user data (the servants in your roster, your inventory, etc.), and loads it from those files, so if you want a fresh start, or want to back your data up, you can do that very easily. Both the user data, and the DB cache are saved in a "data" folder the app creates next to itself, and all of them are saved in plain text json files (since there's really no info here that needs to be hidden or encrypted), which also allows easy editing if you feel like it (though be aware that messing with the structure of the files will, of course, lead to the app failing, in those cases you can just delete or remove the data folder, and let the app recreate it).
 ### Tables
 The tables on all current tabs work basically the same, they are fairly straightforwad to use, but here's a how-to anyway.
 ### Roster Tab
 The core of the current feature set is the roster table. As you might expect, it's just a big table for you to record your servants, their levels, skill levels, etc., both for you to keep track of it, as well as for the rest of the app to use it.
+
+![image of roster tab](https://i.imgur.com/9DVvefj.png)
 
 One slight problem with how the GUI works is that you can only use rows that have been "initialized". By default, the app will always add enough valid rows to fill one full page of the table (at least on my 1080p monitor), but if you want to add or remove rows, you can use the context menu (right click). I also add a black line to separate the valid and invalid rows, because for some inexplicable reason, they look the exact same.
 ##### Planned changes/additions
@@ -54,6 +56,6 @@ As someone who already has more hobbies than time even without developing this, 
 
 As other developers might notice, the code of this app is probably pretty atrocious already, so I don't _really_ have code style rules and other stuff that I'd require from pull requests, but I do want you to test whatever you submit **thoroughly**. As I said, I don't exactly have a whole lot of time, and I definitely don't have enough to test other people's code.
 ## Credits and Support
-The app is built on the database from Atlas DB, which, in theory, is an absolutely up-to-date database of the game data, and this app was _very_ heavily inspired by FGO Manager by Zuth. Without them, I never would've thought of making this, and this app wouldn't work in the first place.
+The app is built on the database from [Atlas DB](https://apps.atlasacademy.io/db/), which, in theory, is an absolutely up-to-date database of the game data, and this app was _very_ heavily inspired by [FGO Manager by Zuth](https://www.reddit.com/r/grandorder/comments/cz3hak/tool_fgo_manager_v10/). Without them, I never would've thought of making this, and this app wouldn't work in the first place.
 
 While the app is completely free and open-source (because honestly, I wouldn't pay for just a tool like this, so I don't expect others to pay either), if you decide that you appreciate my sleepless nights I spent on this (being too excited about my ideas to sleep), you can drop a few SQ my way here (so maybe next time Jalter comes around with a banner, she won't abandon me in the dust again)

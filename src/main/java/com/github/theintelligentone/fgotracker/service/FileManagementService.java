@@ -25,20 +25,22 @@ import java.util.stream.Collectors;
 
 public class FileManagementService {
     private static final String BASE_DATA_PATH = "data/";
+    private static final String CACHE_PATH = "cache/";
+    private static final String USER_DATA_PATH = "userdata/";
     private static final String PNG_FORMAT = "png";
     private static final String MANAGER_DB_PATH = "/managerDB-v1.3.2.csv";
 
     private static final String VERSION_FILE = "dbVersion.json";
-    private static final String FULL_DATA_FILE = "cache/servants.json";
-    private static final String MATERIAL_DATA_FILE = "cache/mats.json";
-    private static final String IMAGE_FOLDER_PATH = "cache/images/";
-    private static final String CLASS_ATTACK_FILE = "cache/classAttack.json";
-    private static final String CARD_DATA_FILE = "cache/cardData.json";
+    private static final String FULL_DATA_FILE = "servants.json";
+    private static final String MATERIAL_DATA_FILE = "mats.json";
+    private static final String IMAGE_FOLDER_PATH = "images/";
+    private static final String CLASS_ATTACK_FILE = "classAttack.json";
+    private static final String CARD_DATA_FILE = "cardData.json";
 
-    private static final String GAME_REGION_FILE = "userdata/region.json";
-    private static final String USER_SERVANT_FILE = "userdata/servants.json";
-    private static final String PLANNED_SERVANT_FILE = "userdata/planned.json";
-    private static final String INVENTORY_FILE = "userdata/inventory.json";
+    private static final String GAME_REGION_FILE = "region.json";
+    private static final String USER_SERVANT_FILE = "servants.json";
+    private static final String PLANNED_SERVANT_FILE = "planned.json";
+    private static final String INVENTORY_FILE = "inventory.json";
 
     private final ObjectMapper objectMapper;
 
@@ -52,7 +54,7 @@ public class FileManagementService {
     }
 
     public void saveFullServantData(List<Servant> servants, String gameRegion) {
-        File file = new File(BASE_DATA_PATH, gameRegion + "_" + FULL_DATA_FILE);
+        File file = new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + FULL_DATA_FILE);
         saveDataToFile(servants, file);
     }
 
@@ -107,7 +109,7 @@ public class FileManagementService {
     }
 
     public List<Servant> loadFullServantData(String gameRegion) {
-        File file = new File(BASE_DATA_PATH, gameRegion + "_" + FULL_DATA_FILE);
+        File file = new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + FULL_DATA_FILE);
         List<Servant> servantList = new ArrayList<>();
         if (file.length() != 0) {
             try {
@@ -191,14 +193,15 @@ public class FileManagementService {
         return cardDataMap;
     }
 
-    public long getCurrentVersion() {
-        String versionAsString = "";
+    public Map<String, Long> getCurrentVersion() {
+        File file = new File(BASE_DATA_PATH, VERSION_FILE);
+        Map<String, Long> versionMap = new HashMap<>();
         try {
-            versionAsString = Files.readString(Path.of(BASE_DATA_PATH, VERSION_FILE));
+            versionMap = objectMapper.readValue(file, new TypeReference<>() {});
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return versionAsString.isEmpty() ? 0 : Long.parseLong(versionAsString);
+        return versionMap;
     }
 
     public String loadGameRegion() {
@@ -211,12 +214,9 @@ public class FileManagementService {
         return regionAsString;
     }
 
-    public void saveNewVersion(long timestamp) {
-        try {
-            Files.writeString(Path.of(BASE_DATA_PATH, VERSION_FILE), String.valueOf(timestamp));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void saveNewVersion(Map<String, Long> versionMap) {
+        File file = new File(BASE_DATA_PATH, VERSION_FILE);
+        saveDataToFile(versionMap, file);
     }
 
     public void saveGameRegion(String region) {
@@ -228,16 +228,18 @@ public class FileManagementService {
     }
 
     private void initFileStructure() throws IOException {
-        createFileIfDoesNotExist(FULL_DATA_FILE);
-        createFileIfDoesNotExist(MATERIAL_DATA_FILE);
-        createFileIfDoesNotExist(USER_SERVANT_FILE);
-        createFileIfDoesNotExist(INVENTORY_FILE);
-        createFileIfDoesNotExist(VERSION_FILE);
+        createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + "NA_" + FULL_DATA_FILE);
+        createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + "JP_" + FULL_DATA_FILE);
+        createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + "NA_" + MATERIAL_DATA_FILE);
+        createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + "JP_" + MATERIAL_DATA_FILE);
+        createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + USER_DATA_PATH + USER_SERVANT_FILE);
+        createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + USER_DATA_PATH + INVENTORY_FILE);
+        createFileIfDoesNotExist(BASE_DATA_PATH + VERSION_FILE);
         Files.createDirectories(Path.of(BASE_DATA_PATH, IMAGE_FOLDER_PATH));
     }
 
     private void createFileIfDoesNotExist(String filePath) throws IOException {
-        File file = new File(BASE_DATA_PATH, filePath);
+        File file = new File(filePath);
         file.getParentFile().mkdirs();
         file.createNewFile();
     }

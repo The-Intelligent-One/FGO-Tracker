@@ -1,7 +1,6 @@
 package com.github.theintelligentone.fgotracker.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
@@ -77,14 +76,14 @@ public class DataRequestService {
         return new Image(material.getIcon());
     }
 
-    public long getOnlineVersion() {
-        JsonNode response = null;
+    public Map<String, Long> getOnlineVersion() {
+        Map<String, Long> response = new HashMap<>();
         try {
-            response = objectMapper.readTree(new URL(VERSION_URL));
+            response = objectMapper.readValue(new URL(CARD_DETAILS_URL), new TypeReference<>() {});
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return Objects.requireNonNull(response).get("NA").get("timestamp").asInt();
+        return response;
     }
 
     private boolean isServant(Servant svt) {

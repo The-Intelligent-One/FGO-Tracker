@@ -73,7 +73,7 @@ public class DataManagementService {
     private ObservableList<UserServantView> userServantList;
     private ObservableList<PlannerServantView> plannerServantList;
     private List<Servant> servantDataList;
-    private long currentVersion;
+    private Map<String, Long> currentVersion;
 
     public DataManagementService() {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -228,11 +228,11 @@ public class DataManagementService {
 
     private boolean newVersionAvailable() {
         currentVersion = fileService.getCurrentVersion();
-        long onlineVersion = requestService.getOnlineVersion();
+        Map<String, Long> onlineVersion = requestService.getOnlineVersion();
         boolean needUpdate = false;
-        if (onlineVersion > currentVersion) {
+        if (onlineVersion.getOrDefault(gameRegion, 0L) > currentVersion.getOrDefault(gameRegion, 0L)) {
             needUpdate = true;
-            currentVersion = onlineVersion;
+            currentVersion.put(gameRegion, onlineVersion.get(gameRegion));
         }
         return needUpdate;
     }

@@ -10,6 +10,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.ChoiceDialog;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -34,33 +35,60 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        double screenHeight = Screen.getPrimary().getBounds().getMaxY() * 3 / 4;
-        double screenWidth = Screen.getPrimary().getBounds().getMaxX() * 3 / 4;
         Parent root = loader.load();
         mainController = loader.getController();
-        Alert loadingAlert = initServantData();
+        Alert loadingAlert = createServantLoadingAlert();
         mainController.initTables();
         Scene scene = new Scene(root);
         scene.getStylesheets().add("tableStyle.css");
+        setupAndShowPrimaryStage(primaryStage, scene);
+        loadingAlert.show();
+    }
+
+    private void setupAndShowPrimaryStage(Stage primaryStage, Scene scene) {
+        double screenHeight = Screen.getPrimary().getBounds().getMaxY() * 3 / 4;
+        double screenWidth = Screen.getPrimary().getBounds().getMaxX() * 3 / 4;
         primaryStage.setScene(scene);
         primaryStage.setResizable(false);
         primaryStage.setTitle("FGO Tracker");
         primaryStage.setHeight(screenHeight);
         primaryStage.setWidth(screenWidth);
-        primaryStage.show();
         primaryStage.setOnCloseRequest(event -> mainController.tearDown());
-        loadingAlert.show();
+        primaryStage.show();
     }
 
-    private Alert initServantData() {
+    private Alert createServantLoadingAlert() {
+        String selectedRegion = dataManagementService.getGameRegion();
+        if (!selectedRegion.isEmpty()) {
+            selectedRegion = letUserChooseRegion();
+        }
+        Alert loadingAlert = setupLoadingAlert();
+        new Thread(createLoadingTaskWithAlert(selectedRegion, loadingAlert)).start();
+        return loadingAlert;
+    }
+
+    private Alert setupLoadingAlert() {
         Alert loadingAlert = new Alert(Alert.AlertType.NONE);
         loadingAlert.setTitle("FGO Tracker");
         loadingAlert.initStyle(StageStyle.UNIFIED);
         loadingAlert.setContentText("Servant data loading");
+        return loadingAlert;
+    }
+
+    private String letUserChooseRegion() {
+        ChoiceDialog<String> regionDialog = new ChoiceDialog<>();
+        regionDialog.setTitle("FGO Region");
+        regionDialog.setContentText("Which region are you playing on?");
+        regionDialog.getItems().addAll("JP", "NA");
+        regionDialog.setOnCloseRequest(event -> Platform.exit());
+        return regionDialog.showAndWait().orElse("");
+    }
+
+    private Task createLoadingTaskWithAlert(String selectedRegion, Alert loadingAlert) {
         Task loadingTask = new Task() {
             @Override
             protected Object call() {
-                dataManagementService.initApp();
+                dataManagementService.initApp(selectedRegion);
                 this.succeeded();
                 return null;
             }
@@ -74,7 +102,6 @@ public class MainApp extends Application {
             loadingTask.getException().printStackTrace();
             Platform.exit();
         });
-        new Thread(loadingTask).start();
-        return loadingAlert;
+        return loadingTask;
     }
 }

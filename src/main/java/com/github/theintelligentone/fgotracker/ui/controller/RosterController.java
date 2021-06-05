@@ -150,6 +150,7 @@ public class RosterController {
     private void displayFileChooserForUserCsvImport() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("CSV to import");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
         File csvFile = fileChooser.showOpenDialog(Stage.getWindows().get(0));
         if (csvFile != null) {
             loadRosterDataFromCsv(csvFile);

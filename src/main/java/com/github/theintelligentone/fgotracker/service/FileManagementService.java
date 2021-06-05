@@ -25,17 +25,21 @@ import java.util.stream.Collectors;
 
 public class FileManagementService {
     private static final String BASE_DATA_PATH = "data/";
+    private static final String PNG_FORMAT = "png";
+    private static final String MANAGER_DB_PATH = "/managerDB-v1.3.2.csv";
+
     private static final String VERSION_FILE = "dbVersion.json";
     private static final String FULL_DATA_FILE = "cache/servants.json";
     private static final String MATERIAL_DATA_FILE = "cache/mats.json";
     private static final String IMAGE_FOLDER_PATH = "cache/images/";
     private static final String CLASS_ATTACK_FILE = "cache/classAttack.json";
     private static final String CARD_DATA_FILE = "cache/cardData.json";
-    private static final String USER_DATA_FILE = "userdata/servants.json";
-    private static final String PLANNED_DATA_FILE = "userdata/planned.json";
-    private static final String MANAGER_DB_PATH = "/managerDB-v1.3.2.csv";
-    private static final String PNG_FORMAT = "png";
+
+    private static final String GAME_REGION_FILE = "userdata/region.json";
+    private static final String USER_SERVANT_FILE = "userdata/servants.json";
+    private static final String PLANNED_SERVANT_FILE = "userdata/planned.json";
     private static final String INVENTORY_FILE = "userdata/inventory.json";
+
     private final ObjectMapper objectMapper;
 
     public FileManagementService(ObjectMapper objectMapper) {
@@ -47,8 +51,8 @@ public class FileManagementService {
         }
     }
 
-    public void saveFullServantData(List<Servant> servants) {
-        File file = new File(BASE_DATA_PATH, FULL_DATA_FILE);
+    public void saveFullServantData(List<Servant> servants, String gameRegion) {
+        File file = new File(BASE_DATA_PATH, gameRegion + "_" + FULL_DATA_FILE);
         saveDataToFile(servants, file);
     }
 
@@ -63,8 +67,8 @@ public class FileManagementService {
         }
     }
 
-    public void saveMaterialData(List<UpgradeMaterial> materials) {
-        File file = new File(BASE_DATA_PATH, MATERIAL_DATA_FILE);
+    public void saveMaterialData(List<UpgradeMaterial> materials, String gameRegion) {
+        File file = new File(BASE_DATA_PATH, gameRegion + "_" + MATERIAL_DATA_FILE);
         materials.forEach(mat -> saveImage(mat.getIconImage(), mat.getId()));
         saveDataToFile(materials, file);
     }
@@ -80,12 +84,12 @@ public class FileManagementService {
     }
 
     public void saveUserServants(List<UserServant> servants) {
-        File file = new File(BASE_DATA_PATH, USER_DATA_FILE);
+        File file = new File(BASE_DATA_PATH, USER_SERVANT_FILE);
         saveDataToFile(servants, file);
     }
 
     public void savePlannerServants(List<PlannerServant> servants) {
-        File file = new File(BASE_DATA_PATH, PLANNED_DATA_FILE);
+        File file = new File(BASE_DATA_PATH, PLANNED_SERVANT_FILE);
         saveDataToFile(servants, file);
     }
 
@@ -102,8 +106,8 @@ public class FileManagementService {
         }
     }
 
-    public List<Servant> loadFullServantData() {
-        File file = new File(BASE_DATA_PATH, FULL_DATA_FILE);
+    public List<Servant> loadFullServantData(String gameRegion) {
+        File file = new File(BASE_DATA_PATH, gameRegion + "_" + FULL_DATA_FILE);
         List<Servant> servantList = new ArrayList<>();
         if (file.length() != 0) {
             try {
@@ -115,8 +119,8 @@ public class FileManagementService {
         return servantList;
     }
 
-    public List<UpgradeMaterial> loadMaterialData() {
-        File file = new File(BASE_DATA_PATH, MATERIAL_DATA_FILE);
+    public List<UpgradeMaterial> loadMaterialData(String gameRegion) {
+        File file = new File(BASE_DATA_PATH, gameRegion + "_" + MATERIAL_DATA_FILE);
         List<UpgradeMaterial> itemList = new ArrayList<>();
         if (file.length() != 0) {
             try {
@@ -130,7 +134,7 @@ public class FileManagementService {
     }
 
     public List<UserServant> loadUserData() {
-        File file = new File(BASE_DATA_PATH, USER_DATA_FILE);
+        File file = new File(BASE_DATA_PATH, USER_SERVANT_FILE);
         List<UserServant> basicDataList = new ArrayList<>();
         if (file.length() != 0) {
             try {
@@ -143,7 +147,7 @@ public class FileManagementService {
     }
 
     public List<PlannerServant> loadPlannedServantData() {
-        File file = new File(BASE_DATA_PATH, PLANNED_DATA_FILE);
+        File file = new File(BASE_DATA_PATH, PLANNED_SERVANT_FILE);
         List<PlannerServant> basicDataList = new ArrayList<>();
         if (file.length() != 0) {
             try {
@@ -197,6 +201,16 @@ public class FileManagementService {
         return versionAsString.isEmpty() ? 0 : Long.parseLong(versionAsString);
     }
 
+    public String loadGameRegion() {
+        String regionAsString = "";
+        try {
+            regionAsString = Files.readString(Path.of(BASE_DATA_PATH, GAME_REGION_FILE));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return regionAsString;
+    }
+
     public void saveNewVersion(long timestamp) {
         try {
             Files.writeString(Path.of(BASE_DATA_PATH, VERSION_FILE), String.valueOf(timestamp));
@@ -205,10 +219,18 @@ public class FileManagementService {
         }
     }
 
+    public void saveGameRegion(String region) {
+        try {
+            Files.writeString(Path.of(BASE_DATA_PATH, VERSION_FILE), region);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void initFileStructure() throws IOException {
         createFileIfDoesNotExist(FULL_DATA_FILE);
         createFileIfDoesNotExist(MATERIAL_DATA_FILE);
-        createFileIfDoesNotExist(USER_DATA_FILE);
+        createFileIfDoesNotExist(USER_SERVANT_FILE);
         createFileIfDoesNotExist(INVENTORY_FILE);
         createFileIfDoesNotExist(VERSION_FILE);
         Files.createDirectories(Path.of(BASE_DATA_PATH, IMAGE_FOLDER_PATH));

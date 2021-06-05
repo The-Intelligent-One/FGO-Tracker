@@ -51,6 +51,7 @@ public class DataManagementService {
             "Stinger", "needle");
     public static Map<String, Integer> CLASS_ATTACK_MULTIPLIER;
     public static Map<String, Map<Integer, CardPlacementData>> CARD_DATA;
+
     private final DataRequestService requestService;
     private final FileManagementService fileService;
     private final UserServantToViewTransformer userServantToViewTransformer;
@@ -67,6 +68,8 @@ public class DataManagementService {
     private InventoryView inventory;
     @Getter
     private boolean iconsResized = false;
+    @Getter
+    private String gameRegion;
     private ObservableList<UserServantView> userServantList;
     private ObservableList<PlannerServantView> plannerServantList;
     private List<Servant> servantDataList;
@@ -79,6 +82,7 @@ public class DataManagementService {
         this.userServantToViewTransformer = new UserServantToViewTransformer();
         this.inventoryToViewTransformer = new InventoryToViewTransformer();
         this.plannerServantToViewTransformer = new PlannerServantToViewTransformer();
+        gameRegion = fileService.loadGameRegion();
     }
 
     public ObservableList<PlannerServantView> getPlannerServantList() {
@@ -101,7 +105,11 @@ public class DataManagementService {
         return servantDataList != null && !servantDataList.isEmpty();
     }
 
-    public void initApp() {
+    public void initApp(String selectedRegion) {
+        if (!gameRegion.isEmpty()) {
+            gameRegion = selectedRegion;
+            fileService.saveGameRegion(gameRegion);
+        }
         initDataLists();
         refreshAllData();
     }
@@ -187,8 +195,8 @@ public class DataManagementService {
     }
 
     private void loadFromCache() {
-        servantDataList = fileService.loadFullServantData();
-        materials = fileService.loadMaterialData();
+        servantDataList = fileService.loadFullServantData(gameRegion);
+        materials = fileService.loadMaterialData(gameRegion);
         iconsResized = true;
         CLASS_ATTACK_MULTIPLIER = fileService.getClassAttackRate();
         CARD_DATA = fileService.getCardData();
@@ -200,19 +208,19 @@ public class DataManagementService {
     }
 
     private void saveNewDataToCache() {
-        fileService.saveFullServantData(servantDataList);
+        fileService.saveFullServantData(servantDataList, gameRegion);
         fileService.saveClassAttackRate(CLASS_ATTACK_MULTIPLIER);
         fileService.saveCardData(CARD_DATA);
         fileService.saveNewVersion(currentVersion);
     }
 
     public void saveMaterialData() {
-        fileService.saveMaterialData(materials);
+        fileService.saveMaterialData(materials, gameRegion);
     }
 
     private void downloadNewData() {
-        servantDataList = requestService.getAllServantData();
-        materials = requestService.getAllMaterialData();
+        servantDataList = requestService.getAllServantData(gameRegion);
+        materials = requestService.getAllMaterialData(gameRegion);
         materials.forEach(material -> material.setIconImage(requestService.getImageForMaterial(material)));
         CLASS_ATTACK_MULTIPLIER = requestService.getClassAttackRate();
         CARD_DATA = requestService.getCardDetails();

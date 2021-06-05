@@ -18,8 +18,11 @@ public class DataRequestService {
     private static final String[] SERVANT_TYPES = {"normal", "heroine"};
     private static final String[] MATERIAL_USES = {"skill", "ascension"};
     private static final String[] EXCLUDED_MATERIAL_TYPES = {"eventItem"};
-    private static final String ALL_SERVANT_URL = "https://api.atlasacademy.io/export/NA/nice_servant.json";
-    private static final String MAT_URL = "https://api.atlasacademy.io/export/NA/nice_item.json";
+    private static final Map<String, String> ALL_SERVANT_URL = Map.of("NA",
+            "https://api.atlasacademy.io/export/NA/nice_servant.json",
+            "JP", "https://api.atlasacademy.io/export/JP/nice_servant_lang_en.json");
+    private static final Map<String, String> MAT_URL = Map.of("NA", "https://api.atlasacademy.io/export/NA/nice_item.json",
+            "JP", "https://api.atlasacademy.io/export/JP/nice_item_lang_en.json");
     private static final String CLASS_ATTACK_RATE_URL = "https://api.atlasacademy.io/export/NA/NiceClassAttackRate.json";
     private static final String CARD_DETAILS_URL = "https://api.atlasacademy.io/export/NA/NiceCard.json";
     private static final String VERSION_URL = "https://api.atlasacademy.io/info";
@@ -30,20 +33,20 @@ public class DataRequestService {
         this.objectMapper = objectMapper;
     }
 
-    public List<Servant> getAllServantData() {
+    public List<Servant> getAllServantData(String gameRegion) {
         List<Servant> dataList = new ArrayList<>();
         try {
-            dataList = objectMapper.readValue(new URL(ALL_SERVANT_URL), new TypeReference<>() {});
+            dataList = objectMapper.readValue(new URL(ALL_SERVANT_URL.get(gameRegion)), new TypeReference<>() {});
         } catch (IOException e) {
             e.printStackTrace();
         }
         return dataList.stream().filter(this::isServant).collect(Collectors.toList());
     }
 
-    public List<UpgradeMaterial> getAllMaterialData() {
+    public List<UpgradeMaterial> getAllMaterialData(String gameRegion) {
         List<UpgradeMaterial> dataList = new ArrayList<>();
         try {
-            dataList = objectMapper.readValue(new URL(MAT_URL), new TypeReference<>() {});
+            dataList = objectMapper.readValue(new URL(MAT_URL.get(gameRegion)), new TypeReference<>() {});
         } catch (IOException e) {
             e.printStackTrace();
         }

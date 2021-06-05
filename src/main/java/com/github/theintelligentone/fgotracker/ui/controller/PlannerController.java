@@ -441,7 +441,10 @@ public class PlannerController {
 
     private void importInventoryFromCsv() {
         if (dataManagementService.isDataLoaded()) {
-            displayFileChooserForInventoryCsvImport();
+            File csvFile = importCsvFile();
+            if (csvFile != null) {
+                loadInventoryDataFromCsv(csvFile);
+            }
         } else {
             showNotLoadedYetAlert();
         }
@@ -449,28 +452,20 @@ public class PlannerController {
 
     private void importPlannerServantsFromCsv() {
         if (dataManagementService.isDataLoaded()) {
-            displayFileChooserForPlannerCsvImport();
+            File csvFile = importCsvFile();
+            if (csvFile != null) {
+                loadPlannerDataFromCsv(csvFile);
+            }
         } else {
             showNotLoadedYetAlert();
         }
     }
 
-    private void displayFileChooserForPlannerCsvImport() {
+    private File importCsvFile() {
         FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("CSV Files", "*.csv"));
         fileChooser.setTitle("CSV to import");
-        File csvFile = fileChooser.showOpenDialog(Stage.getWindows().get(0));
-        if (csvFile != null) {
-            loadPlannerDataFromCsv(csvFile);
-        }
-    }
-
-    private void displayFileChooserForInventoryCsvImport() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("CSV to import");
-        File csvFile = fileChooser.showOpenDialog(Stage.getWindows().get(0));
-        if (csvFile != null) {
-            loadInventoryDataFromCsv(csvFile);
-        }
+        return fileChooser.showOpenDialog(Stage.getWindows().get(0));
     }
 
     private void loadInventoryDataFromCsv(File csvFile) {

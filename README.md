@@ -1,5 +1,3 @@
-TODO: KOFI, license, feature poll
-
 # FGO-Tracker
 ## Introduction
 Have you ever wanted to keep better track of your upgrade materials, and what your servants will need, so you don't end up wasting them on [_insert hated servant here_], only to find out that [_insert waifu/husbando/farming machine here_] really needed it, and now you've condemned yourself to waiting for months or doing mindless farming so you can finally get that sweet sweet final ascension jpeg? Have you been using FGO Manager already, but didn't like the fact that half the time Google Sheets decides to poop itself and only load half of the images and/or data, and only do that very slowly too?
@@ -57,4 +55,6 @@ As other developers might notice, the code of this app is probably pretty atroci
 ## Credits and Support
 The app is built on the database from [Atlas DB](https://apps.atlasacademy.io/db/), which, in theory, is an absolutely up-to-date database of the game data, and this app was _very_ heavily inspired by [FGO Manager by Zuth](https://www.reddit.com/r/grandorder/comments/cz3hak/tool_fgo_manager_v10/). Without them, I never would've thought of making this, and this app wouldn't work in the first place.
 
-While the app is completely free and open-source (because honestly, I wouldn't pay for just a tool like this, so I don't expect others to pay either), if you decide that you appreciate my sleepless nights I spent on this (being too excited about my ideas to sleep), you can drop a few SQ my way here (so maybe next time Jalter comes around with a banner, she won't abandon me in the dust again)
+While the app is completely free and open-source (because honestly, I wouldn't pay for just a tool like this, so I don't expect others to pay either), if you decide that you appreciate my sleepless nights I spent on this (being too excited about my ideas to sleep), you can drop a few SQ my way here (so maybe next time Jalter comes around with a banner, she won't abandon me in the dust again):
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/E1E64VBGR)

@@ -2,7 +2,7 @@ package com.github.theintelligentone.fgotracker.domain.servant;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.NoblePhantasm;
-import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.UpgradeObject;
+import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
 import lombok.Data;
 
 import java.util.List;
@@ -22,6 +22,6 @@ public class Servant {
     private int rarity;
     private List<Integer> atkGrowth;
     private List<Integer> hpGrowth;
-    private Map<Integer, UpgradeObject> ascensionMaterials;
-    private Map<Integer, UpgradeObject> skillMaterials;
+    private Map<Integer, UpgradeCost> ascensionMaterials;
+    private Map<Integer, UpgradeCost> skillMaterials;
 }

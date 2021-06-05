@@ -62,9 +62,9 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
                             String text1 = createNormalizedString(text.getText());
                             Pattern pattern;
                             if (isCaseSensitive()) {
-                                pattern = Pattern.compile(".*" + text1 + ".*");
+                                pattern = Pattern.compile(".*" + "\\Q" + text1 + "\\E" + ".*");
                             } else {
-                                pattern = Pattern.compile(".*" + text1 + ".*", Pattern.CASE_INSENSITIVE);
+                                pattern = Pattern.compile(".*" + "\\Q" + text1 + "\\E" + ".*", Pattern.CASE_INSENSITIVE);
                             }
                             for (T entry : entries) {
                                 String normalizedString = createNormalizedString(entry.toString());
@@ -123,7 +123,7 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
     }
 
     private void populatePopup(List<T> searchResult, String text) {
-        List<CustomMenuItem> menuItems = new ArrayList<>();
+        entriesPopup.getItems().clear();
         int count = Math.min(searchResult.size(), getMaxEntries());
         for (int i = 0; i < count; i++) {
             final String result = searchResult.get(i).toString();
@@ -144,7 +144,7 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
             Text in = new Text(result.substring(occurence, occurence + text.length()));
             in.setStyle(getTextOccurenceStyle());
             //Part after occurence
-            Text post = new Text(result.substring(occurence + text.length(), result.length()));
+            Text post = new Text(result.substring(occurence + text.length()));
 
             TextFlow entryFlow = new TextFlow(pre, in, post);
 
@@ -154,10 +154,8 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
                 lastSelectedItem.set(itemObject);
                 entriesPopup.hide();
             });
-            menuItems.add(item);
+            entriesPopup.getItems().add(item);
         }
-        entriesPopup.getItems().clear();
-        entriesPopup.getItems().addAll(menuItems);
 
     }
 

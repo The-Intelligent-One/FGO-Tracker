@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(value = "baseServant", ignoreUnknown = true)
-public class ServantOfUser {
+public class UserServant {
     private long svtId;
     private Servant baseServant;
     private int rarity;
@@ -20,8 +20,6 @@ public class ServantOfUser {
     private int level;
     private boolean ascension;
     private int npLevel;
-    private String npType;
-    private String npTarget;
     private int bondLevel;
     private int skillLevel1;
     private int skillLevel2;

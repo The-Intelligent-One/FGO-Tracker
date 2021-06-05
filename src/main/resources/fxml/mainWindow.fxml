@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.VBox?>
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="com.github.theintelligentone.fgotracker.ui.controller.MainController">
+    <MenuBar>
+        <Menu>
+            <graphic>
+                <Label onMouseClicked="#saveUserData" text="Save"/>
+            </graphic>
+        </Menu>
+    </MenuBar>
+    <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+        <fx:include fx:id="rosterTab" source="rosterTab.fxml"/>
+        <fx:include fx:id="ltPlanner" source="plannerTab.fxml"/>
+        <fx:include fx:id="planner" source="plannerTab.fxml"/>
+    </TabPane>
+</VBox>

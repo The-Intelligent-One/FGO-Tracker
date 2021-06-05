@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ServantFromManager {
+public class ManagerServant {
     private int collectionNo;
     private String name;
 }

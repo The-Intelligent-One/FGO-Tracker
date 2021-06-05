@@ -52,7 +52,7 @@ jar {
 
 javafx {
     version = "16"
-    modules = ["javafx.fxml", "javafx.controls"]
+    modules = ["javafx.fxml", "javafx.controls", "javafx.swing"]
 }
 
 launch4j {

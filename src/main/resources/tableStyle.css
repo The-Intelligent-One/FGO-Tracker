@@ -7,6 +7,12 @@
     -fx-border-style: solid
 }
 
-.table-row-cell {
-    -fx-cell-size: 35px
+.sum-table .scroll-bar * {
+    -fx-min-width: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+
+    -fx-min-height: 0;
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
 }

@@ -1,11 +1,13 @@
 package com.github.theintelligentone.fgotracker.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
+import com.github.theintelligentone.fgotracker.domain.other.VersionDTO;
 import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
@@ -193,11 +195,14 @@ public class FileManagementService {
         return cardDataMap;
     }
 
-    public Map<String, Long> getCurrentVersion() {
+    public Map<String, VersionDTO> getCurrentVersion() {
         File file = new File(BASE_DATA_PATH, VERSION_FILE);
-        Map<String, Long> versionMap = new HashMap<>();
+        Map<String, VersionDTO> versionMap = new HashMap<>();
         try {
             versionMap = objectMapper.readValue(file, new TypeReference<>() {});
+        } catch (JsonMappingException e) {
+            versionMap.put("NA", new VersionDTO());
+            versionMap.put("JP", new VersionDTO());
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -214,14 +219,14 @@ public class FileManagementService {
         return regionAsString;
     }
 
-    public void saveNewVersion(Map<String, Long> versionMap) {
+    public void saveNewVersion(Map<String, VersionDTO> versionMap) {
         File file = new File(BASE_DATA_PATH, VERSION_FILE);
         saveDataToFile(versionMap, file);
     }
 
     public void saveGameRegion(String region) {
         try {
-            Files.writeString(Path.of(BASE_DATA_PATH, VERSION_FILE), region);
+            Files.writeString(Path.of(BASE_DATA_PATH, GAME_REGION_FILE), region);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -235,6 +240,7 @@ public class FileManagementService {
         createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + USER_DATA_PATH + USER_SERVANT_FILE);
         createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + USER_DATA_PATH + INVENTORY_FILE);
         createFileIfDoesNotExist(BASE_DATA_PATH + VERSION_FILE);
+        createFileIfDoesNotExist(BASE_DATA_PATH + GAME_REGION_FILE);
         Files.createDirectories(Path.of(BASE_DATA_PATH, IMAGE_FOLDER_PATH));
     }
 

@@ -16,6 +16,8 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.Getter;
 
+import java.util.Optional;
+
 public class MainApp extends Application {
     private static final String MAIN_WINDOW_FXML = "/fxml/mainWindow.fxml";
     @Getter
@@ -59,7 +61,7 @@ public class MainApp extends Application {
 
     private Alert createServantLoadingAlert() {
         String selectedRegion = dataManagementService.getGameRegion();
-        if (!selectedRegion.isEmpty()) {
+        if (selectedRegion.isEmpty()) {
             selectedRegion = letUserChooseRegion();
         }
         Alert loadingAlert = setupLoadingAlert();
@@ -79,13 +81,19 @@ public class MainApp extends Application {
         ChoiceDialog<String> regionDialog = new ChoiceDialog<>();
         regionDialog.setTitle("FGO Region");
         regionDialog.setContentText("Which region are you playing on?");
+        regionDialog.setHeaderText(null);
+        regionDialog.setGraphic(null);
         regionDialog.getItems().addAll("JP", "NA");
-        regionDialog.setOnCloseRequest(event -> Platform.exit());
-        return regionDialog.showAndWait().orElse("");
+        regionDialog.setSelectedItem("NA");
+        Optional<String> dialogResult = regionDialog.showAndWait();
+        return dialogResult.orElseGet(() -> {
+            Platform.exit();
+            return null;
+        });
     }
 
-    private Task createLoadingTaskWithAlert(String selectedRegion, Alert loadingAlert) {
-        Task loadingTask = new Task() {
+    private Task<Object> createLoadingTaskWithAlert(String selectedRegion, Alert loadingAlert) {
+        Task<Object> loadingTask = new Task<>() {
             @Override
             protected Object call() {
                 dataManagementService.initApp(selectedRegion);

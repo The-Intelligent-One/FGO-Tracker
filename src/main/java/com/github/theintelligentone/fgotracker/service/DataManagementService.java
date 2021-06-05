@@ -5,6 +5,7 @@ import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
+import com.github.theintelligentone.fgotracker.domain.other.VersionDTO;
 import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
@@ -43,12 +44,7 @@ public class DataManagementService {
             "fouHp", 19,
             "fouAtk", 20,
             "bond", 21);
-    private static final Map<String, String> MAT_NAME_TRANSLATE_MAP = Map.of("blue", "gem",
-            "red", "magic gem",
-            "gold", "secret gem",
-            "Permafrost", "ice",
-            "Seashell", "shell",
-            "Stinger", "needle");
+    private static Map<String, String> MAT_NAME_TRANSLATE_MAP;
     public static Map<String, Integer> CLASS_ATTACK_MULTIPLIER;
     public static Map<String, Map<Integer, CardPlacementData>> CARD_DATA;
 
@@ -73,7 +69,7 @@ public class DataManagementService {
     private ObservableList<UserServantView> userServantList;
     private ObservableList<PlannerServantView> plannerServantList;
     private List<Servant> servantDataList;
-    private Map<String, Long> currentVersion;
+    private Map<String, VersionDTO> currentVersion;
 
     public DataManagementService() {
         ObjectMapper objectMapper = new ObjectMapper();
@@ -82,7 +78,23 @@ public class DataManagementService {
         this.userServantToViewTransformer = new UserServantToViewTransformer();
         this.inventoryToViewTransformer = new InventoryToViewTransformer();
         this.plannerServantToViewTransformer = new PlannerServantToViewTransformer();
+        setupMatTranslateMap();
         gameRegion = fileService.loadGameRegion();
+    }
+
+    private void setupMatTranslateMap() {
+        MAT_NAME_TRANSLATE_MAP = new HashMap<>();
+        MAT_NAME_TRANSLATE_MAP.put("blue", "gem");
+        MAT_NAME_TRANSLATE_MAP.put("red", "magic gem");
+        MAT_NAME_TRANSLATE_MAP.put("gold", "secret gem");
+        MAT_NAME_TRANSLATE_MAP.put("Permafrost", "ice");
+        MAT_NAME_TRANSLATE_MAP.put("Seashell", "shell");
+        MAT_NAME_TRANSLATE_MAP.put("Stinger", "needle");
+        MAT_NAME_TRANSLATE_MAP.put("Crown", "光銀の冠");
+        MAT_NAME_TRANSLATE_MAP.put("Shard", "煌星のカケラ");
+        MAT_NAME_TRANSLATE_MAP.put("Vein", "神脈霊子");
+        MAT_NAME_TRANSLATE_MAP.put("Fruit", "悠久の実");
+        MAT_NAME_TRANSLATE_MAP.put("Thread", "虹の糸玉");
     }
 
     public ObservableList<PlannerServantView> getPlannerServantList() {
@@ -106,7 +118,7 @@ public class DataManagementService {
     }
 
     public void initApp(String selectedRegion) {
-        if (!gameRegion.isEmpty()) {
+        if (gameRegion.isEmpty()) {
             gameRegion = selectedRegion;
             fileService.saveGameRegion(gameRegion);
         }
@@ -228,9 +240,9 @@ public class DataManagementService {
 
     private boolean newVersionAvailable() {
         currentVersion = fileService.getCurrentVersion();
-        Map<String, Long> onlineVersion = requestService.getOnlineVersion();
+        Map<String, VersionDTO> onlineVersion = requestService.getOnlineVersion();
         boolean needUpdate = false;
-        if (onlineVersion.getOrDefault(gameRegion, 0L) > currentVersion.getOrDefault(gameRegion, 0L)) {
+        if (onlineVersion.get(gameRegion).getTimestamp() > currentVersion.get(gameRegion).getTimestamp()) {
             needUpdate = true;
             currentVersion.put(gameRegion, onlineVersion.get(gameRegion));
         }

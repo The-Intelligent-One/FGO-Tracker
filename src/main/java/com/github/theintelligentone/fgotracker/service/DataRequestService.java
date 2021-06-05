@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
+import com.github.theintelligentone.fgotracker.domain.other.VersionDTO;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import javafx.scene.image.Image;
 
@@ -76,10 +77,10 @@ public class DataRequestService {
         return new Image(material.getIcon());
     }
 
-    public Map<String, Long> getOnlineVersion() {
-        Map<String, Long> response = new HashMap<>();
+    public Map<String, VersionDTO> getOnlineVersion() {
+        Map<String, VersionDTO> response = new HashMap<>();
         try {
-            response = objectMapper.readValue(new URL(CARD_DETAILS_URL), new TypeReference<>() {});
+            response = objectMapper.readValue(new URL(VERSION_URL), new TypeReference<>() {});
         } catch (IOException e) {
             e.printStackTrace();
         }

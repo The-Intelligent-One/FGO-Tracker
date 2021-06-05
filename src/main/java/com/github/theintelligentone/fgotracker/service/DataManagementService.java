@@ -35,6 +35,7 @@ import java.util.stream.IntStream;
 public class DataManagementService {
     public static final int[] MAX_LEVELS = {65, 60, 65, 70, 80, 90};
     private static final int MIN_TABLE_SIZE = 30;
+    private static final String NAME_FORMAT = "%s [%s]";
     private static final Map<String, Integer> ROSTER_IMPORT_INDEX_MAP = Map.of("name", 0,
             "npLevel", 14,
             "level", 15,
@@ -137,7 +138,8 @@ public class DataManagementService {
             userServantNameList.clear();
             userServantNameList.addAll(c.getList().stream()
                     .filter(svt -> svt.getBaseServant().getValue() != null)
-                    .map(svt -> svt.getBaseServant().getValue().getName())
+                    .map(svt -> String.format(NAME_FORMAT, svt.getBaseServant().getValue().getName(),
+                            svt.getBaseServant().getValue().getClassName()))
                     .collect(Collectors.toList()));
         });
         servantNameList = FXCollections.observableArrayList();
@@ -153,7 +155,9 @@ public class DataManagementService {
         userServantList.addAll(createAssociatedUserServantList());
         inventory = createInventoryWithAssociatedMatList();
         plannerServantList.addAll(createAssociatedPlannerServantList());
-        servantNameList.addAll(servantDataList.stream().map(Servant::getName).collect(Collectors.toList()));
+        servantNameList.addAll(
+                servantDataList.stream().map(svt -> String.format(NAME_FORMAT, svt.getName(), svt.getClassName())).collect(
+                        Collectors.toList()));
     }
 
     private InventoryView createInventoryWithAssociatedMatList() {
@@ -250,18 +254,21 @@ public class DataManagementService {
         return servantDataList.stream().filter(svt -> svtId == svt.getId()).findFirst().get();
     }
 
-    public Servant findServantByName(String name) {
-        return servantDataList.stream().filter(svt -> name.equalsIgnoreCase(svt.getName())).findFirst().orElse(null);
+    public Servant findServantByFormattedName(String name) {
+        return servantDataList.stream().filter(
+                svt -> name.equalsIgnoreCase(String.format(NAME_FORMAT, svt.getName(), svt.getClassName()))).findFirst().orElse(
+                null);
     }
 
     private UserServantView findUserServantById(long svtId) {
         return userServantList.stream().filter(svt -> svtId == svt.getSvtId().longValue()).findFirst().get();
     }
 
-    public UserServantView findUserServantByName(String name) {
+    public UserServantView findUserServantByFormattedName(String name) {
         return userServantList.stream()
                 .filter(svt -> svt.getBaseServant().getValue() != null)
-                .filter(svt -> name.equalsIgnoreCase(svt.getBaseServant().getValue().getName()))
+                .filter(svt -> name.equalsIgnoreCase(String.format(NAME_FORMAT, svt.getBaseServant().getValue().getName(),
+                        svt.getBaseServant().getValue().getClassName())))
                 .findFirst().orElse(null);
     }
 
@@ -364,7 +371,7 @@ public class DataManagementService {
     }
 
     public void replaceBaseServantInRow(int index, UserServantView servant, String newServantName) {
-        Servant newBaseServant = findServantByName(newServantName);
+        Servant newBaseServant = findServantByFormattedName(newServantName);
         if (newBaseServant != null) {
             if (servant.getBaseServant() == null || servant.getBaseServant().getValue() == null) {
                 userServantList.set(index, userServantToViewTransformer.transform(
@@ -379,7 +386,7 @@ public class DataManagementService {
     }
 
     public void replaceBaseServantInPlannerRow(int index, PlannerServantView servant, String newServantName) {
-        UserServantView newBaseServant = findUserServantByName(newServantName);
+        UserServantView newBaseServant = findUserServantByFormattedName(newServantName);
         if (newBaseServant != null) {
             if (servant.getBaseServant().getValue() == null) {
                 plannerServantList.set(index, new PlannerServantViewFactory().createFromUserServant(newBaseServant));
@@ -483,7 +490,8 @@ public class DataManagementService {
             Servant baseServant = findServantFromManager(servantName, managerLookup);
             UserServantView baseUserServant = null;
             if (baseServant.getName() != null && !baseServant.getName().isEmpty()) {
-                baseUserServant = findUserServantByName(baseServant.getName());
+                baseUserServant = findUserServantByFormattedName(
+                        String.format(NAME_FORMAT, baseServant.getName(), baseServant.getClassName()));
             }
             if (baseUserServant != null) {
                 servant = new PlannerServantViewFactory().createFromUserServant(baseUserServant);

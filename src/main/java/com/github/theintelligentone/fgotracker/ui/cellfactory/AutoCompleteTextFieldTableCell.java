@@ -62,9 +62,9 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
                             String text1 = createNormalizedString(text.getText());
                             Pattern pattern;
                             if (isCaseSensitive()) {
-                                pattern = Pattern.compile(".*" + text1 + ".*");
+                                pattern = Pattern.compile(".*" + "\\Q" + text1 + "\\E" + ".*");
                             } else {
-                                pattern = Pattern.compile(".*" + text1 + ".*", Pattern.CASE_INSENSITIVE);
+                                pattern = Pattern.compile(".*" + "\\Q" + text1 + "\\E" + ".*", Pattern.CASE_INSENSITIVE);
                             }
                             for (T entry : entries) {
                                 String normalizedString = createNormalizedString(entry.toString());

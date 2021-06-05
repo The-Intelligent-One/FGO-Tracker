@@ -44,10 +44,9 @@ public class DataManagementService {
             "fouHp", 19,
             "fouAtk", 20,
             "bond", 21);
-    private static Map<String, String> MAT_NAME_TRANSLATE_MAP;
     public static Map<String, Integer> CLASS_ATTACK_MULTIPLIER;
     public static Map<String, Map<Integer, CardPlacementData>> CARD_DATA;
-
+    private static Map<String, String> MAT_NAME_TRANSLATE_MAP;
     private final DataRequestService requestService;
     private final FileManagementService fileService;
     private final UserServantToViewTransformer userServantToViewTransformer;
@@ -131,10 +130,8 @@ public class DataManagementService {
         plannerServantList = FXCollections.observableArrayList();
         userServantList.addListener((ListChangeListener<? super UserServantView>) c -> {
             List<Long> ids = c.getList().stream().map(svt -> svt.getSvtId().get()).collect(Collectors.toList());
-            plannerServantList.stream()
-                    .filter(svt -> svt.getBaseServant().getValue() != null)
-                    .filter(svt -> !ids.contains(svt.getSvtId().longValue()))
-                    .forEach(plannerServantList::remove);
+            plannerServantList.removeIf(
+                    svt -> svt.getBaseServant().getValue() != null && !ids.contains(svt.getSvtId().longValue()));
         });
         userServantList.addListener((ListChangeListener<? super UserServantView>) c -> {
             userServantNameList.clear();

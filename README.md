@@ -1,4 +1,4 @@
-TODO: images, KOFI, license, issue labeling, feature poll
+TODO: KOFI, license, feature poll
 
 # FGO-Tracker
 ## Introduction
@@ -19,7 +19,7 @@ Download whichever release you want from the releases (stable release is the les
 
 When the app starts it will check if there's a newer version of the data from the [Atlas DB](https://apps.atlasacademy.io/db/) than what's currently saved, and if so will download it and save it. On subsequent starts, if the saved data is up to date, it will load it from the file, significantly speeding up the startup time (in other words, the first time you start will be kinda slow, but otherwise the app starts up fast, except for the occasions when the DB had an update). This includes the images for the material icons, and anything else that might use images later.
 
-The app also saves your user data (the servants in your roster, your inventory, etc.), and loads it from those files, so if you want a fresh start, or want to back your data up, you can do that very easily. Both the user data, and the DB cache are saved in a "data" folder the app creates next to itself, and all of them are saved in plain text json files (since there's really no info here that needs to be hidden or encrypted), which also allows easy editing if you feel like it (though be aware that messing with the structure of the files will, of course, lead to the app failing, in those cases you can just delete or remove the data folder, and let the app recreate it).
+The app also saves your user data (the servants in your roster, your inventory, etc.), and loads it from those files, so if you want a fresh start, or want to back your data up, you can do that very easily, just like you'd do it with any normal folder. Both the user data, and the DB cache are saved in a "data" folder the app creates next to itself, and all of them are saved in plain text json files (since there's really no info here that needs to be hidden or encrypted), which also allows easy editing if you feel like it (though be aware that messing with the structure of the files will, of course, lead to the app failing, in those cases you can just delete or remove the data folder, and let the app recreate it).
 ### Tables
 The tables on all current tabs work basically the same, they are fairly straightforwad to use, but here's a how-to anyway.
 ### Roster Tab
@@ -28,14 +28,13 @@ The core of the current feature set is the roster table. As you might expect, it
 ![image of roster tab](https://i.imgur.com/9DVvefj.png)
 
 One slight problem with how the GUI works is that you can only use rows that have been "initialized". By default, the app will always add enough valid rows to fill one full page of the table (at least on my 1080p monitor), but if you want to add or remove rows, you can use the context menu (right click). I also add a black line to separate the valid and invalid rows, because for some inexplicable reason, they look the exact same.
-##### Planned changes/additions
-I intend to add some color to the table, similar to how it is in FGO Manager, as well as an option to display availabilty, if I can make that happen, though personally I don't really see why you'd need that for servants you already have in theory, so it's not a high priority (also, it seemed like the DB doesn't really have a way to provide this info, so it might be impossible anyway)
 ### LT Planner and Planner Tabs
 The second part of the initial features, the planner tabs. The Long Term Planner might be surprising at first, because it's not just a copy of the L-T sheet in FGO Manager (the regular Planner _is_ basically that though), and instead what I considered "long term" is just maxing out the skills and levels of all of the servants you have. What this means is that the LT Planner will always have all of your servants in your roster, with their desired levels all set to max.
+![image of planner tab](https://i.imgur.com/x95ng6d.png)
 
 In contrast, the regular Planner tab is where you'll want to add your servants you want to plan with, and see what mats you'll need for the level and skill levels you intend to get for them, as well as how much you'll have of each material after you do those.
 ### Adding New Servants
-To add new servants, double click in a cell in the name column (in a valid row) and start typing a servant's name in the textbox that appears. Once you see the servant you want in the autocomplete, just click on their name (another weird issue is that not the whole line of the autocomplete menu works, you have to click specifically on the area where the name is), and the row will be filled up with data, all starting at their default level. After that, just edit each value you'd like (level, bond, etc.) and you're done. Note: for simplicity, currently the NP damage uses the highest rank NP your servant can have, i.e. it assumes you've done all rank-ups and interludes for them (even if they're level 1).
+To add new servants, double click in a cell in the name column (in a valid row) and start typing a servant's name in the textbox that appears. Once you see the servant you want in the autocomplete, just click on their name (another weird issue is that not the whole line of the autocomplete menu works, you have to click specifically on the area where the name is), and the row will be filled up with data, all starting at their default level on the roster tab, and at the current level from their roster when adding to the planner tab. After that, just edit each value you'd like (level, bond, desired level etc.) and you're done. Note: for simplicity, currently the NP damage uses the highest rank NP your servant can have, i.e. it assumes you've done all rank-ups and interludes for them (even if they're level 1).
 ### Removing Servants
 To remove servants, you have a few options.
 * Edit their name and just delete it

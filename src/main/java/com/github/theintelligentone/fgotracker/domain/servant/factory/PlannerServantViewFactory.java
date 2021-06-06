@@ -30,14 +30,6 @@ public class PlannerServantViewFactory {
         return result;
     }
 
-    public List<PlannerServantView> createFromEachUserServant(List<UserServantView> servants) {
-        return servants.stream().map(this::createFromUserServant).collect(Collectors.toList());
-    }
-
-    public PlannerServantView createFromUserServant(List<UserServantView> servants, int index) {
-        return createFromUserServant(servants.get(index));
-    }
-
     public PlannerServantView createFromUserServant(UserServantView servant) {
         PlannerServantView result = new PlannerServantView();
         if (servant.getBaseServant() != null && servant.getBaseServant().getValue() != null) {

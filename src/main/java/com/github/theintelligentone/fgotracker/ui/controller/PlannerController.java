@@ -74,16 +74,16 @@ public class PlannerController {
     private TableColumn<PlannerServantView, ?> desired;
 
     @FXML
-    private TableColumn<PlannerServantView, Number> level;
+    private TableColumn<PlannerServantView, Integer> level;
 
     @FXML
-    private TableColumn<PlannerServantView, Number> skill1;
+    private TableColumn<PlannerServantView, Integer> skill1;
 
     @FXML
-    private TableColumn<PlannerServantView, Number> skill2;
+    private TableColumn<PlannerServantView, Integer> skill2;
 
     @FXML
-    private TableColumn<PlannerServantView, Number> skill3;
+    private TableColumn<PlannerServantView, Integer> skill3;
 
     private DataManagementService dataManagementService;
     private ServantUtils servantUtils;
@@ -192,7 +192,7 @@ public class PlannerController {
                 event.getRowValue().getInventory().stream()
                         .filter(material -> matId == material.getId().longValue())
                         .findFirst().get()
-                        .getAmount().set(servantUtils.getNewValueIfValid(event, 99999, 0));
+                        .getAmount().set(servantUtils.getNewValueIfValid(event, 0, 99999));
                 event.getTableView().refresh();
             }
         });
@@ -387,7 +387,28 @@ public class PlannerController {
         desired.getColumns().get(0).setOnEditCommit(event -> {
             if (event.getRowValue().getSvtId().longValue() != 0) {
                 event.getRowValue().getDesLevel().set(
-                        servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, 100, 1));
+                        servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, 1, 100));
+                plannerTable.refresh();
+            }
+        });
+        desired.getColumns().get(1).setOnEditCommit(event -> {
+            if (event.getRowValue().getSvtId().longValue() != 0) {
+                event.getRowValue().getDesSkill1().set(
+                        servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, 1, 10));
+                plannerTable.refresh();
+            }
+        });
+        desired.getColumns().get(2).setOnEditCommit(event -> {
+            if (event.getRowValue().getSvtId().longValue() != 0) {
+                event.getRowValue().getDesSkill2().set(
+                        servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, 1, 10));
+                plannerTable.refresh();
+            }
+        });
+        desired.getColumns().get(3).setOnEditCommit(event -> {
+            if (event.getRowValue().getSvtId().longValue() != 0) {
+                event.getRowValue().getDesSkill3().set(
+                        servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, 1, 10));
                 plannerTable.refresh();
             }
         });
@@ -404,37 +425,38 @@ public class PlannerController {
     }
 
     public void loadLtTableData() {
-        plannerTable.setItems(createPlannerServantList());
+        plannerTable.setItems(createLTPlannerServantList());
     }
 
     private void initCurrentInfoColumns() {
         level.setCellValueFactory(param -> {
             IntegerProperty level = null;
             if (validServant(param)) {
-                level = param.getValue().getBaseServant().getValue().getLevel();
+                level = new SimpleIntegerProperty(1);
+                level.bind(param.getValue().getBaseServant().getValue().getLevel());
             }
-            return level;
+            return level == null ? null : level.asObject();
         });
         skill1.setCellValueFactory(param -> {
             IntegerProperty skill1 = null;
             if (validServant(param)) {
                 skill1 = param.getValue().getBaseServant().getValue().getSkillLevel1();
             }
-            return skill1;
+            return skill1 == null ? null : skill1.asObject();
         });
         skill2.setCellValueFactory(param -> {
             IntegerProperty skill2 = null;
             if (validServant(param)) {
                 skill2 = param.getValue().getBaseServant().getValue().getSkillLevel2();
             }
-            return skill2;
+            return skill2 == null ? null : skill2.asObject();
         });
         skill3.setCellValueFactory(param -> {
             IntegerProperty skill3 = null;
             if (validServant(param)) {
                 skill3 = param.getValue().getBaseServant().getValue().getSkillLevel3();
             }
-            return skill3;
+            return skill3 == null ? null : skill3.asObject();
         });
         current.getColumns().forEach(col -> col.setPrefWidth(MainController.SHORT_CELL_WIDTH));
     }
@@ -499,11 +521,11 @@ public class PlannerController {
         loadingAlert.show();
     }
 
-    private boolean validServant(TableColumn.CellDataFeatures<PlannerServantView, Number> param) {
+    private boolean validServant(TableColumn.CellDataFeatures<PlannerServantView, Integer> param) {
         return param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getValue() != null && param.getValue().getBaseServant().getValue().getBaseServant() != null;
     }
 
-    private ObservableList<PlannerServantView> createPlannerServantList() {
+    private ObservableList<PlannerServantView> createLTPlannerServantList() {
         return new PlannerServantViewFactory().createForLTPlanner(dataManagementService.getUserServantList());
     }
 }

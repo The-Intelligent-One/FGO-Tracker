@@ -17,11 +17,7 @@ public class PlannerServantToViewTransformer {
     }
 
     public PlannerServantView transform(PlannerServant servant) {
-        UserServantView userServantView = new UserServantView();
-        if (servant.getSvtId() != 0) {
-            userServantView = userServantToViewTransformer.transform(servant.getBaseServant());
-        }
-        ObjectProperty<UserServantView> baseProperty = new SimpleObjectProperty<>(userServantView);
+        ObjectProperty<UserServantView> baseProperty = new SimpleObjectProperty<>();
         LongProperty svtId = new SimpleLongProperty(servant.getSvtId());
         svtId.addListener((observable, oldValue, newValue) -> servant.setSvtId(newValue.longValue()));
         IntegerProperty dLevel = new SimpleIntegerProperty(servant.getDesLevel());

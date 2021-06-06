@@ -7,7 +7,6 @@ import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.other.VersionDTO;
 import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
-import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.PlannerServantViewFactory;
@@ -19,6 +18,7 @@ import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import com.github.theintelligentone.fgotracker.service.transformer.InventoryToViewTransformer;
 import com.github.theintelligentone.fgotracker.service.transformer.PlannerServantToViewTransformer;
 import com.github.theintelligentone.fgotracker.service.transformer.UserServantToViewTransformer;
+import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -127,12 +127,16 @@ public class DataManagementService {
     }
 
     private void initDataLists() {
-        userServantList = FXCollections.observableArrayList();
-        plannerServantList = FXCollections.observableArrayList();
+        userServantList = FXCollections.observableArrayList(
+                param -> new Observable[]{param.getSvtId(), param.getLevel(), param.getSkillLevel1(), param.getSkillLevel2(), param.getSkillLevel3()});
+        plannerServantList = FXCollections.observableArrayList(param -> new Observable[]{param.getBaseServant(), param.getDesLevel(), param.getDesSkill1(), param.getDesSkill2(), param.getDesSkill3()});
         userServantList.addListener((ListChangeListener<? super UserServantView>) c -> {
             List<Long> ids = c.getList().stream().map(svt -> svt.getSvtId().get()).collect(Collectors.toList());
             plannerServantList.removeIf(
                     svt -> svt.getBaseServant().getValue() != null && !ids.contains(svt.getSvtId().longValue()));
+            PlannerServantView dummy = new PlannerServantView();
+            plannerServantList.add(dummy);
+            plannerServantList.remove(dummy);
         });
         userServantList.addListener((ListChangeListener<? super UserServantView>) c -> {
             userServantNameList.clear();
@@ -198,13 +202,14 @@ public class DataManagementService {
     }
 
     private List<PlannerServantView> createAssociatedPlannerServantList() {
-        List<PlannerServant> plannerServants = fileService.loadPlannedServantData();
+        List<PlannerServantView> plannerServants = plannerServantToViewTransformer.transformAll(
+                fileService.loadPlannedServantData());
         plannerServants.forEach(svt -> {
-            if (svt.getSvtId() != 0L) {
-                svt.setBaseServant(userServantToViewTransformer.transform(findUserServantById(svt.getSvtId())));
+            if (svt.getSvtId().longValue() != 0L) {
+                svt.getBaseServant().set(findUserServantById(svt.getSvtId().longValue()));
             }
         });
-        return plannerServantToViewTransformer.transformAll(plannerServants);
+        return plannerServants;
     }
 
     private void loadFromCache() {

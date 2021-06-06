@@ -72,7 +72,7 @@ public class FileManagementService {
     }
 
     public void saveMaterialData(List<UpgradeMaterial> materials, String gameRegion) {
-        File file = new File(BASE_DATA_PATH, gameRegion + "_" + MATERIAL_DATA_FILE);
+        File file = new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + MATERIAL_DATA_FILE);
         materials.forEach(mat -> saveImage(mat.getIconImage(), mat.getId()));
         saveDataToFile(materials, file);
     }
@@ -88,17 +88,17 @@ public class FileManagementService {
     }
 
     public void saveUserServants(List<UserServant> servants) {
-        File file = new File(BASE_DATA_PATH, USER_SERVANT_FILE);
+        File file = new File(BASE_DATA_PATH + USER_DATA_PATH, USER_SERVANT_FILE);
         saveDataToFile(servants, file);
     }
 
     public void savePlannerServants(List<PlannerServant> servants) {
-        File file = new File(BASE_DATA_PATH, PLANNED_SERVANT_FILE);
+        File file = new File(BASE_DATA_PATH + USER_DATA_PATH, PLANNED_SERVANT_FILE);
         saveDataToFile(servants, file);
     }
 
     public void saveInventory(Inventory inventory) {
-        File file = new File(BASE_DATA_PATH, INVENTORY_FILE);
+        File file = new File(BASE_DATA_PATH + USER_DATA_PATH, INVENTORY_FILE);
         saveDataToFile(inventory.getInventory(), file);
     }
 
@@ -124,7 +124,7 @@ public class FileManagementService {
     }
 
     public List<UpgradeMaterial> loadMaterialData(String gameRegion) {
-        File file = new File(BASE_DATA_PATH, gameRegion + "_" + MATERIAL_DATA_FILE);
+        File file = new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + MATERIAL_DATA_FILE);
         List<UpgradeMaterial> itemList = new ArrayList<>();
         if (file.length() != 0) {
             try {
@@ -138,7 +138,7 @@ public class FileManagementService {
     }
 
     public List<UserServant> loadUserData() {
-        File file = new File(BASE_DATA_PATH, USER_SERVANT_FILE);
+        File file = new File(BASE_DATA_PATH + USER_DATA_PATH, USER_SERVANT_FILE);
         List<UserServant> basicDataList = new ArrayList<>();
         if (file.length() != 0) {
             try {
@@ -151,7 +151,7 @@ public class FileManagementService {
     }
 
     public List<PlannerServant> loadPlannedServantData() {
-        File file = new File(BASE_DATA_PATH, PLANNED_SERVANT_FILE);
+        File file = new File(BASE_DATA_PATH + USER_DATA_PATH, PLANNED_SERVANT_FILE);
         List<PlannerServant> basicDataList = new ArrayList<>();
         if (file.length() != 0) {
             try {
@@ -212,7 +212,7 @@ public class FileManagementService {
     public String loadGameRegion() {
         String regionAsString = "";
         try {
-            regionAsString = Files.readString(Path.of(BASE_DATA_PATH, GAME_REGION_FILE));
+            regionAsString = Files.readString(Path.of(BASE_DATA_PATH + USER_DATA_PATH, GAME_REGION_FILE));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -226,7 +226,7 @@ public class FileManagementService {
 
     public void saveGameRegion(String region) {
         try {
-            Files.writeString(Path.of(BASE_DATA_PATH, GAME_REGION_FILE), region);
+            Files.writeString(Path.of(BASE_DATA_PATH + USER_DATA_PATH, GAME_REGION_FILE), region);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -237,10 +237,10 @@ public class FileManagementService {
         createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + "JP_" + FULL_DATA_FILE);
         createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + "NA_" + MATERIAL_DATA_FILE);
         createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + "JP_" + MATERIAL_DATA_FILE);
-        createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + USER_DATA_PATH + USER_SERVANT_FILE);
-        createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + USER_DATA_PATH + INVENTORY_FILE);
+        createFileIfDoesNotExist(BASE_DATA_PATH + USER_DATA_PATH + USER_SERVANT_FILE);
+        createFileIfDoesNotExist(BASE_DATA_PATH + USER_DATA_PATH + INVENTORY_FILE);
+        createFileIfDoesNotExist(BASE_DATA_PATH + USER_DATA_PATH + GAME_REGION_FILE);
         createFileIfDoesNotExist(BASE_DATA_PATH + VERSION_FILE);
-        createFileIfDoesNotExist(BASE_DATA_PATH + GAME_REGION_FILE);
         Files.createDirectories(Path.of(BASE_DATA_PATH, IMAGE_FOLDER_PATH));
     }
 
@@ -324,7 +324,7 @@ public class FileManagementService {
     }
 
     public Inventory loadInventory() {
-        File file = new File(BASE_DATA_PATH, INVENTORY_FILE);
+        File file = new File(BASE_DATA_PATH + USER_DATA_PATH, INVENTORY_FILE);
         List<UpgradeMaterialCost> matList = new ArrayList<>();
         if (file.length() != 0) {
             try {

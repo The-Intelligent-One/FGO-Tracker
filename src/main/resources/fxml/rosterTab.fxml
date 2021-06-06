@@ -58,7 +58,7 @@
                             <UserServantNpDamageValueFactory/>
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn text="Level" editable="true" fx:id="npLvlColumn">
+                    <TableColumn text="Level" fx:id="npLvlColumn">
                         <cellValueFactory>
                             <UserServantValueFactory property="npLevel"/>
                         </cellValueFactory>
@@ -72,7 +72,11 @@
                             <UserServantValueFactory property="level"/>
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn fx:id="ascColumn" text="Asc"/>
+                    <TableColumn fx:id="ascColumn" text="Asc">
+                        <cellValueFactory>
+                            <UserServantValueFactory property="ascension"/>
+                        </cellValueFactory>
+                    </TableColumn>
                     <TableColumn fx:id="bondColumn" text="Bond">
                         <cellValueFactory>
                             <UserServantValueFactory property="bondLevel"/>

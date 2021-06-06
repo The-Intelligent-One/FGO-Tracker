@@ -31,7 +31,7 @@ public class ServantUtils {
         for (int ascLevel = 90; ascLevel <= 100; ascLevel += 2) {
             levelsWithAscension.add(ascLevel);
         }
-        return levelsWithAscension.stream().distinct().collect(Collectors.toList());
+        return levelsWithAscension.stream().distinct().sorted().collect(Collectors.toList());
     }
 
     public ObservableIntegerValue getAscensionFromRarityAndLevel(ObservableIntegerValue level, int rarity) {
@@ -46,9 +46,15 @@ public class ServantUtils {
     }
 
     public ObservableIntegerValue getPlannedMatUse(PlannerServantView servant, long matId) {
-        IntegerProperty matSum = new SimpleIntegerProperty(0);
-        return (ObservableIntegerValue) matSum.add(sumNeededAscensionMats(servant, matId)).add(
-                sumAllNeededSkillMats(servant, matId));
+        ObservableIntegerValue ascMats = sumNeededAscensionMats(servant, matId);
+        ObservableIntegerValue skillMats = sumAllNeededSkillMats(servant, matId);
+        IntegerProperty matSum = new SimpleIntegerProperty(ascMats.intValue() + skillMats.intValue());
+        ObservableList<ObservableIntegerValue> neededValues = FXCollections.observableArrayList(param -> new Observable[]{param});
+        neededValues.add(ascMats);
+        neededValues.add(skillMats);
+        neededValues.addListener(
+                (ListChangeListener<? super ObservableIntegerValue>) c -> matSum.set(ascMats.intValue() + skillMats.intValue()));
+        return matSum;
     }
 
     private ObservableIntegerValue sumAllNeededSkillMats(PlannerServantView servant, long matId) {
@@ -122,7 +128,7 @@ public class ServantUtils {
         return neededGrails;
     }
 
-    public int getNewValueIfValid(TableColumn.CellEditEvent<?, Integer> event, int max, int min) {
+    public int getNewValueIfValid(TableColumn.CellEditEvent<?, Integer> event, int min, int max) {
         int result = event.getOldValue();
         int input = event.getNewValue();
         if (input <= max && input >= min) {

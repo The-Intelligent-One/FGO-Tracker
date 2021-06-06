@@ -12,6 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.FileChooser;
@@ -254,7 +255,7 @@ public class RosterController {
 
     private void ascColumnSetup() {
         ascColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
-        ascColumn.setCellFactory(cell -> new AscensionCheckBoxTableCell());
+        ascColumn.setCellFactory(param -> new AscensionCheckBoxTableCell());
     }
 
     private void skill1ColumnSetup() {

@@ -8,7 +8,7 @@ plugins {
 }
 
 group "com.github.theintelligentone"
-version "1.0-SNAPSHOT"
+version "v0.1.0"
 
 def MAINPATH = "com.github.theintelligentone.fgotracker.Main"
 mainClassName = MAINPATH

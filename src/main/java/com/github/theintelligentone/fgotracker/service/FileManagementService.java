@@ -30,7 +30,7 @@ public class FileManagementService {
     private static final String CACHE_PATH = "cache/";
     private static final String USER_DATA_PATH = "userdata/";
     private static final String PNG_FORMAT = "png";
-    private static final String MANAGER_DB_PATH = "/managerDB-v1.3.2.csv";
+    private static final String MANAGER_DB_PATH = "/managerDB-v1.3.3.csv";
 
     private static final String VERSION_FILE = "dbVersion.json";
     private static final String FULL_DATA_FILE = "servants.json";

@@ -289,10 +289,10 @@ public class DataManagementService {
                 .collect(Collectors.toList());
         importedServants = importedServants.stream().filter(
                 svt -> svt.getBaseServant() == null || svt.getSvtId() != 0).collect(Collectors.toList());
-        ObservableList<UserServantView> trasnformedServants = userServantToViewTransformer.transformAll(
+        ObservableList<UserServantView> transformedServants = userServantToViewTransformer.transformAll(
                 importedServants);
-        clearUnnecessaryEmptyUserRows(trasnformedServants);
-        userServantList.setAll(trasnformedServants);
+        clearUnnecessaryEmptyUserRows(transformedServants);
+        userServantList.setAll(transformedServants);
         return notFoundNames;
     }
 

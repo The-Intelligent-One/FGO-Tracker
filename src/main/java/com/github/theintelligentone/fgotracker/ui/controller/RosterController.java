@@ -178,6 +178,7 @@ public class RosterController {
             stringBuilder.append(str);
             stringBuilder.append("\n");
         });
+        notFoundAlert.setHeaderText("Servants that couldn't be imported:");
         notFoundAlert.setContentText(stringBuilder.toString());
         notFoundAlert.show();
     }

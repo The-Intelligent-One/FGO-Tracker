@@ -18,6 +18,7 @@ public class UserServantToViewTransformer {
         result.setBaseServant(new SimpleObjectProperty<>(servant.getBaseServant()));
         result.setAscension(new SimpleBooleanProperty(servant.isAscension()));
         result.setFouAtk(new SimpleIntegerProperty(servant.getFouAtk()));
+        result.setFouHp(new SimpleIntegerProperty(servant.getFouHp()));
         result.setNpLevel(new SimpleIntegerProperty(servant.getNpLevel()));
         result.setLevel(new SimpleIntegerProperty(servant.getLevel()));
         result.setBondLevel(new SimpleIntegerProperty(servant.getBondLevel()));

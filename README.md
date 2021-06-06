@@ -5,7 +5,7 @@ Have you ever wanted to keep better track of your upgrade materials, and what yo
 If the answer is yes to either of those, than this app is for you! That last part was my personal experience with FGO Manager (as much as I love it), and after trying to seek help with it on the sub, I half jokingly mentioned that I might just make a new version myself. And so I did. Kinda. This is not a complete adaptation of FGO Manager (at least not yet), but I do want to implement as many of its features as I possibly can, using the DB by [Atlas Academy](https://atlasacademy.io/) and I started with what I consider to be the most important feature of FGO Manager: the roster and planner (including inventory). With those done, I believe this is ready to be released and used, while I continue working on it, potentially with help from helpful peoples. [To help me figure out what people would want to use the most, here's a Google form where you can vote on what you'd like to see quicker. I'll consider the result of this when I start working on the next part, though first I'm taking a break.](https://forms.gle/sYiHiWunY8btrViw7)
 
 ## Quickstart Guide
-1. Download the latest release you want and extract
+1. Download the latest release you want and extract, or if you're updating, just grab the exe and replace the old one
 2. Run the exe
 3. Add your servants to the roster manually or import from FGO Manager
 4. Update your inventory in either of the planner tabs manually, or import from FGO Manager

@@ -511,6 +511,7 @@ public class PlannerController {
             stringBuilder.append(str);
             stringBuilder.append("\n");
         });
+        notFoundAlert.setHeaderText("Servants/Materials that couldn't be imported:");
         notFoundAlert.setContentText(stringBuilder.toString());
         notFoundAlert.show();
     }

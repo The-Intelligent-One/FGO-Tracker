@@ -41,10 +41,10 @@ To remove servants, you have a few options.
 * Click "clear row" in the context menu
 * Click "delete row" in the context menu. This also removes the row itself, meaning the rest of the table will move up
 ### Importing from FGO Manager
-I assume many people, like me, who'd want to use the app have already been using FGO Manager, so for ease of use, I've added a feature to import your roster (as well as your inventory and your entries in the L-T Planner) from FGO Manager.
+I assume many people, like me, who'd want to use the app have already been using FGO Manager, so for ease of use, I've added a feature to import your roster (as well as your inventory and your entries from the L-T Planner) from FGO Manager.
 
 To import your roster do the following:
-1. Open FGO Manager and the Roster/L-T sheet on it (depending on whether you want to import your roster, or something else)
+1. Open FGO Manager and the Roster/L-T sheet on it (depending on whether you want to import your roster, or your planner and inventory)
 2. Click File -> Download -> Comma-separated values
 3. In FGO Tracker, right click on the table you want to import to and choose import
 4. Choose the .csv file you just downloaded

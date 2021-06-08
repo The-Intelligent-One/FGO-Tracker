@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
 import java.io.*;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -248,14 +249,18 @@ public class FileManagementService {
 
     private void createFileIfDoesNotExist(String filePath) throws IOException {
         File file = new File(filePath);
-        file.getParentFile().mkdirs();
-        file.createNewFile();
+        if (file.getParentFile().mkdirs()) {
+            log.debug("File structure created for path: {}", filePath);
+        }
+        if (file.createNewFile()) {
+            log.debug("File created with path: {}", filePath);
+        }
     }
 
     public List<String[]> importRosterCsv(File sourceFile) {
         List<String[]> strings = new ArrayList<>();
         try {
-            FileReader fileReader = new FileReader(sourceFile);
+            FileReader fileReader = new FileReader(sourceFile, Charset.defaultCharset());
             CSVReader csvReader = new CSVReaderBuilder(fileReader)
                     .withSkipLines(2)
                     .build();
@@ -269,7 +274,7 @@ public class FileManagementService {
     public List<String[]> importPlannerCsv(File sourceFile) {
         List<String[]> strings = new ArrayList<>();
         try {
-            FileReader fileReader = new FileReader(sourceFile);
+            FileReader fileReader = new FileReader(sourceFile, Charset.defaultCharset());
             CSVReader csvReader = new CSVReaderBuilder(fileReader)
                     .withSkipLines(12)
                     .build();
@@ -283,7 +288,7 @@ public class FileManagementService {
     public Map<String, Integer> importInventoryCsv(File sourceFile) {
         List<String[]> strings = new ArrayList<>();
         try {
-            FileReader fileReader = new FileReader(sourceFile);
+            FileReader fileReader = new FileReader(sourceFile, Charset.defaultCharset());
             CSVReader csvReader = new CSVReaderBuilder(fileReader)
                     .withSkipLines(7)
                     .build();
@@ -310,7 +315,7 @@ public class FileManagementService {
 
     public List<ManagerServant> loadManagerLookupTable() {
         Reader reader = new BufferedReader(new InputStreamReader(
-                Objects.requireNonNull(getClass().getResourceAsStream(MANAGER_DB_PATH))));
+                Objects.requireNonNull(getClass().getResourceAsStream(MANAGER_DB_PATH)), Charset.defaultCharset()));
         CSVReader csvReader = new CSVReaderBuilder(reader).withSkipLines(1).build();
         List<String[]> strings = new ArrayList<>();
         try {

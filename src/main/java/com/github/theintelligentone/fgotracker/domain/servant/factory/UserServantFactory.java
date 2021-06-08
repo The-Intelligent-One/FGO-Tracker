@@ -2,7 +2,6 @@ package com.github.theintelligentone.fgotracker.domain.servant.factory;
 
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
-import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.FgoFunction;
 
 public class UserServantFactory {
     public UserServant createUserServantFromBaseServant(Servant baseServant) {

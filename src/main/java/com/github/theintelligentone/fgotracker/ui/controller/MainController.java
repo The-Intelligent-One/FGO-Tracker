@@ -3,12 +3,6 @@ package com.github.theintelligentone.fgotracker.ui.controller;
 import com.github.theintelligentone.fgotracker.app.MainApp;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-
-import java.io.File;
-import java.util.List;
 
 public class MainController {
     public static final double NAME_CELL_WIDTH = 200;

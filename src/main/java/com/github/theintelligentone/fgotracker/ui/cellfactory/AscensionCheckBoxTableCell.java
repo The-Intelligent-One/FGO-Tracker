@@ -7,10 +7,6 @@ import javafx.scene.control.cell.CheckBoxTableCell;
 import java.util.List;
 
 public class AscensionCheckBoxTableCell extends CheckBoxTableCell<UserServantView, Boolean> {
-    public AscensionCheckBoxTableCell() {
-        super();
-    }
-
     @Override
     public void updateItem(Boolean item, boolean empty) {
         super.updateItem(item, empty);

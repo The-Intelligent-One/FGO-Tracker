@@ -187,12 +187,12 @@ public class PlannerController {
         newCol.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         newCol.setCellValueFactory(new InventoryValueFactory(mat.getId()));
         newCol.setOnEditCommit(event -> {
-            if (event.getRowValue().getLabel().equalsIgnoreCase("Inventory")) {
+            if ("Inventory".equalsIgnoreCase(event.getRowValue().getLabel())) {
                 long matId = ((InventoryValueFactory) event.getTableColumn().getCellValueFactory()).getMatId();
                 event.getRowValue().getInventory().stream()
                         .filter(material -> matId == material.getId().longValue())
                         .findFirst().get()
-                        .getAmount().set(servantUtils.getNewValueIfValid(event, 0, 99999));
+                        .getAmount().set(servantUtils.getNewValueIfValid(event, 0, 99_999));
                 event.getTableView().refresh();
             }
         });
@@ -509,7 +509,7 @@ public class PlannerController {
         Alert notFoundAlert = new Alert(Alert.AlertType.WARNING);
         notFoundNames.forEach(str -> {
             stringBuilder.append(str);
-            stringBuilder.append("\n");
+            stringBuilder.append('\n');
         });
         notFoundAlert.setHeaderText("Servants/Materials that couldn't be imported:");
         notFoundAlert.setContentText(stringBuilder.toString());

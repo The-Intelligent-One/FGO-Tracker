@@ -30,8 +30,8 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
     private final ObservableList<T> entries;
     private ObservableList<T> filteredEntries = FXCollections.observableArrayList();
     private ContextMenu entriesPopup;
-    private boolean caseSensitive = false;
-    private boolean popupHidden = false;
+    private boolean caseSensitive;
+    private boolean popupHidden;
     private String textOccurenceStyle = "-fx-font-weight: bold";
     private int maxEntries = 10;
     private TextField text;
@@ -40,55 +40,53 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
         super();
         getStyleClass().add("text-field-table-cell");
         setConverter(converter);
-        this.entries = (entrySet == null ? FXCollections.observableArrayList() : entrySet);
+        this.entries = entrySet == null ? FXCollections.observableArrayList() : entrySet;
         this.filteredEntries.addAll(entries);
 
         entriesPopup = new ContextMenu();
         getChildren().addListener((ListChangeListener.Change<? extends Node> change) ->
         {
-            if (change.next()) {
-                if (change.getAddedSubList().get(0) instanceof TextField) {
-                    text = (TextField) change.getAddedSubList().get(0);
+            if (change.next() && change.getAddedSubList().get(0) instanceof TextField) {
+                text = (TextField) change.getAddedSubList().get(0);
 
-                    text.textProperty().addListener((ObservableValue<? extends String> observableValue, String s, String s2) ->
-                    {
-                        if (text.getText() == null || text.getText().length() == 0) {
-                            filteredEntries.clear();
-                            filteredEntries.addAll(entries);
-                            entriesPopup.hide();
+                text.textProperty().addListener((ObservableValue<? extends String> observableValue, String s, String s2) ->
+                {
+                    if (text.getText() == null || text.getText().length() == 0) {
+                        filteredEntries.clear();
+                        filteredEntries.addAll(entries);
+                        entriesPopup.hide();
+                    } else {
+                        List<T> searchResult = new ArrayList<>();
+                        //Check if the entered Text is part of some entry
+                        String text1 = createNormalizedString(text.getText());
+                        Pattern pattern;
+                        if (isCaseSensitive()) {
+                            pattern = Pattern.compile(".*" + "\\Q" + text1 + "\\E" + ".*");
                         } else {
-                            List<T> searchResult = new ArrayList<>();
-                            //Check if the entered Text is part of some entry
-                            String text1 = createNormalizedString(text.getText());
-                            Pattern pattern;
-                            if (isCaseSensitive()) {
-                                pattern = Pattern.compile(".*" + "\\Q" + text1 + "\\E" + ".*");
-                            } else {
-                                pattern = Pattern.compile(".*" + "\\Q" + text1 + "\\E" + ".*", Pattern.CASE_INSENSITIVE);
-                            }
-                            for (T entry : entries) {
-                                String normalizedString = createNormalizedString(entry.toString());
-                                Matcher matcher = pattern.matcher(normalizedString);
-                                if (matcher.matches()) {
-                                    searchResult.add(entry);
-                                }
-                            }
-                            if (!entries.isEmpty()) {
-                                filteredEntries.clear();
-                                filteredEntries.addAll(searchResult);
-                                //Only show popup if not in filter mode
-                                if (!isPopupHidden()) {
-                                    populatePopup(searchResult, text1);
-                                    if (!entriesPopup.isShowing()) {
-                                        entriesPopup.show(AutoCompleteTextFieldTableCell.this, Side.BOTTOM, 0, 0);
-                                    }
-                                }
-                            } else {
-                                entriesPopup.hide();
+                            pattern = Pattern.compile(".*" + "\\Q" + text1 + "\\E" + ".*", Pattern.CASE_INSENSITIVE);
+                        }
+                        for (T entry : entries) {
+                            String normalizedString = createNormalizedString(entry.toString());
+                            Matcher matcher = pattern.matcher(normalizedString);
+                            if (matcher.matches()) {
+                                searchResult.add(entry);
                             }
                         }
-                    });
-                }
+                        if (entries.isEmpty()) {
+                            entriesPopup.hide();
+                        } else {
+                            filteredEntries.clear();
+                            filteredEntries.addAll(searchResult);
+                            //Only show popup if not in filter mode
+                            if (!isPopupHidden()) {
+                                populatePopup(searchResult, text1);
+                                if (!entriesPopup.isShowing()) {
+                                    entriesPopup.show(AutoCompleteTextFieldTableCell.this, Side.BOTTOM, 0, 0);
+                                }
+                            }
+                        }
+                    }
+                });
             }
         });
 
@@ -101,7 +99,8 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
 
     public static <S> Callback<TableColumn<S, String>, TableCell<S, String>> forTableColumn(ObservableList<String> entries) {
         return list -> {
-            AutoCompleteTextFieldTableCell<S, String> tableCell = new AutoCompleteTextFieldTableCell(new DefaultStringConverter(), entries);
+            AutoCompleteTextFieldTableCell<S, String> tableCell = new AutoCompleteTextFieldTableCell(new DefaultStringConverter(),
+                    entries);
             tableCell.getEntryMenu().setOnAction(e -> {
                 ((MenuItem) e.getTarget()).addEventHandler(Event.ANY, event ->
                 {

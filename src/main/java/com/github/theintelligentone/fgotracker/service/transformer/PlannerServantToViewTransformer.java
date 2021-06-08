@@ -45,9 +45,9 @@ public class PlannerServantToViewTransformer {
     }
 
     public PlannerServant transform(PlannerServantView servant) {
-        UserServant transformedUserServant = servant.getBaseServant().getValue() != null
-                ? userServantToViewTransformer.transform(servant.getBaseServant().getValue())
-                : null;
+        UserServant transformedUserServant = servant.getBaseServant().getValue() == null
+                ? null
+                : userServantToViewTransformer.transform(servant.getBaseServant().getValue());
         return PlannerServant.builder()
                 .svtId(servant.getSvtId().longValue())
                 .baseServant(transformedUserServant)

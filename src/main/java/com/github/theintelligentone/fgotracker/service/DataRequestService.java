@@ -7,12 +7,14 @@ import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.other.VersionDTO;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import javafx.scene.image.Image;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class DataRequestService {
 
     private static final String[] SERVANT_TYPES = {"normal", "heroine"};
@@ -38,7 +40,7 @@ public class DataRequestService {
         try {
             dataList = objectMapper.readValue(new URL(ALL_SERVANT_URL.get(gameRegion)), new TypeReference<>() {});
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
         }
         return dataList.stream().filter(this::isServant).collect(Collectors.toList());
     }
@@ -48,7 +50,7 @@ public class DataRequestService {
         try {
             dataList = objectMapper.readValue(new URL(MAT_URL.get(gameRegion)), new TypeReference<>() {});
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
         }
         return dataList.stream().filter(this::isMat).collect(Collectors.toList());
     }
@@ -58,7 +60,7 @@ public class DataRequestService {
         try {
             classAttackRate = objectMapper.readValue(new URL(CLASS_ATTACK_RATE_URL), new TypeReference<>() {});
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
         }
         return classAttackRate;
     }
@@ -68,7 +70,7 @@ public class DataRequestService {
         try {
             cardDetailMap = objectMapper.readValue(new URL(CARD_DETAILS_URL), new TypeReference<>() {});
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
         }
         return cardDetailMap;
     }
@@ -82,7 +84,7 @@ public class DataRequestService {
         try {
             response = objectMapper.readValue(new URL(VERSION_URL), new TypeReference<>() {});
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
         }
         return response;
     }

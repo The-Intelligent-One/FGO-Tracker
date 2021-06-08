@@ -15,9 +15,11 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Optional;
 
+@Slf4j
 public class MainApp extends Application {
     private static final String MAIN_WINDOW_FXML = "/fxml/mainWindow.fxml";
     @Getter
@@ -107,7 +109,7 @@ public class MainApp extends Application {
             loadingAlert.close();
         });
         loadingTask.setOnFailed(event -> {
-            loadingTask.getException().printStackTrace();
+            log.error(loadingTask.getException().getLocalizedMessage());
             Platform.exit();
         });
         return loadingTask;

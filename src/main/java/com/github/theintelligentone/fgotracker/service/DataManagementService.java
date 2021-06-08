@@ -63,7 +63,7 @@ public class DataManagementService {
     @Getter
     private InventoryView inventory;
     @Getter
-    private boolean iconsResized = false;
+    private boolean iconsResized;
     @Getter
     private String gameRegion;
     private ObservableList<UserServantView> userServantList;
@@ -129,7 +129,8 @@ public class DataManagementService {
     private void initDataLists() {
         userServantList = FXCollections.observableArrayList(
                 param -> new Observable[]{param.getSvtId(), param.getLevel(), param.getSkillLevel1(), param.getSkillLevel2(), param.getSkillLevel3()});
-        plannerServantList = FXCollections.observableArrayList(param -> new Observable[]{param.getBaseServant(), param.getDesLevel(), param.getDesSkill1(), param.getDesSkill2(), param.getDesSkill3()});
+        plannerServantList = FXCollections.observableArrayList(
+                param -> new Observable[]{param.getBaseServant(), param.getDesLevel(), param.getDesSkill1(), param.getDesSkill2(), param.getDesSkill3()});
         userServantList.addListener((ListChangeListener<? super UserServantView>) c -> {
             List<Long> ids = c.getList().stream().map(svt -> svt.getSvtId().get()).collect(Collectors.toList());
             plannerServantList.removeIf(
@@ -301,7 +302,7 @@ public class DataManagementService {
         String servantName = importedData[ROSTER_IMPORT_INDEX_MAP.get("name")];
         if (!servantName.isEmpty()) {
             Servant baseServant = findServantFromManager(servantName, managerLookup);
-            if (baseServant.getName() != null && !baseServant.getName().isEmpty()) {
+            if (!(baseServant.getName() == null || baseServant.getName().isEmpty())) {
                 servant = new UserServantFactory().createUserServantFromBaseServant(baseServant);
                 servant.setNpLevel(getValueFromImportedRosterData(importedData, "npLevel", 1, 5));
                 servant.setLevel(getValueFromImportedRosterData(importedData, "level", 1, 100));
@@ -323,17 +324,17 @@ public class DataManagementService {
 
     private int getValueFromImportedRosterData(String[] importedData, String propertyName, int min, int max) {
         String stringValue = importedData[ROSTER_IMPORT_INDEX_MAP.get(propertyName)];
-        if (propertyName.equalsIgnoreCase("level")) {
+        if ("level".equalsIgnoreCase(propertyName)) {
             stringValue = stringValue.isEmpty() ? stringValue : stringValue.substring(4);
         }
-        if (propertyName.equalsIgnoreCase("npLevel")) {
+        if ("npLevel".equalsIgnoreCase(propertyName)) {
             stringValue = stringValue.isEmpty() ? stringValue : stringValue.substring(2);
         }
         return Math.max(Math.min(convertToInt(stringValue), max), min);
     }
 
     private int convertToInt(String data) {
-        return data != null && !data.isEmpty() ? Integer.parseInt(data) : 0;
+        return !(data == null || data.isEmpty()) ? Integer.parseInt(data) : 0;
     }
 
     private Servant findServantFromManager(String name, List<ManagerServant> managerLookup) {
@@ -431,10 +432,10 @@ public class DataManagementService {
         List<String> notFoundNames = new ArrayList<>();
         for (Map.Entry<String, Integer> entry : importedData.entrySet()) {
             String matName = findMaterialName(entry.getKey());
-            if (!matName.isEmpty()) {
-                processedData.put(matName, entry.getValue());
-            } else {
+            if (matName.isEmpty()) {
                 notFoundNames.add(entry.getKey());
+            } else {
+                processedData.put(matName, entry.getValue());
             }
         }
         for (UpgradeMaterialCostView mat : inventory.getInventory()) {
@@ -498,19 +499,19 @@ public class DataManagementService {
                 baseUserServant = findUserServantByFormattedName(
                         String.format(NAME_FORMAT, baseServant.getName(), baseServant.getClassName()));
             }
-            if (baseUserServant != null) {
-                servant = new PlannerServantViewFactory().createFromUserServant(baseUserServant);
-                servant.getDesLevel().set(Math.max(Math.min(convertToInt(importedData[9]), 100), 1));
-                servant.getDesSkill1().set(Math.max(Math.min(convertToInt(importedData[10]), 10), 1));
-                servant.getDesSkill2().set(Math.max(Math.min(convertToInt(importedData[11]), 10), 1));
-                servant.getDesSkill3().set(Math.max(Math.min(convertToInt(importedData[12]), 10), 1));
-            } else {
+            if (baseUserServant == null) {
                 baseUserServant = userServantToViewTransformer.transform(new UserServant());
                 baseServant = new Servant();
                 baseServant.setName(servantName);
                 baseUserServant.getBaseServant().set(baseServant);
                 servant = new PlannerServantView();
                 servant.getBaseServant().set(baseUserServant);
+            } else {
+                servant = new PlannerServantViewFactory().createFromUserServant(baseUserServant);
+                servant.getDesLevel().set(Math.max(Math.min(convertToInt(importedData[9]), 100), 1));
+                servant.getDesSkill1().set(Math.max(Math.min(convertToInt(importedData[10]), 10), 1));
+                servant.getDesSkill2().set(Math.max(Math.min(convertToInt(importedData[11]), 10), 1));
+                servant.getDesSkill3().set(Math.max(Math.min(convertToInt(importedData[12]), 10), 1));
             }
         }
         return servant;

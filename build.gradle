@@ -25,6 +25,7 @@ dependencies {
     runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:linux"
     runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:mac"
     compile "com.opencsv:opencsv:5.4"
+    compile 'ch.qos.logback:logback-classic:1.2.3'
 }
 
 application {

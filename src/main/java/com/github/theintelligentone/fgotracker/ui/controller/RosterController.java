@@ -12,7 +12,6 @@ import javafx.collections.FXCollections;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxTableCell;
 import javafx.scene.control.cell.ComboBoxTableCell;
 import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.FileChooser;
@@ -176,7 +175,7 @@ public class RosterController {
         Alert notFoundAlert = new Alert(Alert.AlertType.WARNING);
         notFoundNames.forEach(str -> {
             stringBuilder.append(str);
-            stringBuilder.append("\n");
+            stringBuilder.append('\n');
         });
         notFoundAlert.setHeaderText("Servants that couldn't be imported:");
         notFoundAlert.setContentText(stringBuilder.toString());

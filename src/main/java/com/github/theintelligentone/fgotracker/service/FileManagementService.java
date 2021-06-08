@@ -17,6 +17,7 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
 import java.io.*;
@@ -25,6 +26,7 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class FileManagementService {
     private static final String BASE_DATA_PATH = "data/";
     private static final String CACHE_PATH = "cache/";
@@ -51,7 +53,7 @@ public class FileManagementService {
         try {
             initFileStructure();
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
         }
     }
 
@@ -67,7 +69,7 @@ public class FileManagementService {
                 throw new IOException();
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
         }
     }
 
@@ -106,7 +108,7 @@ public class FileManagementService {
         try {
             objectMapper.writeValue(file, data);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
         }
     }
 
@@ -117,7 +119,7 @@ public class FileManagementService {
             try {
                 servantList = objectMapper.readValue(file, new TypeReference<>() {});
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getLocalizedMessage());
             }
         }
         return servantList;
@@ -130,7 +132,7 @@ public class FileManagementService {
             try {
                 itemList = objectMapper.readValue(file, new TypeReference<>() {});
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getLocalizedMessage());
             }
         }
         itemList.forEach(this::loadImageForMaterial);
@@ -144,7 +146,7 @@ public class FileManagementService {
             try {
                 basicDataList = objectMapper.readValue(file, new TypeReference<>() {});
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getLocalizedMessage());
             }
         }
         return basicDataList;
@@ -157,7 +159,7 @@ public class FileManagementService {
             try {
                 basicDataList = objectMapper.readValue(file, new TypeReference<>() {});
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getLocalizedMessage());
             }
         }
         return basicDataList;
@@ -170,7 +172,7 @@ public class FileManagementService {
             try {
                 classAttackMap = objectMapper.readValue(file, new TypeReference<>() {});
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getLocalizedMessage());
             }
         }
         return classAttackMap;
@@ -189,7 +191,7 @@ public class FileManagementService {
             try {
                 cardDataMap = objectMapper.readValue(file, new TypeReference<>() {});
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getLocalizedMessage());
             }
         }
         return cardDataMap;
@@ -204,7 +206,7 @@ public class FileManagementService {
             versionMap.put("NA", new VersionDTO());
             versionMap.put("JP", new VersionDTO());
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
         }
         return versionMap;
     }
@@ -214,7 +216,7 @@ public class FileManagementService {
         try {
             regionAsString = Files.readString(Path.of(BASE_DATA_PATH + USER_DATA_PATH, GAME_REGION_FILE));
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
         }
         return regionAsString;
     }
@@ -228,7 +230,7 @@ public class FileManagementService {
         try {
             Files.writeString(Path.of(BASE_DATA_PATH + USER_DATA_PATH, GAME_REGION_FILE), region);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
         }
     }
 
@@ -259,7 +261,7 @@ public class FileManagementService {
                     .build();
             strings = csvReader.readAll();
         } catch (IOException | CsvException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
         }
         return strings;
     }
@@ -273,7 +275,7 @@ public class FileManagementService {
                     .build();
             strings = csvReader.readAll();
         } catch (IOException | CsvException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
         }
         return strings;
     }
@@ -290,7 +292,7 @@ public class FileManagementService {
             csvReader.readNext();
             strings.add(csvReader.readNext());
         } catch (IOException | CsvException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
         }
         return transformToInventoryMap(strings);
     }
@@ -314,12 +316,12 @@ public class FileManagementService {
         try {
             strings = csvReader.readAll();
         } catch (IOException | CsvException e) {
-            e.printStackTrace();
+            log.error(e.getLocalizedMessage());
         }
         return strings.stream().map(this::buildLookupObject).collect(Collectors.toList());
     }
 
-    private ManagerServant buildLookupObject(String[] strings) {
+    private ManagerServant buildLookupObject(String... strings) {
         return new ManagerServant(Integer.parseInt(strings[1]), strings[0]);
     }
 
@@ -330,7 +332,7 @@ public class FileManagementService {
             try {
                 matList = objectMapper.readValue(file, new TypeReference<>() {});
             } catch (IOException e) {
-                e.printStackTrace();
+                log.error(e.getLocalizedMessage());
             }
         }
         Inventory result = new Inventory();

@@ -1,6 +1,7 @@
 package com.github.theintelligentone.fgotracker.ui.valuefactory.planner;
 
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
+import com.github.theintelligentone.fgotracker.domain.view.UpgradeMaterialCostView;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
@@ -10,7 +11,7 @@ import lombok.Getter;
 
 public class InventoryValueFactory implements Callback<TableColumn.CellDataFeatures<InventoryView, Integer>, ObservableValue<Integer>> {
     @Getter
-    private long matId;
+    private final long matId;
 
     public InventoryValueFactory(long matId) {
         this.matId = matId;
@@ -22,7 +23,8 @@ public class InventoryValueFactory implements Callback<TableColumn.CellDataFeatu
     }
 
     private ObservableValue<Integer> getAmountOfMaterial(InventoryView inventory) {
-        IntegerProperty property = inventory.getInventory().stream().filter(mat -> mat.getId().longValue() == matId).map(mat -> mat.getAmount()).findFirst().get();
-        return property != null ? property.asObject() : new SimpleIntegerProperty(0).asObject();
+        IntegerProperty property = inventory.getInventory().stream().filter(mat -> mat.getId().longValue() == matId).map(
+                UpgradeMaterialCostView::getAmount).findFirst().orElse(null);
+        return property == null ? new SimpleIntegerProperty(0).asObject() : property.asObject();
     }
 }

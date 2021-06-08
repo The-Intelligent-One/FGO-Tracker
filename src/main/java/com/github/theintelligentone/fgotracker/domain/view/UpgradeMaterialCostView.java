@@ -6,9 +6,9 @@ import lombok.Data;
 
 @Data
 public class UpgradeMaterialCostView {
-    LongProperty id;
-    ObjectProperty<UpgradeMaterial> item;
-    IntegerProperty amount;
+    private LongProperty id;
+    private ObjectProperty<UpgradeMaterial> item;
+    private IntegerProperty amount;
 
     public UpgradeMaterialCostView() {
         this.id = new SimpleLongProperty(0);

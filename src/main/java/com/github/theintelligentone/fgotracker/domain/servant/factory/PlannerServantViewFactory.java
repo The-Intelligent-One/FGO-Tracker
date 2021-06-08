@@ -11,7 +11,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -21,7 +20,8 @@ public class PlannerServantViewFactory {
     private static final int MAX_SKILL_LEVEL = 10;
 
     public ObservableList<PlannerServantView> createForLTPlanner(ObservableList<UserServantView> servants) {
-        ObservableList<PlannerServantView> result = FXCollections.observableArrayList(param -> new Observable[]{param.getBaseServant(), param.getDesLevel(), param.getDesSkill1(), param.getDesSkill2(), param.getDesSkill3()});
+        ObservableList<PlannerServantView> result = FXCollections.observableArrayList(
+                param -> new Observable[]{param.getBaseServant(), param.getDesLevel(), param.getDesSkill1(), param.getDesSkill2(), param.getDesSkill3()});
         result.addAll(servants.stream().map(this::createFromUserServantForLTPlanner).collect(Collectors.toList()));
         servants.addListener((ListChangeListener<? super UserServantView>) c -> {
             result.clear();
@@ -53,7 +53,8 @@ public class PlannerServantViewFactory {
             result = PlannerServantView.builder()
                     .svtId(servant.getSvtId())
                     .baseServant(new SimpleObjectProperty<>(servant))
-                    .desLevel(new SimpleIntegerProperty(DataManagementService.MAX_LEVELS[servant.getBaseServant().getValue().getRarity()]))
+                    .desLevel(new SimpleIntegerProperty(
+                            DataManagementService.MAX_LEVELS[servant.getBaseServant().getValue().getRarity()]))
                     .desSkill1(new SimpleIntegerProperty(MAX_SKILL_LEVEL))
                     .desSkill2(new SimpleIntegerProperty(MAX_SKILL_LEVEL))
                     .desSkill3(new SimpleIntegerProperty(MAX_SKILL_LEVEL))
@@ -65,6 +66,7 @@ public class PlannerServantViewFactory {
     }
 
     private List<UpgradeCost> convertMaterialMapToList(Map<Integer, UpgradeCost> materials) {
-        return materials.entrySet().stream().sorted(Comparator.comparing(Map.Entry::getKey)).map(Map.Entry::getValue).collect(Collectors.toList());
+        return materials.entrySet().stream().sorted(Map.Entry.comparingByKey()).map(Map.Entry::getValue).collect(
+                Collectors.toList());
     }
 }

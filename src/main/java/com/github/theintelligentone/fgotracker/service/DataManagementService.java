@@ -482,26 +482,31 @@ public class DataManagementService {
     }
 
     public void saveUserState() {
-        clearUnnecessaryEmptyUserRows(userServantList);
-        clearUnnecessaryEmptyPlannerRows(plannerServantList);
-        fileService.saveUserServants(userServantToViewTransformer.transformAll(userServantList));
+        List<UserServantView> clearedUserList = clearUnnecessaryEmptyUserRows(userServantList);
+        List<PlannerServantView> clearedPlannerList = clearUnnecessaryEmptyPlannerRows(plannerServantList);
+        List<PlannerServantView> clearedPriorityList = clearUnnecessaryEmptyPlannerRows(priorityPlannerServantList);
+        fileService.saveUserServants(userServantToViewTransformer.transformAll(clearedUserList));
         fileService.saveInventory(inventoryToViewTransformer.transform(inventory));
-        fileService.savePlannerServants(plannerServantToViewTransformer.transformAllFromViews(plannerServantList));
-        fileService.savePriorityServants(plannerServantToViewTransformer.transformAllFromViews(priorityPlannerServantList));
+        fileService.savePlannerServants(plannerServantToViewTransformer.transformAllFromViews(clearedPlannerList));
+        fileService.savePriorityServants(plannerServantToViewTransformer.transformAllFromViews(clearedPriorityList));
     }
 
-    private void clearUnnecessaryEmptyUserRows(List<UserServantView> servantList) {
-        int index = servantList.size() - 1;
-        while (!servantList.isEmpty() && servantList.get(index).getBaseServant().getValue() == null) {
-            servantList.remove(index--);
+    private List<UserServantView> clearUnnecessaryEmptyUserRows(List<UserServantView> servantList) {
+        List<UserServantView> newList = new ArrayList<>(servantList);
+        int index = newList.size() - 1;
+        while (!newList.isEmpty() && newList.get(index).getBaseServant().getValue() == null) {
+            newList.remove(index--);
         }
+        return newList;
     }
 
-    private void clearUnnecessaryEmptyPlannerRows(List<PlannerServantView> servantList) {
-        int index = servantList.size() - 1;
-        while (!servantList.isEmpty() && servantList.get(index).getBaseServant().getValue() == null) {
-            servantList.remove(index--);
+    private List<PlannerServantView> clearUnnecessaryEmptyPlannerRows(List<PlannerServantView> servantList) {
+        List<PlannerServantView> newList = new ArrayList<>(servantList);
+        int index = newList.size() - 1;
+        while (!newList.isEmpty() && newList.get(index).getBaseServant().getValue() == null) {
+            newList.remove(index--);
         }
+        return newList;
     }
 
     public List<String> importInventoryFromCsv(File sourceFile) {

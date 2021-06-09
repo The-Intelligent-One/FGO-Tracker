@@ -51,7 +51,7 @@ public class UserServantToViewTransformer {
         return FXCollections.observableArrayList(servants.stream().map(this::transform).collect(Collectors.toList()));
     }
 
-    public List<UserServant> transformAll(ObservableList<UserServantView> servants) {
+    public List<UserServant> transformAll(List<UserServantView> servants) {
         return servants.stream().map(this::transform).collect(Collectors.toList());
     }
 }

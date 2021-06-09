@@ -183,7 +183,7 @@ public class PlannerController {
                             index >= 0 && index == plannerTable.getItems().size() - 1);
                 }
             };
-            createContextMenuForTableRow(row);
+            createContextMenuForPlannerTableRow(row);
             return row;
         });
     }
@@ -191,6 +191,16 @@ public class PlannerController {
     private void setupSumTable() {
         disableSumTableHeader();
         sumTable.setMaxHeight(MainController.CELL_HEIGHT * 3);
+        sumTable.setRowFactory(param -> {
+            TableRow<InventoryView> row = new TableRow<>() {
+                @Override
+                public void updateIndex(int index) {
+                    super.updateIndex(index);
+                }
+            };
+            createContextMenuForInventoryTableRow(row);
+            return row;
+        });
         setupSumTableData();
         bindColumnWidths();
     }
@@ -321,18 +331,27 @@ public class PlannerController {
         }
     }
 
-    private void createContextMenuForTableRow(TableRow<PlannerServantView> row) {
-        MenuItem importInventoryButton = new MenuItem("Import inventory from csv");
-        importInventoryButton.setOnAction(event -> importInventoryFromCsv());
-        ContextMenu menu = new ContextMenu(importInventoryButton);
+    private void createContextMenuForInventoryTableRow(TableRow<InventoryView> row) {
+        ContextMenu menu = createBasicPlannerContextMenu();
+        row.contextMenuProperty().bind(Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(menu));
+    }
+
+    private void createContextMenuForPlannerTableRow(TableRow<PlannerServantView> row) {
+        ContextMenu menu = createBasicPlannerContextMenu();
         if (PlannerType.LT != plannerType) {
-            List<MenuItem> editableMenuItems = createListOfMenuItemsWhenTableIsEditable(row);
+            List<MenuItem> editableMenuItems = createEditablePlannerTableMenuItems(row);
             menu.getItems().addAll(editableMenuItems);
         }
         row.contextMenuProperty().bind(Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(menu));
     }
 
-    private List<MenuItem> createListOfMenuItemsWhenTableIsEditable(TableRow<PlannerServantView> row) {
+    private ContextMenu createBasicPlannerContextMenu() {
+        MenuItem importInventoryButton = new MenuItem("Import inventory from csv");
+        importInventoryButton.setOnAction(event -> importInventoryFromCsv());
+        return new ContextMenu(importInventoryButton);
+    }
+
+    private List<MenuItem> createEditablePlannerTableMenuItems(TableRow<PlannerServantView> row) {
         List<MenuItem> editableMenuItems = new ArrayList<>();
         addNewMenuItem(editableMenuItems, "Import servants for planner from CSV", event -> importPlannerServantsFromCsv());
         addNewMenuItem(editableMenuItems, "Delete row",

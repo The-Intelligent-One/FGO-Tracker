@@ -1,6 +1,7 @@
 package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
+import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import javafx.fxml.FXML;
 
@@ -14,10 +15,10 @@ public class MainController {
 
     @FXML
     private RosterController rosterTabController;
-
     @FXML
     private PlannerController plannerController;
-
+    @FXML
+    private PlannerController priorityPlannerController;
     @FXML
     private PlannerController ltPlannerController;
 
@@ -31,11 +32,12 @@ public class MainController {
     public void tableSetup() {
         rosterTabController.setup();
         plannerController.setup();
+        priorityPlannerController.setup();
         ltPlannerController.setup();
     }
 
     public void tearDown() {
-        dataManagementService.saveUserState();
+        saveUserData();
     }
 
     public void saveUserData() {
@@ -43,9 +45,11 @@ public class MainController {
     }
 
     public void initTables() {
-        plannerController.setLongTerm(false);
+        plannerController.setPlannerType(PlannerType.REGULAR);
         plannerController.init();
-        ltPlannerController.setLongTerm(true);
+        priorityPlannerController.setPlannerType(PlannerType.PRIORITY);
+        priorityPlannerController.init();
+        ltPlannerController.setPlannerType(PlannerType.LT);
         ltPlannerController.init();
     }
 }

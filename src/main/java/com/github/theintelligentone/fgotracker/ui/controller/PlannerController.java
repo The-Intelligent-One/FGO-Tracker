@@ -3,6 +3,7 @@ package com.github.theintelligentone.fgotracker.ui.controller;
 import com.github.theintelligentone.fgotracker.app.MainApp;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
+import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.PlannerServantViewFactory;
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
@@ -26,6 +27,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Orientation;
 import javafx.scene.SnapshotParameters;
@@ -37,12 +40,16 @@ import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
+@Slf4j
 public class PlannerController {
     private static final int HOLY_GRAIL_ID = 7999;
 
@@ -87,11 +94,8 @@ public class PlannerController {
 
     private DataManagementService dataManagementService;
     private ServantUtils servantUtils;
-    private boolean isLongTerm;
-
-    public void setLongTerm(boolean longTerm) {
-        isLongTerm = longTerm;
-    }
+    @Setter
+    private PlannerType plannerType;
 
     public void initialize() {
         dataManagementService = MainApp.getDataManagementService();
@@ -141,25 +145,59 @@ public class PlannerController {
     }
 
     public void setup() {
-        tabSetup();
-        setupPlannerTable();
-        setupSumTable();
+        plannerTab.setOnSelectionChanged(event -> refreshOnTabSelected());
+        setupTables();
         if (!dataManagementService.isIconsResized()) {
             dataManagementService.saveMaterialData();
         }
     }
 
+    private void setupTables() {
+        setupTableData();
+        setupPlannerTable();
+        setupSumTable();
+    }
+
+    private void setupTableData() {
+        if (PlannerType.LT == plannerType) {
+            loadLTData();
+        } else {
+            plannerTable.setItems(dataManagementService.getPlannerServantList(plannerType));
+        }
+    }
+
     private void setupPlannerTable() {
+        if (PlannerType.LT != plannerType) {
+            plannerTable.setEditable(true);
+            nameColumn.setCellFactory(
+                    AutoCompleteTextFieldTableCell.forTableColumn(dataManagementService.getUserServantNameList()));
+        }
         plannerTable.getColumns().addAll(createColumnsForAllMats());
-        plannerTable.getStyleClass().add("planner-table");
+        plannerTable.setRowFactory(param -> {
+            PseudoClass lastRow = PseudoClass.getPseudoClass("last-row");
+            TableRow<PlannerServantView> row = new TableRow<>() {
+                @Override
+                public void updateIndex(int index) {
+                    super.updateIndex(index);
+                    pseudoClassStateChanged(lastRow,
+                            index >= 0 && index == plannerTable.getItems().size() - 1);
+                }
+            };
+            createContextMenuForTableRow(row);
+            return row;
+        });
     }
 
     private void setupSumTable() {
+        disableSumTableHeader();
+        sumTable.setMaxHeight(MainController.CELL_HEIGHT * 3);
+        setupSumTableData();
+        bindColumnWidths();
+    }
+
+    private void setupSumTableData() {
         InventoryToViewTransformer transformer = new InventoryToViewTransformer();
         sumTable.getColumns().addAll(createColumnsForAllMatsForSum());
-        sumTable.setMaxHeight(MainController.CELL_HEIGHT * 3);
-        disableSumTableHeader();
-        bindColumnWidths();
         sumTable.getStyleClass().add("sum-table");
         InventoryView inventory = dataManagementService.getInventory();
         sumTable.getItems().add(inventory);
@@ -268,87 +306,60 @@ public class PlannerController {
     }
 
     public void init() {
-        if (isLongTerm) {
-            plannerTab.setText("LT Planner");
-        } else {
-            plannerTab.setText("Planner");
-        }
-    }
-
-    private void tabSetup() {
-        setupTableData();
-        plannerTab.setOnSelectionChanged(event -> refreshOnTabSelected());
-    }
-
-    private void setupTableData() {
-        if (isLongTerm) {
-            loadLtTableData();
-            plannerTable.setRowFactory(param -> {
-                PseudoClass lastRow = PseudoClass.getPseudoClass("last-row");
-                TableRow<PlannerServantView> row = new TableRow<>() {
-                    @Override
-                    public void updateIndex(int index) {
-                        super.updateIndex(index);
-                        pseudoClassStateChanged(lastRow,
-                                index >= 0 && index == plannerTable.getItems().size() - 1);
-                    }
-                };
-                createContextMenuForTableRow(row);
-                return row;
-            });
-        } else {
-            loadTableData();
-            plannerTable.setEditable(true);
-            plannerTable.setRowFactory(param -> {
-                PseudoClass lastRow = PseudoClass.getPseudoClass("last-row");
-                TableRow<PlannerServantView> row = new TableRow<>() {
-                    @Override
-                    public void updateIndex(int index) {
-                        super.updateIndex(index);
-                        pseudoClassStateChanged(lastRow,
-                                index >= 0 && index == plannerTable.getItems().size() - 1);
-                    }
-                };
-                createContextMenuForTableRow(row);
-                return row;
-            });
-            nameColumn.setCellFactory(
-                    AutoCompleteTextFieldTableCell.forTableColumn(dataManagementService.getUserServantNameList()));
+        switch (plannerType) {
+            case LT:
+                plannerTab.setText("LT Planner");
+                break;
+            case REGULAR:
+                plannerTab.setText("Planner");
+                break;
+            case PRIORITY:
+                plannerTab.setText("Priority Planner");
+                break;
+            default:
+                log.error("ERROR: Planner type not set correctly");
         }
     }
 
     private void createContextMenuForTableRow(TableRow<PlannerServantView> row) {
         MenuItem importInventoryButton = new MenuItem("Import inventory from csv");
         importInventoryButton.setOnAction(event -> importInventoryFromCsv());
-        MenuItem importPlannerServantsButton = new MenuItem("Import servants for planner from CSV");
-        importPlannerServantsButton.setOnAction(event -> importPlannerServantsFromCsv());
-        MenuItem removeRowButton = new MenuItem("Delete row");
-        removeRowButton.setOnAction(event -> dataManagementService.removePlannerServant(row.getItem()));
-        MenuItem clearRowButton = new MenuItem("Clear row");
-        clearRowButton.setOnAction(event -> dataManagementService.erasePlannerServant(row.getItem()));
-        MenuItem addRowAboveButton = new MenuItem("Insert row above");
-        addRowAboveButton.setOnAction(
+        ContextMenu menu = new ContextMenu(importInventoryButton);
+        if (PlannerType.LT != plannerType) {
+            List<MenuItem> editableMenuItems = createListOfMenuItemsWhenTableIsEditable(row);
+            menu.getItems().addAll(editableMenuItems);
+        }
+        row.contextMenuProperty().bind(Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(menu));
+    }
+
+    private List<MenuItem> createListOfMenuItemsWhenTableIsEditable(TableRow<PlannerServantView> row) {
+        List<MenuItem> editableMenuItems = new ArrayList<>();
+        addNewMenuItem(editableMenuItems, "Import servants for planner from CSV", event -> importPlannerServantsFromCsv());
+        addNewMenuItem(editableMenuItems, "Delete row",
+                event -> dataManagementService.removePlannerServant(row.getItem(), plannerType));
+        addNewMenuItem(editableMenuItems, "Clear row",
+                event -> dataManagementService.erasePlannerServant(row.getItem(), plannerType));
+        addNewMenuItem(editableMenuItems, "Insert row above",
                 event -> dataManagementService.savePlannerServant(row.getTableView().getItems().indexOf(row.getItem()),
-                        new PlannerServantView()));
-        MenuItem addRowBelowButton = new MenuItem("Insert row below");
-        addRowBelowButton.setOnAction(
+                        new PlannerServantView(), plannerType));
+        addNewMenuItem(editableMenuItems, "Insert row below",
                 event -> dataManagementService.savePlannerServant(row.getTableView().getItems().indexOf(row.getItem()) + 1,
-                        new PlannerServantView()));
-        MenuItem addMultipleRowsButton = new MenuItem("Add X new rows");
-        addMultipleRowsButton.setOnAction(event -> {
+                        new PlannerServantView(), plannerType));
+        addNewMenuItem(editableMenuItems, "Add X new rows", event -> {
             TextInputDialog prompt = new TextInputDialog("10");
             prompt.setContentText("How many new rows to add?");
             prompt.setTitle("Add X new rows");
             prompt.setHeaderText("");
             prompt.showAndWait().ifPresent(s -> IntStream.range(0, Integer.parseInt(s)).forEach(
-                    i -> dataManagementService.savePlannerServant(new PlannerServantView())));
+                    i -> dataManagementService.savePlannerServant(new PlannerServantView(), plannerType)));
         });
-        ContextMenu menu = new ContextMenu(importInventoryButton);
-        if (!isLongTerm) {
-            menu.getItems().addAll(importPlannerServantsButton, addRowAboveButton, addRowBelowButton, addMultipleRowsButton,
-                    clearRowButton, removeRowButton);
-        }
-        row.contextMenuProperty().bind(Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(menu));
+        return editableMenuItems;
+    }
+
+    private void addNewMenuItem(List<MenuItem> editableMenuItems, String text, EventHandler<ActionEvent> action) {
+        MenuItem importPlannerServantsButton = new MenuItem(text);
+        importPlannerServantsButton.setOnAction(action);
+        editableMenuItems.add(importPlannerServantsButton);
     }
 
     private void refreshOnTabSelected() {
@@ -358,11 +369,14 @@ public class PlannerController {
     }
 
     private void syncScrollbars() {
-        ScrollBar sumTableBar = sumTable.lookupAll(".scroll-bar").stream().map(node -> (ScrollBar) node).filter(
-                scrollBar -> scrollBar.getOrientation() == Orientation.HORIZONTAL).findFirst().get();
-        ScrollBar plannerTableBar = plannerTable.lookupAll(".scroll-bar").stream().map(node -> (ScrollBar) node).filter(
-                scrollBar -> scrollBar.getOrientation() == Orientation.HORIZONTAL).findFirst().get();
+        ScrollBar sumTableBar = getHorizontalScrollBar(sumTable);
+        ScrollBar plannerTableBar = getHorizontalScrollBar(plannerTable);
         sumTableBar.valueProperty().bindBidirectional(plannerTableBar.valueProperty());
+    }
+
+    private ScrollBar getHorizontalScrollBar(TableView<?> table) {
+        return table.lookupAll(".scroll-bar").stream().map(node -> (ScrollBar) node).filter(
+                scrollBar -> scrollBar.getOrientation() == Orientation.HORIZONTAL).findFirst().get();
     }
 
     private void tableInit() {
@@ -374,45 +388,15 @@ public class PlannerController {
     private void initPlannerTable() {
         plannerTable.getSelectionModel().setCellSelectionEnabled(true);
         plannerTable.setFixedCellSize(MainController.CELL_HEIGHT);
-        nameColumn.setPrefWidth(MainController.NAME_CELL_WIDTH);
-        nameColumn.setOnEditCommit(event -> {
-            if (event.getNewValue().isEmpty()) {
-                dataManagementService.erasePlannerServant(event.getRowValue());
-            } else {
-                dataManagementService.replaceBaseServantInPlannerRow(event.getTablePosition().getRow(), event.getRowValue(),
-                        event.getNewValue());
-                event.getTableView().refresh();
-            }
-        });
-        desired.getColumns().get(0).setOnEditCommit(event -> {
-            if (event.getRowValue().getSvtId().longValue() != 0) {
-                event.getRowValue().getDesLevel().set(
-                        servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, 1, 100));
-                plannerTable.refresh();
-            }
-        });
-        desired.getColumns().get(1).setOnEditCommit(event -> {
-            if (event.getRowValue().getSvtId().longValue() != 0) {
-                event.getRowValue().getDesSkill1().set(
-                        servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, 1, 10));
-                plannerTable.refresh();
-            }
-        });
-        desired.getColumns().get(2).setOnEditCommit(event -> {
-            if (event.getRowValue().getSvtId().longValue() != 0) {
-                event.getRowValue().getDesSkill2().set(
-                        servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, 1, 10));
-                plannerTable.refresh();
-            }
-        });
-        desired.getColumns().get(3).setOnEditCommit(event -> {
-            if (event.getRowValue().getSvtId().longValue() != 0) {
-                event.getRowValue().getDesSkill3().set(
-                        servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, 1, 10));
-                plannerTable.refresh();
-            }
-        });
+        initDesiredInfoColumns();
         initCurrentInfoColumns();
+    }
+
+    private void initDesiredInfoColumns() {
+        initDesiredInfoColumn(0, event -> event.getRowValue().getDesLevel(), 1, 100);
+        initDesiredInfoColumn(1, event -> event.getRowValue().getDesSkill1(), 1, 10);
+        initDesiredInfoColumn(2, event -> event.getRowValue().getDesSkill2(), 1, 10);
+        initDesiredInfoColumn(3, event -> event.getRowValue().getDesSkill3(), 1, 10);
         desired.getColumns().forEach(col1 -> col1.setPrefWidth(MainController.SHORT_CELL_WIDTH));
         desired.getColumns().forEach(col -> {
             TableColumn<PlannerServantView, Integer> actualCol = (TableColumn<PlannerServantView, Integer>) col;
@@ -420,45 +404,50 @@ public class PlannerController {
         });
     }
 
-    public void loadTableData() {
-        plannerTable.setItems(dataManagementService.getPlannerServantList());
+    private void initDesiredInfoColumn(int columnIndex,
+                                       Function<TableColumn.CellEditEvent<PlannerServantView, ?>, IntegerProperty> getProperty,
+                                       int min, int max) {
+        desired.getColumns().get(columnIndex).setOnEditCommit(event -> {
+            if (event.getRowValue().getSvtId().longValue() != 0) {
+                getProperty.apply(event).set(
+                        servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, min, max));
+                plannerTable.refresh();
+            }
+        });
     }
 
-    public void loadLtTableData() {
+    public void loadLTData() {
         plannerTable.setItems(createLTPlannerServantList());
     }
 
     private void initCurrentInfoColumns() {
-        level.setCellValueFactory(param -> {
+        nameColumn.setPrefWidth(MainController.NAME_CELL_WIDTH);
+        nameColumn.setOnEditCommit(event -> {
+            if (event.getNewValue().isEmpty()) {
+                dataManagementService.erasePlannerServant(event.getRowValue(), plannerType);
+            } else {
+                dataManagementService.replaceBaseServantInPlannerRow(event.getTablePosition().getRow(), event.getRowValue(),
+                        event.getNewValue(), plannerType);
+                event.getTableView().refresh();
+            }
+        });
+        initCurrentInfoColumn(level, param -> param.getValue().getBaseServant().getValue().getLevel());
+        initCurrentInfoColumn(skill1, param -> param.getValue().getBaseServant().getValue().getSkillLevel1());
+        initCurrentInfoColumn(skill2, param -> param.getValue().getBaseServant().getValue().getSkillLevel2());
+        initCurrentInfoColumn(skill3, param -> param.getValue().getBaseServant().getValue().getSkillLevel3());
+        current.getColumns().forEach(col -> col.setPrefWidth(MainController.SHORT_CELL_WIDTH));
+    }
+
+    private void initCurrentInfoColumn(TableColumn<PlannerServantView, Integer> column,
+                                       Function<TableColumn.CellDataFeatures<PlannerServantView, Integer>, IntegerProperty> getProperty) {
+        column.setCellValueFactory(param -> {
             IntegerProperty level = null;
             if (validServant(param)) {
                 level = new SimpleIntegerProperty(1);
-                level.bind(param.getValue().getBaseServant().getValue().getLevel());
+                level.bind(getProperty.apply(param));
             }
             return level == null ? null : level.asObject();
         });
-        skill1.setCellValueFactory(param -> {
-            IntegerProperty skill1 = null;
-            if (validServant(param)) {
-                skill1 = param.getValue().getBaseServant().getValue().getSkillLevel1();
-            }
-            return skill1 == null ? null : skill1.asObject();
-        });
-        skill2.setCellValueFactory(param -> {
-            IntegerProperty skill2 = null;
-            if (validServant(param)) {
-                skill2 = param.getValue().getBaseServant().getValue().getSkillLevel2();
-            }
-            return skill2 == null ? null : skill2.asObject();
-        });
-        skill3.setCellValueFactory(param -> {
-            IntegerProperty skill3 = null;
-            if (validServant(param)) {
-                skill3 = param.getValue().getBaseServant().getValue().getSkillLevel3();
-            }
-            return skill3 == null ? null : skill3.asObject();
-        });
-        current.getColumns().forEach(col -> col.setPrefWidth(MainController.SHORT_CELL_WIDTH));
     }
 
     private void importInventoryFromCsv() {
@@ -498,7 +487,7 @@ public class PlannerController {
     }
 
     private void loadPlannerDataFromCsv(File csvFile) {
-        List<String> notFoundNames = dataManagementService.importPlannerServantsFromCsv(csvFile);
+        List<String> notFoundNames = dataManagementService.importPlannerServantsFromCsv(csvFile, plannerType);
         if (notFoundNames != null && !notFoundNames.isEmpty()) {
             displayNotFoundAlert(notFoundNames);
         }

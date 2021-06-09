@@ -2,8 +2,8 @@ package com.github.theintelligentone.fgotracker.ui.valuefactory.roster;
 
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.FgoFunction;
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.NoblePhantasm;
-import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
+import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
@@ -26,7 +26,8 @@ public class UserServantNpDamageValueFactory implements Callback<TableColumn.Cel
 
     private int calculateNpDamage(UserServantView servant) {
         int damage = 0;
-        NoblePhantasm np = servant.getBaseServant().getValue().getNoblePhantasms().get(servant.getBaseServant().getValue().getNoblePhantasms().size() - 1);
+        NoblePhantasm np = servant.getBaseServant().getValue().getNoblePhantasms().get(
+                servant.getBaseServant().getValue().getNoblePhantasms().size() - 1);
         FgoFunction dmgFnc = findDamagingNpFunction(np);
         if (dmgFnc != null) {
             damage = calculateDamage(servant, dmgFnc, np.getCard());
@@ -36,7 +37,8 @@ public class UserServantNpDamageValueFactory implements Callback<TableColumn.Cel
 
     private int calculateDamage(UserServantView servant, FgoFunction np, String card) {
         int svtAtk = calculateBaseAtk(servant);
-        return Math.toIntExact(Math.round(svtAtk * getNpMultiplier(servant.getNpLevel(), np) * getCardMultiplier(card) * BASE_DAMAGE_MULTIPLIER));
+        return Math.toIntExact(Math.round(
+                svtAtk * getNpMultiplier(servant.getNpLevel(), np) * getCardMultiplier(card) * BASE_DAMAGE_MULTIPLIER));
     }
 
     private double getCardMultiplier(String card) {
@@ -48,7 +50,8 @@ public class UserServantNpDamageValueFactory implements Callback<TableColumn.Cel
     }
 
     private int calculateBaseAtk(UserServantView servant) {
-        return servant.getFouAtk().add(servant.getBaseServant().getValue().getAtkGrowth().get(servant.getLevel().subtract(1).get())).intValue();
+        return servant.getFouAtk().add(
+                servant.getBaseServant().getValue().getAtkGrowth().get(servant.getLevel().subtract(1).get())).intValue();
     }
 
     private FgoFunction findDamagingNpFunction(NoblePhantasm noblePhantasm) {

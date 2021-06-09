@@ -28,8 +28,8 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
 
     private final ObjectProperty<T> lastSelectedItem = new SimpleObjectProperty<>();
     private final ObservableList<T> entries;
-    private ObservableList<T> filteredEntries = FXCollections.observableArrayList();
-    private ContextMenu entriesPopup;
+    private final ObservableList<T> filteredEntries = FXCollections.observableArrayList();
+    private final ContextMenu entriesPopup;
     private boolean caseSensitive;
     private boolean popupHidden;
     private String textOccurenceStyle = "-fx-font-weight: bold";

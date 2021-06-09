@@ -16,5 +16,6 @@
         <fx:include fx:id="rosterTab" source="rosterTab.fxml"/>
         <fx:include fx:id="ltPlanner" source="plannerTab.fxml"/>
         <fx:include fx:id="planner" source="plannerTab.fxml"/>
+        <fx:include fx:id="priorityPlanner" source="plannerTab.fxml"/>
     </TabPane>
 </VBox>

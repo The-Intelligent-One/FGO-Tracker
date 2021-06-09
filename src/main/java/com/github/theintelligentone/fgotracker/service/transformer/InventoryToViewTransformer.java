@@ -16,7 +16,8 @@ public class InventoryToViewTransformer {
     public InventoryView transform(Inventory inventory) {
         InventoryView result = new InventoryView();
         result.setLabel(inventory.getLabel());
-        result.setInventory(FXCollections.observableArrayList(inventory.getInventory().stream().map(matToViewTransformer::transform).collect(Collectors.toList())));
+        result.setInventory(FXCollections.observableArrayList(
+                inventory.getInventory().stream().map(matToViewTransformer::transform).collect(Collectors.toList())));
         return result;
     }
 

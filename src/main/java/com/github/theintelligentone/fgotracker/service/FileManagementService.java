@@ -45,7 +45,10 @@ public class FileManagementService {
     private static final String GAME_REGION_FILE = "region.json";
     private static final String USER_SERVANT_FILE = "servants.json";
     private static final String PLANNED_SERVANT_FILE = "planned.json";
+    private static final String PRIORITY_SERVANT_FILE = "priority.json";
     private static final String INVENTORY_FILE = "inventory.json";
+    private static final int LINES_TO_SKIP_IN_ROSTER_CSV = 2;
+    private static final int LINES_TO_SKIP_IN_LT_CSV = 12;
 
     private final ObjectMapper objectMapper;
 
@@ -59,111 +62,61 @@ public class FileManagementService {
     }
 
     public void saveFullServantData(List<Servant> servants, String gameRegion) {
-        File file = new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + FULL_DATA_FILE);
-        saveDataToFile(servants, file);
-    }
-
-    public void saveImage(Image image, long id) {
-        File file = new File(BASE_DATA_PATH + IMAGE_FOLDER_PATH, id + "." + PNG_FORMAT);
-        try {
-            if (!ImageIO.write(SwingFXUtils.fromFXImage(image, null), PNG_FORMAT, file)) {
-                throw new IOException();
-            }
-        } catch (IOException e) {
-            log.error(e.getLocalizedMessage());
-        }
+        saveDataToFile(servants, new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + FULL_DATA_FILE));
     }
 
     public void saveMaterialData(List<UpgradeMaterial> materials, String gameRegion) {
-        File file = new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + MATERIAL_DATA_FILE);
         materials.forEach(mat -> saveImage(mat.getIconImage(), mat.getId()));
-        saveDataToFile(materials, file);
+        saveDataToFile(materials, new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + MATERIAL_DATA_FILE));
     }
 
     public void saveClassAttackRate(Map<String, Integer> classAttackRate) {
-        File file = new File(BASE_DATA_PATH, CLASS_ATTACK_FILE);
-        saveDataToFile(classAttackRate, file);
+        saveDataToFile(classAttackRate, new File(BASE_DATA_PATH, CLASS_ATTACK_FILE));
     }
 
     public void saveCardData(Map<String, Map<Integer, CardPlacementData>> cardData) {
-        File file = new File(BASE_DATA_PATH, CARD_DATA_FILE);
-        saveDataToFile(cardData, file);
+        saveDataToFile(cardData, new File(BASE_DATA_PATH, CARD_DATA_FILE));
     }
 
     public void saveUserServants(List<UserServant> servants) {
-        File file = new File(BASE_DATA_PATH + USER_DATA_PATH, USER_SERVANT_FILE);
-        saveDataToFile(servants, file);
+        saveDataToFile(servants, new File(BASE_DATA_PATH + USER_DATA_PATH, USER_SERVANT_FILE));
     }
 
     public void savePlannerServants(List<PlannerServant> servants) {
-        File file = new File(BASE_DATA_PATH + USER_DATA_PATH, PLANNED_SERVANT_FILE);
-        saveDataToFile(servants, file);
+        saveDataToFile(servants, new File(BASE_DATA_PATH + USER_DATA_PATH, PLANNED_SERVANT_FILE));
+    }
+
+    public void savePriorityServants(List<PlannerServant> servants) {
+        saveDataToFile(servants, new File(BASE_DATA_PATH + USER_DATA_PATH, PRIORITY_SERVANT_FILE));
     }
 
     public void saveInventory(Inventory inventory) {
-        File file = new File(BASE_DATA_PATH + USER_DATA_PATH, INVENTORY_FILE);
-        saveDataToFile(inventory.getInventory(), file);
-    }
-
-    private void saveDataToFile(Object data, File file) {
-        try {
-            objectMapper.writeValue(file, data);
-        } catch (IOException e) {
-            log.error(e.getLocalizedMessage());
-        }
+        saveDataToFile(inventory.getInventory(), new File(BASE_DATA_PATH + USER_DATA_PATH, INVENTORY_FILE));
     }
 
     public List<Servant> loadFullServantData(String gameRegion) {
-        File file = new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + FULL_DATA_FILE);
-        List<Servant> servantList = new ArrayList<>();
-        if (file.length() != 0) {
-            try {
-                servantList = objectMapper.readValue(file, new TypeReference<>() {});
-            } catch (IOException e) {
-                log.error(e.getLocalizedMessage());
-            }
-        }
+        List<Servant> servantList = getDataListFromFile(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + FULL_DATA_FILE,
+                new TypeReference<>() {});
         return servantList;
     }
 
     public List<UpgradeMaterial> loadMaterialData(String gameRegion) {
-        File file = new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + MATERIAL_DATA_FILE);
-        List<UpgradeMaterial> itemList = new ArrayList<>();
-        if (file.length() != 0) {
-            try {
-                itemList = objectMapper.readValue(file, new TypeReference<>() {});
-            } catch (IOException e) {
-                log.error(e.getLocalizedMessage());
-            }
-        }
+        List<UpgradeMaterial> itemList = getDataListFromFile(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + MATERIAL_DATA_FILE,
+                new TypeReference<>() {});
         itemList.forEach(this::loadImageForMaterial);
         return itemList;
     }
 
     public List<UserServant> loadUserData() {
-        File file = new File(BASE_DATA_PATH + USER_DATA_PATH, USER_SERVANT_FILE);
-        List<UserServant> basicDataList = new ArrayList<>();
-        if (file.length() != 0) {
-            try {
-                basicDataList = objectMapper.readValue(file, new TypeReference<>() {});
-            } catch (IOException e) {
-                log.error(e.getLocalizedMessage());
-            }
-        }
-        return basicDataList;
+        return getDataListFromFile(BASE_DATA_PATH + USER_DATA_PATH, USER_SERVANT_FILE, new TypeReference<>() {});
     }
 
     public List<PlannerServant> loadPlannedServantData() {
-        File file = new File(BASE_DATA_PATH + USER_DATA_PATH, PLANNED_SERVANT_FILE);
-        List<PlannerServant> basicDataList = new ArrayList<>();
-        if (file.length() != 0) {
-            try {
-                basicDataList = objectMapper.readValue(file, new TypeReference<>() {});
-            } catch (IOException e) {
-                log.error(e.getLocalizedMessage());
-            }
-        }
-        return basicDataList;
+        return getDataListFromFile(BASE_DATA_PATH + USER_DATA_PATH, PLANNED_SERVANT_FILE, new TypeReference<>() {});
+    }
+
+    public List<PlannerServant> loadPriorityServantData() {
+        return getDataListFromFile(BASE_DATA_PATH + USER_DATA_PATH, PRIORITY_SERVANT_FILE, new TypeReference<>() {});
     }
 
     public Map<String, Integer> getClassAttackRate() {
@@ -235,6 +188,34 @@ public class FileManagementService {
         }
     }
 
+    public List<String[]> importRosterCsv(File sourceFile) {
+        return importServantsFromCsv(sourceFile, LINES_TO_SKIP_IN_ROSTER_CSV);
+    }
+
+    public List<String[]> importPlannerCsv(File sourceFile) {
+        return importServantsFromCsv(sourceFile, LINES_TO_SKIP_IN_LT_CSV);
+    }
+
+    public Inventory loadInventory() {
+        List<UpgradeMaterialCost> matList = getDataListFromFile(BASE_DATA_PATH + USER_DATA_PATH, INVENTORY_FILE,
+                new TypeReference<>() {});
+        Inventory result = new Inventory();
+        result.setLabel("Inventory");
+        result.setInventory(matList);
+        return result;
+    }
+
+    public void saveImage(Image image, long id) {
+        File file = new File(BASE_DATA_PATH + IMAGE_FOLDER_PATH, id + "." + PNG_FORMAT);
+        try {
+            if (!ImageIO.write(SwingFXUtils.fromFXImage(image, null), PNG_FORMAT, file)) {
+                throw new IOException();
+            }
+        } catch (IOException e) {
+            log.error(e.getLocalizedMessage());
+        }
+    }
+
     private void initFileStructure() throws IOException {
         createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + "NA_" + FULL_DATA_FILE);
         createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + "JP_" + FULL_DATA_FILE);
@@ -257,26 +238,33 @@ public class FileManagementService {
         }
     }
 
-    public List<String[]> importRosterCsv(File sourceFile) {
-        List<String[]> strings = new ArrayList<>();
+    private void saveDataToFile(Object data, File file) {
         try {
-            FileReader fileReader = new FileReader(sourceFile, Charset.defaultCharset());
-            CSVReader csvReader = new CSVReaderBuilder(fileReader)
-                    .withSkipLines(2)
-                    .build();
-            strings = csvReader.readAll();
-        } catch (IOException | CsvException e) {
+            objectMapper.writeValue(file, data);
+        } catch (IOException e) {
             log.error(e.getLocalizedMessage());
         }
-        return strings;
     }
 
-    public List<String[]> importPlannerCsv(File sourceFile) {
+    private <T> List<T> getDataListFromFile(String directory, String filename, TypeReference<List<T>> expectedType) {
+        File file = new File(directory, filename);
+        List<T> basicDataList = new ArrayList<>();
+        if (file.length() != 0) {
+            try {
+                basicDataList = objectMapper.readValue(file, expectedType);
+            } catch (IOException e) {
+                log.error(e.getLocalizedMessage());
+            }
+        }
+        return basicDataList;
+    }
+
+    private List<String[]> importServantsFromCsv(File sourceFile, int linesToSkip) {
         List<String[]> strings = new ArrayList<>();
         try {
             FileReader fileReader = new FileReader(sourceFile, Charset.defaultCharset());
             CSVReader csvReader = new CSVReaderBuilder(fileReader)
-                    .withSkipLines(12)
+                    .withSkipLines(linesToSkip)
                     .build();
             strings = csvReader.readAll();
         } catch (IOException | CsvException e) {
@@ -330,19 +318,4 @@ public class FileManagementService {
         return new ManagerServant(Integer.parseInt(strings[1]), strings[0]);
     }
 
-    public Inventory loadInventory() {
-        File file = new File(BASE_DATA_PATH + USER_DATA_PATH, INVENTORY_FILE);
-        List<UpgradeMaterialCost> matList = new ArrayList<>();
-        if (file.length() != 0) {
-            try {
-                matList = objectMapper.readValue(file, new TypeReference<>() {});
-            } catch (IOException e) {
-                log.error(e.getLocalizedMessage());
-            }
-        }
-        Inventory result = new Inventory();
-        result.setLabel("Inventory");
-        result.setInventory(matList);
-        return result;
-    }
 }

@@ -226,7 +226,7 @@ public class DataManagementService {
                 svt.setBaseServant(findServantById(svt.getSvtId()));
             }
         });
-        return userServantToViewTransformer.transformAll(userServants);
+        return userServantToViewTransformer.transformAllToViews(userServants);
     }
 
     private List<PlannerServantView> createAssociatedPlannerServantList(List<PlannerServant> servants) {
@@ -318,7 +318,7 @@ public class DataManagementService {
                 .collect(Collectors.toList());
         importedServants = importedServants.stream().filter(
                 svt -> svt.getBaseServant() == null || svt.getSvtId() != 0).collect(Collectors.toList());
-        ObservableList<UserServantView> transformedServants = userServantToViewTransformer.transformAll(
+        ObservableList<UserServantView> transformedServants = userServantToViewTransformer.transformAllToViews(
                 importedServants);
         clearUnnecessaryEmptyUserRows(transformedServants);
         userServantList.setAll(transformedServants);

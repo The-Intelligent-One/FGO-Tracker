@@ -318,9 +318,8 @@ public class DataManagementService {
                 .collect(Collectors.toList());
         importedServants = importedServants.stream().filter(
                 svt -> svt.getBaseServant() == null || svt.getSvtId() != 0).collect(Collectors.toList());
-        ObservableList<UserServantView> transformedServants = userServantToViewTransformer.transformAllToViews(
-                importedServants);
-        clearUnnecessaryEmptyUserRows(transformedServants);
+        List<UserServantView> transformedServants = userServantToViewTransformer.transformAllToViews(importedServants);
+        transformedServants = clearUnnecessaryEmptyUserRows(transformedServants);
         userServantList.setAll(transformedServants);
         return notFoundNames;
     }
@@ -567,7 +566,7 @@ public class DataManagementService {
                 .collect(Collectors.toList());
         importedServants = importedServants.stream().filter(
                 svt -> svt.getBaseServant().getValue() == null || svt.getSvtId().getValue() != 0).collect(Collectors.toList());
-        clearUnnecessaryEmptyPlannerRows(importedServants);
+        importedServants = clearUnnecessaryEmptyPlannerRows(importedServants);
         switch (plannerType) {
             case REGULAR:
                 plannerServantList.setAll(importedServants);

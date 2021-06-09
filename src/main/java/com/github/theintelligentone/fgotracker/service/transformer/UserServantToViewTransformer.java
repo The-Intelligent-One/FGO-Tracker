@@ -6,8 +6,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,8 +45,8 @@ public class UserServantToViewTransformer {
                 .build();
     }
 
-    public ObservableList<UserServantView> transformAllToViews(List<UserServant> servants) {
-        return FXCollections.observableArrayList(servants.stream().map(this::transform).collect(Collectors.toList()));
+    public List<UserServantView> transformAllToViews(List<UserServant> servants) {
+        return servants.stream().map(this::transform).collect(Collectors.toList());
     }
 
     public List<UserServant> transformAll(List<UserServantView> servants) {

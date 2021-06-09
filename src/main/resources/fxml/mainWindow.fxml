@@ -11,6 +11,10 @@
                 <Label onMouseClicked="#saveUserData" text="Save"/>
             </graphic>
         </Menu>
+        <Menu text="Help">
+            <MenuItem text="Check for Updates" onAction="#checkForUpdates"/>
+            <MenuItem text="About" onAction="#showAboutInfo"/>
+        </Menu>
     </MenuBar>
     <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
         <fx:include fx:id="rosterTab" source="rosterTab.fxml"/>

@@ -8,7 +8,7 @@ plugins {
 }
 
 group "com.github.theintelligentone"
-version "v0.1.1"
+version "v0.2.1-beta"
 
 def MAINPATH = "com.github.theintelligentone.fgotracker.Main"
 mainClassName = MAINPATH
@@ -24,6 +24,7 @@ dependencies {
     runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:win"
     runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:linux"
     runtimeOnly "org.openjfx:javafx-graphics:$javafx.version:mac"
+    compile 'org.kohsuke:github-api:1.130'
     compile "com.opencsv:opencsv:5.4"
     compile 'ch.qos.logback:logback-classic:1.2.3'
 }

@@ -19,7 +19,7 @@ When the app starts it will check if there's a newer version of the data from th
 
 The app also saves your user data (the servants in your roster, your inventory, etc.), and loads it from those files, so if you want a fresh start, or want to back your data up, you can do that very easily, just like you'd do it with any normal folder. Both the user data, and the DB cache are saved in a "data" folder the app creates next to itself, and all of them are saved in plain text json files (since there's really no info here that needs to be hidden or encrypted), which also allows easy editing if you feel like it (though be aware that messing with the structure of the files will, of course, lead to the app failing, in those cases you can just delete or remove the data folder, and let the app recreate it).
 ### Tables
-The tables on all current tabs work basically the same, they are fairly straightforwad to use, but here's a how-to anyway.
+The tables on all current tabs work basically the same, they are fairly straightforward to use, but here's a how-to anyway.
 ### Roster Tab
 The core of the current feature set is the roster table. As you might expect, it's just a big table for you to record your servants, their levels, skill levels, etc., both for you to keep track of it, as well as for the rest of the app to use it.
 
@@ -32,7 +32,7 @@ One slight problem with how the GUI works is that you can only use rows that hav
 The second part of the initial features, the planner tabs. The Long Term Planner might be surprising at first, because it's not just a copy of the L-T sheet in FGO Manager (the regular Planner _is_ basically that though), and instead what I considered "long term" is just maxing out the skills and levels of all of the servants you have. What this means is that the LT Planner will always have all of your servants in your roster, with their desired levels all set to max.
 ![image of planner tab](https://i.imgur.com/x95ng6d.png)
 
-In contrast, the regular Planner tab is where you'll want to add your servants you want to plan with, and see what mats you'll need for the level and skill levels you intend to get for them, as well as how much you'll have of each material after you do those.
+In contrast, the regular Planner tab is where you'll want to add your servants you want to plan with, and see what mats you'll need for the level and skill levels you intend to get for them, as well as how much you'll have of each material after you do those. The Priority Planner is literally just a copy of the the regular planner, with its own separate list you can edit, so it can be used for things like making a priority plan.
 ### Adding New Servants
 To add new servants, double click in a cell in the name column (in a valid row) and start typing a servant's name in the textbox that appears. Once you see the servant you want in the autocomplete, just click on their name (another weird issue is that not the whole line of the autocomplete menu works, you have to click specifically on the area where the name is), and the row will be filled up with data, all starting at their default level on the roster tab, and at the current level from their roster when adding to the planner tab. After that, just edit each value you'd like (level, bond, desired level etc.) and you're done. Note: for simplicity, currently the NP damage uses the highest rank NP your servant can have, i.e. it assumes you've done all rank-ups and interludes for them (even if they're level 1).
 ### Removing Servants

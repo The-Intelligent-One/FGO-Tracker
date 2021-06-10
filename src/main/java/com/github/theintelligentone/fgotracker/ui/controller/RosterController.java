@@ -85,6 +85,9 @@ public class RosterController {
     @FXML
     private TableColumn<UserServantView, Integer> skill3Column;
 
+    @FXML
+    private TableColumn<UserServantView, String> notesColumn;
+
     public void initialize() {
         dataManagementService = MainApp.getDataManagementService();
         servantUtils = new ServantUtils();
@@ -197,6 +200,8 @@ public class RosterController {
         skill3ColumnSetup();
         bondColumnSetup();
         ascColumnSetup();
+        notesColumn.setStyle("-fx-alignment: center-left");
+        notesColumn.setPrefWidth(MainController.LONG_CELL_WIDTH * 3);
     }
 
     private void npColumnSetup() {

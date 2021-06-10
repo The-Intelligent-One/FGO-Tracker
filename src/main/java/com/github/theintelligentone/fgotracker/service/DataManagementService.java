@@ -49,7 +49,8 @@ public class DataManagementService {
             "skill3", 18,
             "fouHp", 19,
             "fouAtk", 20,
-            "bond", 21);
+            "bond", 21,
+            "notes", 23);
     public static Map<String, Integer> CLASS_ATTACK_MULTIPLIER;
     public static Map<String, Map<Integer, CardPlacementData>> CARD_DATA;
     private static Map<String, String> MAT_NAME_TRANSLATE_MAP;
@@ -328,59 +329,6 @@ public class DataManagementService {
         return notFoundNames;
     }
 
-    private UserServant buildUserServantFromStringArray(String[] importedData, List<ManagerServant> managerLookup) {
-        UserServant servant = new UserServant();
-        String servantName = importedData[ROSTER_IMPORT_INDEX_MAP.get("name")];
-        if (!servantName.isEmpty()) {
-            Servant baseServant = findServantFromManager(servantName, managerLookup);
-            if (!(baseServant.getName() == null || baseServant.getName().isEmpty())) {
-                servant = createValidUserServant(importedData, baseServant);
-            } else {
-                servant = createBlankUserServantEntry(servantName);
-            }
-        }
-        return servant;
-    }
-
-    private UserServant createBlankUserServantEntry(String servantName) {
-        Servant baseServant;
-        UserServant servant;
-        baseServant = new Servant();
-        baseServant.setName(servantName);
-        servant = new UserServant();
-        servant.setBaseServant(baseServant);
-        return servant;
-    }
-
-    private UserServant createValidUserServant(String[] importedData, Servant baseServant) {
-        UserServant servant;
-        servant = new UserServantFactory().createUserServantFromBaseServant(baseServant);
-        servant.setNpLevel(getValueFromImportedRosterData(importedData, "npLevel", 1, 5));
-        servant.setLevel(getValueFromImportedRosterData(importedData, "level", 1, 100));
-        servant.setSkillLevel1(getValueFromImportedRosterData(importedData, "skill1", 1, 10));
-        servant.setSkillLevel2(getValueFromImportedRosterData(importedData, "skill2", 1, 10));
-        servant.setSkillLevel3(getValueFromImportedRosterData(importedData, "skill3", 1, 10));
-        servant.setFouHp(getValueFromImportedRosterData(importedData, "fouHp", 0, 2000));
-        servant.setFouAtk(getValueFromImportedRosterData(importedData, "fouAtk", 0, 2000));
-        servant.setBondLevel(getValueFromImportedRosterData(importedData, "bond", 0, 15));
-        return servant;
-    }
-
-    private int getValueFromImportedRosterData(String[] importedData, String propertyName, int min, int max) {
-        String stringValue = importedData[ROSTER_IMPORT_INDEX_MAP.get(propertyName)];
-        if ("level".equalsIgnoreCase(propertyName)) {
-            stringValue = stringValue.isEmpty() ? stringValue : stringValue.substring(4);
-        }
-        if ("npLevel".equalsIgnoreCase(propertyName)) {
-            stringValue = stringValue.isEmpty() ? stringValue : stringValue.substring(2);
-        }
-        return Math.max(Math.min(convertToInt(stringValue), max), min);
-    }
-
-    private int convertToInt(String data) {
-        return !(data == null || data.isEmpty()) ? Integer.parseInt(data) : 0;
-    }
-
     private Servant findServantFromManager(String name, List<ManagerServant> managerLookup) {
         ManagerServant managerServant = managerLookup.stream().filter(
                 svt -> name.equalsIgnoreCase(svt.getName())).findFirst().get();
@@ -608,5 +556,59 @@ public class DataManagementService {
             }
         }
         return servant;
+    }
+
+    private UserServant buildUserServantFromStringArray(String[] importedData, List<ManagerServant> managerLookup) {
+        UserServant servant = new UserServant();
+        String servantName = importedData[ROSTER_IMPORT_INDEX_MAP.get("name")];
+        if (!servantName.isEmpty()) {
+            Servant baseServant = findServantFromManager(servantName, managerLookup);
+            if (!(baseServant.getName() == null || baseServant.getName().isEmpty())) {
+                servant = createValidUserServant(importedData, baseServant);
+            } else {
+                servant = createBlankUserServantEntry(servantName);
+            }
+        }
+        return servant;
+    }
+
+    private UserServant createBlankUserServantEntry(String servantName) {
+        Servant baseServant;
+        UserServant servant;
+        baseServant = new Servant();
+        baseServant.setName(servantName);
+        servant = new UserServant();
+        servant.setBaseServant(baseServant);
+        return servant;
+    }
+
+    private UserServant createValidUserServant(String[] importedData, Servant baseServant) {
+        UserServant servant;
+        servant = new UserServantFactory().createUserServantFromBaseServant(baseServant);
+        servant.setNpLevel(getValueFromImportedRosterData(importedData, "npLevel", 1, 5));
+        servant.setLevel(getValueFromImportedRosterData(importedData, "level", 1, 100));
+        servant.setSkillLevel1(getValueFromImportedRosterData(importedData, "skill1", 1, 10));
+        servant.setSkillLevel2(getValueFromImportedRosterData(importedData, "skill2", 1, 10));
+        servant.setSkillLevel3(getValueFromImportedRosterData(importedData, "skill3", 1, 10));
+        servant.setFouHp(getValueFromImportedRosterData(importedData, "fouHp", 0, 2000));
+        servant.setFouAtk(getValueFromImportedRosterData(importedData, "fouAtk", 0, 2000));
+        servant.setBondLevel(getValueFromImportedRosterData(importedData, "bond", 0, 15));
+        servant.setNotes(importedData[ROSTER_IMPORT_INDEX_MAP.get("notes")]);
+        return servant;
+    }
+
+    private int getValueFromImportedRosterData(String[] importedData, String propertyName, int min, int max) {
+        String stringValue = importedData[ROSTER_IMPORT_INDEX_MAP.get(propertyName)];
+        if ("level".equalsIgnoreCase(propertyName)) {
+            stringValue = stringValue.isEmpty() ? stringValue : stringValue.substring(4);
+        }
+        if ("npLevel".equalsIgnoreCase(propertyName)) {
+            stringValue = stringValue.isEmpty() ? stringValue : stringValue.substring(2);
+        }
+        return Math.max(Math.min(convertToInt(stringValue), max), min);
+    }
+
+    private int convertToInt(String data) {
+        return !(data == null || data.isEmpty()) ? Integer.parseInt(data) : 0;
     }
 }

@@ -24,4 +24,5 @@ public class UserServant {
     private int skillLevel1;
     private int skillLevel2;
     private int skillLevel3;
+    private String notes;
 }

@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import com.github.theintelligentone.fgotracker.ui.valuefactory.roster.*?>
+<?import javafx.scene.control.cell.TextFieldTableCell?>
 <?import javafx.scene.control.*?>
 <Tab xmlns="http://javafx.com/javafx"
      xmlns:fx="http://javafx.com/fxml"
@@ -112,6 +113,14 @@
                         </cellValueFactory>
                     </TableColumn>
                 </columns>
+            </TableColumn>
+            <TableColumn fx:id="notesColumn" text="Notes">
+                <cellValueFactory>
+                    <UserServantValueFactory property="notes"/>
+                </cellValueFactory>
+                <cellFactory>
+                    <TextFieldTableCell fx:factory="forTableColumn"/>
+                </cellFactory>
             </TableColumn>
         </columns>
     </TableView>

@@ -18,6 +18,7 @@ public class UserServantView {
     private IntegerProperty skillLevel1;
     private IntegerProperty skillLevel2;
     private IntegerProperty skillLevel3;
+    private StringProperty notes;
 
     public UserServantView() {
         this.svtId = new SimpleLongProperty(0);
@@ -32,6 +33,7 @@ public class UserServantView {
         this.skillLevel1 = new SimpleIntegerProperty(0);
         this.skillLevel2 = new SimpleIntegerProperty(0);
         this.skillLevel3 = new SimpleIntegerProperty(0);
+        this.notes = new SimpleStringProperty("");
     }
 
     public LongProperty svtIdProperty() {
@@ -80,5 +82,9 @@ public class UserServantView {
 
     public IntegerProperty skillLevel3Property() {
         return skillLevel3;
+    }
+
+    public StringProperty notesProperty() {
+        return notes;
     }
 }

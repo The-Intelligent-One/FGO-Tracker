@@ -18,6 +18,7 @@ public class UserServantFactory {
                 .skillLevel1(1)
                 .skillLevel2(1)
                 .skillLevel3(1)
+                .notes("")
                 .build();
     }
 }

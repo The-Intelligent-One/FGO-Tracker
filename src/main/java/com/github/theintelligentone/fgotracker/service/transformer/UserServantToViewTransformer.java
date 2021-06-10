@@ -2,10 +2,7 @@ package com.github.theintelligentone.fgotracker.service.transformer;
 
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,6 +22,7 @@ public class UserServantToViewTransformer {
         result.setSkillLevel3(new SimpleIntegerProperty(servant.getSkillLevel3()));
         result.setRarity(new SimpleIntegerProperty(servant.getRarity()));
         result.setSvtId(new SimpleLongProperty(servant.getSvtId()));
+        result.setNotes(new SimpleStringProperty(servant.getNotes()));
         return result;
     }
 
@@ -42,6 +40,7 @@ public class UserServantToViewTransformer {
                 .skillLevel1(servant.getSkillLevel1().getValue())
                 .skillLevel2(servant.getSkillLevel2().getValue())
                 .skillLevel3(servant.getSkillLevel3().getValue())
+                .notes(servant.notesProperty().getValue())
                 .build();
     }
 

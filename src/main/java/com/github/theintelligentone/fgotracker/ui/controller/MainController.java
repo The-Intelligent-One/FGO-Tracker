@@ -3,6 +3,7 @@ package com.github.theintelligentone.fgotracker.ui.controller;
 import com.github.theintelligentone.fgotracker.app.MainApp;
 import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import lombok.extern.slf4j.Slf4j;
@@ -37,6 +38,7 @@ public class MainController {
 
     public void initialize() {
         dataManagementService = MainApp.getDataManagementService();
+        checkForUpdates(null);
     }
 
 
@@ -72,11 +74,16 @@ public class MainController {
         aboutAlert.showAndWait();
     }
 
-    public void checkForUpdates() {
+    public void checkForUpdates(ActionEvent actionEvent) {
         try {
             GitHub gitHub = GitHub.connectAnonymously();
             GHRepository repo = gitHub.getRepository("The-Intelligent-One/FGO-Tracker");
-            GHRelease latest = repo.getLatestRelease();
+            GHRelease latest;
+            if (actionEvent == null) {
+                 latest = repo.getLatestRelease();
+            } else {
+                latest = repo.listReleases().toList().get(0);
+            }
             GHRelease current = repo.getReleaseByTagName(DataManagementService.VERSION);
             if (current == null || latest.getPublished_at().after(current.getPublished_at())) {
                 showNewUpdateAlert(latest);

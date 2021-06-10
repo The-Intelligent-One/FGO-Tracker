@@ -35,11 +35,13 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class DataManagementService {
-    public static final String VERSION = "v0.2.1-beta";
+    public static final String VERSION = "v0.2.0-beta";
     public static final int[] MAX_LEVELS = {65, 60, 65, 70, 80, 90};
+
     private static final int MIN_TABLE_SIZE = 30;
     private static final String NAME_FORMAT = "%s [%s]";
-    private static final Map<String, Integer> ROSTER_IMPORT_INDEX_MAP = Map.of("name", 0,
+    private static final Map<String, Integer> ROSTER_IMPORT_INDEX_MAP = Map.of(
+            "name", 0,
             "npLevel", 14,
             "level", 15,
             "skill1", 16,
@@ -51,6 +53,7 @@ public class DataManagementService {
     public static Map<String, Integer> CLASS_ATTACK_MULTIPLIER;
     public static Map<String, Map<Integer, CardPlacementData>> CARD_DATA;
     private static Map<String, String> MAT_NAME_TRANSLATE_MAP;
+
     private final DataRequestService requestService;
     private final FileManagementService fileService;
     private final UserServantToViewTransformer userServantToViewTransformer;
@@ -147,7 +150,7 @@ public class DataManagementService {
 
     private void initDataLists() {
         userServantList = FXCollections.observableArrayList(
-                param -> new Observable[]{param.getSvtId(), param.getLevel(), param.getSkillLevel1(), param.getSkillLevel2(), param.getSkillLevel3()});
+                param -> new Observable[]{param.getSvtId(), param.getLevel(), param.getSkillLevel1(), param.getSkillLevel2(), param.getSkillLevel3(), param.getAscension()});
         plannerServantList = FXCollections.observableArrayList(
                 param -> new Observable[]{param.getBaseServant(), param.getDesLevel(), param.getDesSkill1(), param.getDesSkill2(), param.getDesSkill3()});
         priorityPlannerServantList = FXCollections.observableArrayList(

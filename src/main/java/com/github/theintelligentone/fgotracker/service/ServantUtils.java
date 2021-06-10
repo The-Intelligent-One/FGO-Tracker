@@ -6,6 +6,7 @@ import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.Fg
 import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableIntegerValue;
 import javafx.collections.FXCollections;
@@ -118,11 +119,12 @@ public class ServantUtils {
         IntegerProperty desiredLevel = servant.getDesLevel();
         IntegerProperty neededGrails = new SimpleIntegerProperty(
                 calculateNeededGrails(servant, servant.getBaseServant().getValue().getLevel(), servant.getDesLevel()));
-        ObservableList<IntegerProperty> neededValues = FXCollections.observableArrayList(param -> new Observable[]{param});
+        ObservableList<Property> neededValues = FXCollections.observableArrayList(param -> new Observable[]{param});
         neededValues.add(currentLevel);
         neededValues.add(desiredLevel);
-        neededValues.addListener((ListChangeListener<? super IntegerProperty>) observable -> {
-            int plannedGrails = calculateNeededGrails(servant, observable.getList().get(0), observable.getList().get(1));
+        neededValues.add(servant.getBaseServant().getValue().getAscension());
+        neededValues.addListener((ListChangeListener<? super Property>) observable -> {
+            int plannedGrails = calculateNeededGrails(servant, currentLevel, desiredLevel);
             neededGrails.set(plannedGrails);
         });
         return neededGrails;
@@ -141,6 +143,9 @@ public class ServantUtils {
                                       ObservableIntegerValue desiredLevel) {
         int currentAscLevel = Math.max(getAscensionFromRarityAndLevel(currentLevel,
                 servant.getBaseServant().getValue().getBaseServant().getValue().getRarity()).intValue() - 4, 0);
+        if (servant.getBaseServant().getValue().getAscension().getValue()) {
+            currentAscLevel++;
+        }
         int desiredAscLevel = Math.max(getAscensionFromRarityAndLevel(desiredLevel,
                 servant.getBaseServant().getValue().getBaseServant().getValue().getRarity()).intValue() - 4, 0);
         return Math.max(desiredAscLevel - currentAscLevel, 0);

@@ -21,10 +21,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
 import java.io.*;
+import java.net.URISyntaxException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,11 +35,12 @@ public class FileManagementService {
     private static final String BASE_DATA_PATH = "data/";
     private static final String CACHE_PATH = "cache/";
     private static final String USER_DATA_PATH = "userdata/";
+    private static final String OFFLINE_BASE_PATH = "/offline/";
     private static final String PNG_FORMAT = "png";
     private static final String MANAGER_DB_PATH = "/managerDB-v1.3.3.csv";
 
     private static final String VERSION_FILE = "dbVersion.json";
-    private static final String FULL_DATA_FILE = "servants.json";
+    private static final String SERVANT_DATA_FILE = "servants.json";
     private static final String MATERIAL_DATA_FILE = "mats.json";
     private static final String IMAGE_FOLDER_PATH = "images/";
     private static final String CLASS_ATTACK_FILE = "classAttack.json";
@@ -48,23 +51,57 @@ public class FileManagementService {
     private static final String PLANNED_SERVANT_FILE = "planned.json";
     private static final String PRIORITY_SERVANT_FILE = "priority.json";
     private static final String INVENTORY_FILE = "inventory.json";
+    private static final String DARKMODE_FILE = "darkmode.json";
+
     private static final int LINES_TO_SKIP_IN_ROSTER_CSV = 2;
     private static final int LINES_TO_SKIP_IN_LT_CSV = 12;
-    private static final String DARKMODE_FILE = "darkmode.json";
 
     private final ObjectMapper objectMapper;
 
     public FileManagementService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         try {
-            Files.createDirectories(Path.of(BASE_DATA_PATH, IMAGE_FOLDER_PATH));
+            Files.createDirectories(Path.of(BASE_DATA_PATH + CACHE_PATH, IMAGE_FOLDER_PATH));
         } catch (IOException e) {
             log.error(e.getLocalizedMessage());
         }
     }
 
+    public void loadOfflineData() {
+        copyOfflineBackupToCache("NA_" + SERVANT_DATA_FILE);
+        copyOfflineBackupToCache("JP_" + SERVANT_DATA_FILE);
+        copyOfflineBackupToCache("NA_" + MATERIAL_DATA_FILE);
+        copyOfflineBackupToCache("JP_" + MATERIAL_DATA_FILE);
+        copyOfflineBackupToCache(VERSION_FILE);
+        copyOfflineBackupToCache(CARD_DATA_FILE);
+        copyOfflineBackupToCache(CLASS_ATTACK_FILE);
+        copyImagesFromOfflineBackupToCache();
+    }
+
+    private void copyImagesFromOfflineBackupToCache() {
+        try {
+            File imageFolder = new File(getClass().getResource(OFFLINE_BASE_PATH + IMAGE_FOLDER_PATH).toURI());
+            for (File file : imageFolder.listFiles()) {
+                Files.copy(file.toPath(), new File(BASE_DATA_PATH + CACHE_PATH + IMAGE_FOLDER_PATH, file.getName()).toPath(),
+                        StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (URISyntaxException | IOException e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
+    }
+
+    private void copyOfflineBackupToCache(String filePath) {
+        try (InputStream servantStream = getClass().getResource(OFFLINE_BASE_PATH + filePath).openStream()) {
+            File file = new File(BASE_DATA_PATH + CACHE_PATH, filePath);
+            createFileIfDoesNotExist(file);
+            Files.copy(servantStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
+    }
+
     public void saveFullServantData(List<Servant> servants, String gameRegion) {
-        saveDataToFile(servants, new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + FULL_DATA_FILE));
+        saveDataToFile(servants, new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + SERVANT_DATA_FILE));
     }
 
     public void saveMaterialData(List<UpgradeMaterial> materials, String gameRegion) {
@@ -73,11 +110,11 @@ public class FileManagementService {
     }
 
     public void saveClassAttackRate(Map<String, Integer> classAttackRate) {
-        saveDataToFile(classAttackRate, new File(BASE_DATA_PATH, CLASS_ATTACK_FILE));
+        saveDataToFile(classAttackRate, new File(BASE_DATA_PATH + CACHE_PATH, CLASS_ATTACK_FILE));
     }
 
     public void saveCardData(Map<String, Map<Integer, CardPlacementData>> cardData) {
-        saveDataToFile(cardData, new File(BASE_DATA_PATH, CARD_DATA_FILE));
+        saveDataToFile(cardData, new File(BASE_DATA_PATH + CACHE_PATH, CARD_DATA_FILE));
     }
 
     public void saveUserServants(List<UserServant> servants) {
@@ -97,7 +134,7 @@ public class FileManagementService {
     }
 
     public List<Servant> loadFullServantData(String gameRegion) {
-        return getDataListFromFile(new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + FULL_DATA_FILE),
+        return getDataListFromFile(new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + SERVANT_DATA_FILE),
                 new TypeReference<>() {});
     }
 
@@ -123,7 +160,8 @@ public class FileManagementService {
     public Map<String, Integer> getClassAttackRate() {
         Map<String, Integer> classAttackMap = new HashMap<>();
         try {
-            classAttackMap = objectMapper.readValue(new File(BASE_DATA_PATH, CLASS_ATTACK_FILE), new TypeReference<>() {});
+            classAttackMap = objectMapper.readValue(new File(BASE_DATA_PATH + CACHE_PATH, CLASS_ATTACK_FILE),
+                    new TypeReference<>() {});
         } catch (FileNotFoundException e) {
             log.debug("No valid class damage multiplier file found. Loading blank value");
         } catch (IOException e) {
@@ -133,7 +171,7 @@ public class FileManagementService {
     }
 
     public void loadImageForMaterial(UpgradeMaterial material) {
-        File file = new File(BASE_DATA_PATH + IMAGE_FOLDER_PATH, material.getId() + "." + PNG_FORMAT);
+        File file = new File(BASE_DATA_PATH + CACHE_PATH + IMAGE_FOLDER_PATH, material.getId() + "." + PNG_FORMAT);
         Image iconImage = new Image(file.toURI().toString());
         material.setIconImage(iconImage);
     }
@@ -141,7 +179,7 @@ public class FileManagementService {
     public Map<String, Map<Integer, CardPlacementData>> getCardData() {
         Map<String, Map<Integer, CardPlacementData>> cardDataMap = new HashMap<>();
         try {
-            cardDataMap = objectMapper.readValue(new File(BASE_DATA_PATH, CARD_DATA_FILE), new TypeReference<>() {});
+            cardDataMap = objectMapper.readValue(new File(BASE_DATA_PATH + CACHE_PATH, CARD_DATA_FILE), new TypeReference<>() {});
         } catch (FileNotFoundException e) {
             log.debug("No valid card data file found, loading blank value");
         } catch (IOException e) {
@@ -153,7 +191,7 @@ public class FileManagementService {
     public Map<String, VersionDTO> getCurrentVersion() {
         Map<String, VersionDTO> versionMap = new HashMap<>();
         try {
-            versionMap = objectMapper.readValue(new File(BASE_DATA_PATH, VERSION_FILE), new TypeReference<>() {});
+            versionMap = objectMapper.readValue(new File(BASE_DATA_PATH + CACHE_PATH, VERSION_FILE), new TypeReference<>() {});
         } catch (JsonMappingException | FileNotFoundException e) {
             log.debug("No valid DB version file found. Loading blank values");
             versionMap.put("NA", new VersionDTO());
@@ -190,7 +228,7 @@ public class FileManagementService {
     }
 
     public void saveNewVersion(Map<String, VersionDTO> versionMap) {
-        File file = new File(BASE_DATA_PATH, VERSION_FILE);
+        File file = new File(BASE_DATA_PATH + CACHE_PATH, VERSION_FILE);
         saveDataToFile(versionMap, file);
     }
 
@@ -201,7 +239,9 @@ public class FileManagementService {
 
     public void saveGameRegion(String region) {
         try {
-            Files.writeString(Path.of(BASE_DATA_PATH + USER_DATA_PATH, GAME_REGION_FILE), region);
+            File file = new File(BASE_DATA_PATH + USER_DATA_PATH, GAME_REGION_FILE);
+            createFileIfDoesNotExist(file);
+            Files.writeString(file.toPath(), region);
         } catch (IOException e) {
             log.error(e.getLocalizedMessage(), e);
         }
@@ -225,7 +265,7 @@ public class FileManagementService {
     }
 
     public void saveImage(Image image, long id) {
-        File file = new File(BASE_DATA_PATH + IMAGE_FOLDER_PATH, id + "." + PNG_FORMAT);
+        File file = new File(BASE_DATA_PATH + CACHE_PATH + IMAGE_FOLDER_PATH, id + "." + PNG_FORMAT);
         try {
             if (!ImageIO.write(SwingFXUtils.fromFXImage(image, null), PNG_FORMAT, file)) {
                 throw new IOException();

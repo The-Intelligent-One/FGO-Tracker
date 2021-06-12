@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class DataManagementService {
-    public static final String VERSION = "v0.2.1-beta";
+    public static final String VERSION = "v0.2.0-beta";
     public static final int[] MAX_LEVELS = {65, 60, 65, 70, 80, 90};
 
     private static final int MIN_TABLE_SIZE = 25;
@@ -291,9 +291,13 @@ public class DataManagementService {
         currentVersion = fileService.getCurrentVersion();
         Map<String, VersionDTO> onlineVersion = requestService.getOnlineVersion();
         boolean needUpdate = false;
-        if (onlineVersion.get(gameRegion).getTimestamp() > currentVersion.get(gameRegion).getTimestamp()) {
+        if (!onlineVersion.isEmpty() && (onlineVersion.get(gameRegion).getTimestamp() > currentVersion.get(
+                gameRegion).getTimestamp())) {
             needUpdate = true;
             currentVersion.put(gameRegion, onlineVersion.get(gameRegion));
+        } else if (currentVersion.get(gameRegion).getTimestamp() == 0) {
+            fileService.loadOfflineData();
+            currentVersion = fileService.getCurrentVersion();
         }
         return needUpdate;
     }

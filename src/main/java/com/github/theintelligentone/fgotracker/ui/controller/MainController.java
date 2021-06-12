@@ -101,8 +101,9 @@ public class MainController {
 
     private void showNewUpdateAlert(GHRelease latest) {
         Alert newUpdateAlert = new Alert(Alert.AlertType.CONFIRMATION);
-        newUpdateAlert.setHeaderText("New version available: " + latest.getName());
         newUpdateAlert.setTitle("New Update Available!");
+        newUpdateAlert.setHeaderText("New version available: " + latest.getName() + "\n" +
+                latest.getBody());
         newUpdateAlert.setContentText(
                 "Would you like to download it (this will open the releases page in your browser)?");
         newUpdateAlert.showAndWait().ifPresent(buttonType -> {

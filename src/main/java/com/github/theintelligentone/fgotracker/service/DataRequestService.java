@@ -11,7 +11,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -36,57 +40,50 @@ public class DataRequestService {
     }
 
     public List<Servant> getAllServantData(String gameRegion) {
-        List<Servant> dataList = new ArrayList<>();
-        try {
-            dataList = objectMapper.readValue(new URL(ALL_SERVANT_URL.get(gameRegion)), new TypeReference<>() {});
-        } catch (IOException e) {
-            log.error(e.getLocalizedMessage());
-        }
+        List<Servant> dataList = getDataFromUrl(ALL_SERVANT_URL.get(gameRegion), new TypeReference<>() {});
         return dataList.stream().filter(this::isServant).collect(Collectors.toList());
     }
 
     public List<UpgradeMaterial> getAllMaterialData(String gameRegion) {
-        List<UpgradeMaterial> dataList = new ArrayList<>();
-        try {
-            dataList = objectMapper.readValue(new URL(MAT_URL.get(gameRegion)), new TypeReference<>() {});
-        } catch (IOException e) {
-            log.error(e.getLocalizedMessage());
-        }
+        List<UpgradeMaterial> dataList = getDataFromUrl(MAT_URL.get(gameRegion), new TypeReference<>() {});
         return dataList.stream().filter(this::isMat).collect(Collectors.toList());
     }
 
     public Map<String, Integer> getClassAttackRate() {
-        Map<String, Integer> classAttackRate = new HashMap<>();
-        try {
-            classAttackRate = objectMapper.readValue(new URL(CLASS_ATTACK_RATE_URL), new TypeReference<>() {});
-        } catch (IOException e) {
-            log.error(e.getLocalizedMessage());
-        }
-        return classAttackRate;
+        Map<String, Integer> dataFromUrl = getDataFromUrl(CLASS_ATTACK_RATE_URL, new TypeReference<>() {});
+        return dataFromUrl == null ? new HashMap<>() : dataFromUrl;
     }
 
     public Map<String, Map<Integer, CardPlacementData>> getCardDetails() {
-        Map<String, Map<Integer, CardPlacementData>> cardDetailMap = new HashMap<>();
-        try {
-            cardDetailMap = objectMapper.readValue(new URL(CARD_DETAILS_URL), new TypeReference<>() {});
-        } catch (IOException e) {
-            log.error(e.getLocalizedMessage());
-        }
-        return cardDetailMap;
+        Map<String, Map<Integer, CardPlacementData>> dataFromUrl = getDataFromUrl(CARD_DETAILS_URL, new TypeReference<>() {});
+        return dataFromUrl == null ? new HashMap<>() : dataFromUrl;
     }
 
     public Image getImageForMaterial(UpgradeMaterial material) {
-        return new Image(material.getIcon());
+        Image image = null;
+        try {
+            image = new Image(material.getIcon());
+        } catch (IllegalArgumentException e) {
+            log.warn("Couldn't find image from url for material: " + material.getName(), e);
+        }
+        return image;
     }
 
     public Map<String, VersionDTO> getOnlineVersion() {
-        Map<String, VersionDTO> response = new HashMap<>();
+        Map<String, VersionDTO> dataFromUrl = getDataFromUrl(VERSION_URL, new TypeReference<>() {});
+        return dataFromUrl == null ? new HashMap<>() : dataFromUrl;
+    }
+
+    private <T> T getDataFromUrl(String url, TypeReference<T> typeRef) {
+        T returnedData = null;
         try {
-            response = objectMapper.readValue(new URL(VERSION_URL), new TypeReference<>() {});
+            returnedData = objectMapper.readValue(new URL(url), typeRef);
+        } catch (UnknownHostException e) {
+            log.warn("Couldn't reach host: " + e.getLocalizedMessage(), e);
         } catch (IOException e) {
-            log.error(e.getLocalizedMessage());
+            log.error(e.getLocalizedMessage(), e);
         }
-        return response;
+        return returnedData;
     }
 
     private boolean isServant(Servant svt) {

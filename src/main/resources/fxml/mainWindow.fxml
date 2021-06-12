@@ -4,7 +4,8 @@
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.github.theintelligentone.fgotracker.ui.controller.MainController">
+      fx:controller="com.github.theintelligentone.fgotracker.ui.controller.MainController"
+      fx:id="rootNode">
     <MenuBar>
         <Menu>
             <graphic>
@@ -12,6 +13,7 @@
             </graphic>
         </Menu>
         <Menu text="Help">
+            <MenuItem text="User Guide" onAction="#showUserGuide"/>
             <MenuItem text="Check for Updates" onAction="#checkForUpdates"/>
             <MenuItem text="About" onAction="#showAboutInfo"/>
         </Menu>

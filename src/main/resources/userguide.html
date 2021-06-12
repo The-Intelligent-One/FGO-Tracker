@@ -1,0 +1,122 @@
+<html>
+
+<head>
+</head>
+
+<body>
+   <h1 id="fgo-tracker">FGO-Tracker</h1>
+   <h2 id="quickstart-guide">Quickstart Guide</h2>
+   <ol>
+      <li>Add your servants to the roster manually or import from FGO Manager</li>
+      <li>Update your inventory in either of the planner tabs manually, or import from FGO Manager</li>
+      <li>Add servants from your roster to the regular planner, or import from FGO Manager</li>
+   </ol>
+   <h2 id="full-usage">Full Usage</h2>
+   <h3 id="general-info">General info</h3>
+   <p>Download whichever release you want from the releases (stable release is the less frequent, more stable version
+      that only gets updated when a full functionality has been tested enough to seem mostly bug free, while the beta
+      version is the new stuff that works <em>in theory</em>) and extract it, preferably to its own folder. You will see
+      an exe file and a &quot;jre&quot; folder. To start the app, just run the exe.</p>
+   <p>When the app starts it will check if there&#39;s a newer version of the data from the <a
+         href="https://apps.atlasacademy.io/db/">Atlas DB</a> than what&#39;s currently saved, and if so will download
+      it and save it. On subsequent starts, if the saved data is up to date, it will load it from the file,
+      significantly speeding up the startup time (in other words, the first time you start will be kinda slow, but
+      otherwise the app starts up fast, except for the occasions when the DB had an update). This includes the images
+      for the material icons, and anything else that might use images later.</p>
+   <p>The app also saves your user data (the servants in your roster, your inventory, etc.), and loads it from those
+      files, so if you want a fresh start, or want to back your data up, you can do that very easily, just like
+      you&#39;d do it with any normal folder. Both the user data, and the DB cache are saved in a &quot;data&quot;
+      folder the app creates next to itself, and all of them are saved in plain text json files (since there&#39;s
+      really no info here that needs to be hidden or encrypted), which also allows easy editing if you feel like it
+      (though be aware that messing with the structure of the files will, of course, lead to the app failing, in those
+      cases you can just delete or remove the data folder, and let the app recreate it).</p>
+   <h3 id="tables">Tables</h3>
+   <p>The tables on all current tabs work basically the same, they are fairly straightforwad to use, but here&#39;s a
+      how-to anyway.</p>
+   <h3 id="roster-tab">Roster Tab</h3>
+   <p>The core of the current feature set is the roster table. As you might expect, it&#39;s just a big table for you to
+      record your servants, their levels, skill levels, etc., both for you to keep track of it, as well as for the rest
+      of the app to use it.</p>
+   <p><img src="https://i.imgur.com/9DVvefj.png" alt="image of roster tab"></p>
+   <p>While most columns are self-explanatory, the Asc column is probably not so, and it wasn&#39;t part of FGO Manager
+      either, so it&#39;s completely new. A small problem I was annoyed by in the Manager, is that if you set servant
+      to, for exmaple, Lv. 50, that servant will be considered Lv. 50/50 for ascension material calculation purposes.
+      This meant that if you ascended them, just didn&#39;t level them up further, you either had to set them to one
+      level higher (51), or keep in mind that the ascension mats include the stuff needed to get the max level to 60.
+      The Asc column changes that, as it adds a checkbox that appears when the servant is set to a level that allows
+      them to be ascended (including palingenesis), and gives you a way to indicated whether or not the servant was
+      ascended from the current level or not.</p>
+   <p>One slight problem with how the GUI works is that you can only use rows that have been &quot;initialized&quot;. By
+      default, the app will always add enough valid rows to fill one full page of the table (at least on my 1080p
+      monitor), but if you want to add or remove rows, you can use the context menu (right click). I also add a black
+      line to separate the valid and invalid rows, because for some inexplicable reason, they look the exact same.</p>
+   <h3 id="lt-planner-and-planner-tabs">LT Planner and Planner Tabs</h3>
+   <p>The second part of the initial features, the planner tabs. The Long Term Planner might be surprising at first,
+      because it&#39;s not just a copy of the L-T sheet in FGO Manager (the regular Planner <em>is</em> basically that
+      though), and instead what I considered &quot;long term&quot; is just maxing out the skills and levels of all of
+      the servants you have. What this means is that the LT Planner will always have all of your servants in your
+      roster, with their desired levels all set to max.
+      <img src="https://i.imgur.com/x95ng6d.png" alt="image of planner tab">
+   </p>
+   <p>In contrast, the regular Planner tab is where you&#39;ll want to add your servants you want to plan with, and see
+      what mats you&#39;ll need for the level and skill levels you intend to get for them, as well as how much
+      you&#39;ll have of each material after you do those.</p>
+   <h3 id="adding-new-servants">Adding New Servants</h3>
+   <p>To add new servants, double click in a cell in the name column (in a valid row) and start typing a servant&#39;s
+      name in the textbox that appears. Once you see the servant you want in the autocomplete, just click on their name
+      (another weird issue is that not the whole line of the autocomplete menu works, you have to click specifically on
+      the area where the name is), and the row will be filled up with data, all starting at their default level on the
+      roster tab, and at the current level from their roster when adding to the planner tab. After that, just edit each
+      value you&#39;d like (level, bond, desired level etc.) and you&#39;re done. Note: for simplicity, currently the NP
+      damage uses the highest rank NP your servant can have, i.e. it assumes you&#39;ve done all rank-ups and interludes
+      for them (even if they&#39;re level 1).</p>
+   <h3 id="removing-servants">Removing Servants</h3>
+   <p>To remove servants, you have a few options.</p>
+   <ul>
+      <li>Edit their name and just delete it</li>
+      <li>Click &quot;clear row&quot; in the context menu</li>
+      <li>Click &quot;delete row&quot; in the context menu. This also removes the row itself, meaning the rest of the
+         table will move up<h3 id="importing-from-fgo-manager">Importing from FGO Manager</h3>
+         I assume many people, like me, who&#39;d want to use the app have already been using FGO Manager, so for ease
+         of use, I&#39;ve added a feature to import your roster (as well as your inventory and your entries from the L-T
+         Planner) from FGO Manager.</li>
+   </ul>
+   <p>To import your roster do the following:</p>
+   <ol>
+      <li>Open FGO Manager and the Roster/L-T sheet on it (depending on whether you want to import your roster, or your
+         planner and inventory)</li>
+      <li>Click File -&gt; Download -&gt; Comma-separated values</li>
+      <li>In FGO Tracker, right click on the table you want to import to and choose import</li>
+      <li>Choose the .csv file you just downloaded</li>
+   </ol>
+   <p>If for some reason, the app couldn&#39;t identify some of your servants or materials (most likely because the app
+      is set to NA, and there was JP-only content in the CSV), you will get a warning message, listing all the names of
+      the servants it couldn&#39;t find automatically. Be warned, the import <strong><em>replaces</em></strong> the
+      current data in the table, because I&#39;m going to assume that if you&#39;ve been using FGO Manager, you&#39;re
+      going to import your servants from there first, instead of adding some here, and then trying to add the ones from
+      the Manager on top of them.</p>
+   <h2 id="issues-and-pull-requests">Issues and pull requests</h2>
+   <p>As someone who already has more hobbies than time even without developing this, I&#39;ll gladly accept people
+      chipping in to help, however, ultimately I still consider this my baby, so I mostly want to code the actual
+      features myself, so if you want to help, please prioritize the issues labeled &quot;help wanted&quot;, before
+      trying to implement full new features (if you have an idea that I don&#39;t already have in my issues, probably
+      with the &quot;epic&quot; label somewhere, please talk to me about it first, before starting to code, by making a
+      new issue with the &quot;suggestion&quot; label).</p>
+   <p>As other developers might notice, the code of this app is probably pretty atrocious already, so I don&#39;t
+      <em>really</em> have code style rules and other stuff that I&#39;d require from pull requests, but I do want you
+      to test whatever you submit <strong>thoroughly</strong>. As I said, I don&#39;t exactly have a whole lot of time,
+      and I definitely don&#39;t have enough to test other people&#39;s code.
+   </p>
+   <h2 id="credits-and-support">Credits and Support</h2>
+   <p>The app is built on the database from <a href="https://apps.atlasacademy.io/db/">Atlas DB</a>, which, in theory,
+      is an absolutely up-to-date database of the game data, and this app was <em>very</em> heavily inspired by <a
+         href="https://www.reddit.com/r/grandorder/comments/cz3hak/tool_fgo_manager_v10/">FGO Manager by Zuth</a>.
+      Without them, I never would&#39;ve thought of making this, and this app wouldn&#39;t work in the first place.</p>
+   <p>While the app is completely free and open-source (because honestly, I wouldn&#39;t pay for just a tool like this,
+      so I don&#39;t expect others to pay either), if you decide that you appreciate my sleepless nights I spent on this
+      (being too excited about my ideas to sleep), you can drop a few SQ my way here (so maybe next time Jalter comes
+      around with a banner, she won&#39;t abandon me in the dust again):</p>
+   <p><a href="https://ko-fi.com/E1E64VBGR"><img src="https://ko-fi.com/img/githubbutton_sm.svg" alt="ko-fi"></a></p>
+</body>
+
+</html>

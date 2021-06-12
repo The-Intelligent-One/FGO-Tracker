@@ -42,8 +42,8 @@ public class MainApp extends Application {
         Parent root = loader.load();
         mainController = loader.getController();
         Alert loadingAlert = createServantLoadingAlert();
-        mainController.initTables();
         Scene scene = new Scene(root);
+        mainController.initTables(primaryStage, scene);
         scene.getStylesheets().add("tableStyle.css");
         setupAndShowPrimaryStage(primaryStage, scene);
         loadingAlert.show();

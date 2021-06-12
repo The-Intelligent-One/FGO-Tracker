@@ -5,7 +5,13 @@ import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.service.DataManagementService;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
+import javafx.scene.web.WebView;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHRelease;
 import org.kohsuke.github.GHRepository;
@@ -34,6 +40,11 @@ public class MainController {
     @FXML
     private PlannerController ltPlannerController;
 
+    @FXML
+    private VBox rootNode;
+
+    private Stage primaryStage;
+    private Scene mainScene;
     private DataManagementService dataManagementService;
 
     public void initialize() {
@@ -57,7 +68,9 @@ public class MainController {
         dataManagementService.saveUserState();
     }
 
-    public void initTables() {
+    public void initTables(Stage primaryStage, Scene scene) {
+        this.primaryStage = primaryStage;
+        this.mainScene = scene;
         plannerController.setPlannerType(PlannerType.REGULAR);
         plannerController.init();
         priorityPlannerController.setPlannerType(PlannerType.PRIORITY);
@@ -70,7 +83,8 @@ public class MainController {
         Alert aboutAlert = new Alert(Alert.AlertType.INFORMATION);
         aboutAlert.setTitle("FGO Tracker " + DataManagementService.VERSION);
         aboutAlert.setHeaderText("");
-        aboutAlert.setContentText("Tracker app for Fate/Grand Order. Heavily inspired by FGO Manager by zuth. Based on Atlas Academy DB.");
+        aboutAlert.setContentText(
+                "Tracker app for Fate/Grand Order. Heavily inspired by FGO Manager by zuth. Based on Atlas Academy DB.");
         aboutAlert.showAndWait();
     }
 
@@ -80,7 +94,7 @@ public class MainController {
             GHRepository repo = gitHub.getRepository("The-Intelligent-One/FGO-Tracker");
             GHRelease latest;
             if (actionEvent == null) {
-                 latest = repo.getLatestRelease();
+                latest = repo.getLatestRelease();
             } else {
                 latest = repo.listReleases().toList().get(0);
             }
@@ -110,5 +124,18 @@ public class MainController {
                 }
             }
         });
+    }
+
+    public void showUserGuide() {
+        WebView helpView = new WebView();
+        helpView.getEngine().load(getClass().getResource("/userguide.html").toString());
+        helpView.getEngine().setUserStyleSheetLocation(getClass().getResource("/userguide.css").toString());
+        VBox.setVgrow(helpView, Priority.ALWAYS);
+        VBox vBox = new VBox(helpView);
+        vBox.setFillWidth(true);
+        Scene scene = new Scene(vBox);
+        Stage helpStage = new Stage();
+        helpStage.setScene(scene);
+        helpStage.show();
     }
 }

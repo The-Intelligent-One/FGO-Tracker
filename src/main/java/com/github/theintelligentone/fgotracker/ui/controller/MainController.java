@@ -121,15 +121,16 @@ public class MainController {
     public void showUserGuide() {
         WebView helpView = new WebView();
         helpView.getEngine().load(getClass().getResource("/userguide.html").toString());
-        if (dataManagementService.darkModeProperty().getValue()) {
-            helpView.getEngine().setUserStyleSheetLocation(getClass().getResource("/userguide-dark.css").toString());
-        } else {
-            helpView.getEngine().setUserStyleSheetLocation(getClass().getResource("/userguide.css").toString());
-        }
         VBox.setVgrow(helpView, Priority.ALWAYS);
         VBox vBox = new VBox(helpView);
         vBox.setFillWidth(true);
         Scene scene = new Scene(vBox);
+        if (dataManagementService.darkModeProperty().getValue()) {
+            helpView.getEngine().setUserStyleSheetLocation(getClass().getResource("/styles/userguide-dark.css").toString());
+            scene.getStylesheets().add("styles/dark-mode.css");
+        } else {
+            helpView.getEngine().setUserStyleSheetLocation(getClass().getResource("/styles/userguide.css").toString());
+        }
         Stage helpStage = new Stage();
         vBox.minHeightProperty().bind(helpStage.heightProperty());
         helpStage.setScene(scene);

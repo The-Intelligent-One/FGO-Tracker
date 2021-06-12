@@ -50,13 +50,13 @@ public class MainApp extends Application {
         Parent root = loader.load();
         mainController = loader.getController();
         Scene scene = new Scene(root);
-        scene.getStylesheets().add("tableStyle.css");
-        scene.getStylesheets().add("dark-mode.css");
+        scene.getStylesheets().add("styles/tableStyle.css");
+        scene.getStylesheets().add("styles/dark-mode.css");
         dataManagementService.darkModeProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                scene.getStylesheets().add("dark-mode.css");
+                scene.getStylesheets().add("styles/dark-mode.css");
             } else {
-                scene.getStylesheets().remove("dark-mode.css");
+                scene.getStylesheets().remove("styles/dark-mode.css");
             }
         });
         return scene;

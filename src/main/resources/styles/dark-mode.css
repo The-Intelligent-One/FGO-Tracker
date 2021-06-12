@@ -1,4 +1,4 @@
-.root { 
+.root, .root.popup { 
     -fx-accent: #bfbfbf ;
     -fx-focus-color: -fx-accent;
     -fx-base: #373e43;
@@ -21,4 +21,8 @@
 
 .table-row-cell:odd{    
     -fx-control-inner-background: derive(-fx-base, 15%);
+}
+
+.temp * {
+    -fx-fill: white;
 }

@@ -44,6 +44,7 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
         this.filteredEntries.addAll(entries);
 
         entriesPopup = new ContextMenu();
+        entriesPopup.getStyleClass().add("temp");
         getChildren().addListener((ListChangeListener.Change<? extends Node> change) ->
         {
             if (change.next() && change.getAddedSubList().get(0) instanceof TextField) {
@@ -146,6 +147,7 @@ public class AutoCompleteTextFieldTableCell<S, T> extends TextFieldTableCell<S, 
             Text post = new Text(result.substring(occurence + text.length()));
 
             TextFlow entryFlow = new TextFlow(pre, in, post);
+            entryFlow.getStyleClass().add("autocomplete-label");
 
             CustomMenuItem item = new CustomMenuItem(entryFlow, true);
             item.setOnAction((ActionEvent actionEvent) ->

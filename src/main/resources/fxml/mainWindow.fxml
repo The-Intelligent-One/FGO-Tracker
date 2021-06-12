@@ -9,6 +9,11 @@
     <MenuBar>
         <Menu>
             <graphic>
+                <Label onMouseClicked="#toggleDarkMode" text="Toggle Dark Mode"/>
+            </graphic>
+        </Menu>
+        <Menu>
+            <graphic>
                 <Label onMouseClicked="#invalidateCache" text="Invalidate Cache"/>
             </graphic>
         </Menu>

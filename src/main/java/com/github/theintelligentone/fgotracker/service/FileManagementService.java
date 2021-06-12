@@ -49,6 +49,7 @@ public class FileManagementService {
     private static final String INVENTORY_FILE = "inventory.json";
     private static final int LINES_TO_SKIP_IN_ROSTER_CSV = 2;
     private static final int LINES_TO_SKIP_IN_LT_CSV = 12;
+    private static final String DARKMODE_FILE = "darkmode.json";
 
     private final ObjectMapper objectMapper;
 
@@ -165,6 +166,19 @@ public class FileManagementService {
         return versionMap;
     }
 
+    public boolean loadDarkMode() {
+        File file = new File(BASE_DATA_PATH + USER_DATA_PATH, DARKMODE_FILE);
+        boolean darkMode = true;
+        if (file.length() != 0) {
+            try {
+                darkMode = objectMapper.readValue(file, new TypeReference<>() {});
+            } catch (IOException e) {
+                log.error(e.getLocalizedMessage());
+            }
+        }
+        return darkMode;
+    }
+
     public String loadGameRegion() {
         String regionAsString = "";
         try {
@@ -178,6 +192,11 @@ public class FileManagementService {
     public void saveNewVersion(Map<String, VersionDTO> versionMap) {
         File file = new File(BASE_DATA_PATH, VERSION_FILE);
         saveDataToFile(versionMap, file);
+    }
+
+    public void saveDarkMode(boolean value) {
+        File file = new File(BASE_DATA_PATH + USER_DATA_PATH, DARKMODE_FILE);
+        saveDataToFile(value, file);
     }
 
     public void saveGameRegion(String region) {
@@ -217,19 +236,20 @@ public class FileManagementService {
     }
 
     private void initFileStructure() throws IOException {
-        createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + "NA_" + FULL_DATA_FILE);
-        createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + "JP_" + FULL_DATA_FILE);
-        createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + "NA_" + MATERIAL_DATA_FILE);
-        createFileIfDoesNotExist(BASE_DATA_PATH + CACHE_PATH + "JP_" + MATERIAL_DATA_FILE);
-        createFileIfDoesNotExist(BASE_DATA_PATH + USER_DATA_PATH + USER_SERVANT_FILE);
-        createFileIfDoesNotExist(BASE_DATA_PATH + USER_DATA_PATH + INVENTORY_FILE);
-        createFileIfDoesNotExist(BASE_DATA_PATH + USER_DATA_PATH + GAME_REGION_FILE);
-        createFileIfDoesNotExist(BASE_DATA_PATH + VERSION_FILE);
+        createFileIfDoesNotExist(CACHE_PATH + "NA_" + FULL_DATA_FILE);
+        createFileIfDoesNotExist(CACHE_PATH + "JP_" + FULL_DATA_FILE);
+        createFileIfDoesNotExist(CACHE_PATH + "NA_" + MATERIAL_DATA_FILE);
+        createFileIfDoesNotExist(CACHE_PATH + "JP_" + MATERIAL_DATA_FILE);
+        createFileIfDoesNotExist(USER_DATA_PATH + USER_SERVANT_FILE);
+        createFileIfDoesNotExist(USER_DATA_PATH + INVENTORY_FILE);
+        createFileIfDoesNotExist(USER_DATA_PATH + GAME_REGION_FILE);
+        createFileIfDoesNotExist(USER_DATA_PATH + DARKMODE_FILE);
+        createFileIfDoesNotExist(VERSION_FILE);
         Files.createDirectories(Path.of(BASE_DATA_PATH, IMAGE_FOLDER_PATH));
     }
 
     private void createFileIfDoesNotExist(String filePath) throws IOException {
-        File file = new File(filePath);
+        File file = new File(BASE_DATA_PATH, filePath);
         if (file.getParentFile().mkdirs()) {
             log.debug("File structure created for path: {}", filePath);
         }
@@ -317,5 +337,4 @@ public class FileManagementService {
     private ManagerServant buildLookupObject(String... strings) {
         return new ManagerServant(Integer.parseInt(strings[1]), strings[0]);
     }
-
 }

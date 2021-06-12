@@ -21,6 +21,8 @@ import com.github.theintelligentone.fgotracker.service.transformer.InventoryToVi
 import com.github.theintelligentone.fgotracker.service.transformer.PlannerServantToViewTransformer;
 import com.github.theintelligentone.fgotracker.service.transformer.UserServantToViewTransformer;
 import javafx.beans.Observable;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -73,6 +75,7 @@ public class DataManagementService {
     private boolean iconsResized;
     @Getter
     private String gameRegion;
+    private BooleanProperty darkMode;
     private ObservableList<UserServantView> userServantList;
     private ObservableList<PlannerServantView> plannerServantList;
     private ObservableList<PlannerServantView> priorityPlannerServantList;
@@ -88,6 +91,7 @@ public class DataManagementService {
         this.plannerServantToViewTransformer = new PlannerServantToViewTransformer();
         setupMatTranslateMap();
         gameRegion = fileService.loadGameRegion();
+        darkMode = new SimpleBooleanProperty(true);
     }
 
     private void setupMatTranslateMap() {
@@ -103,6 +107,10 @@ public class DataManagementService {
         MAT_NAME_TRANSLATE_MAP.put("Vein", "神脈霊子");
         MAT_NAME_TRANSLATE_MAP.put("Fruit", "悠久の実");
         MAT_NAME_TRANSLATE_MAP.put("Thread", "虹の糸玉");
+    }
+
+    public BooleanProperty darkModeProperty() {
+        return darkMode;
     }
 
     public ObservableList<PlannerServantView> getPlannerServantList(PlannerType plannerType) {
@@ -183,6 +191,7 @@ public class DataManagementService {
     }
 
     private void refreshAllData() {
+        darkMode.set(fileService.loadDarkMode());
         if (newVersionAvailable()) {
             refreshCache();
         } else {
@@ -440,6 +449,7 @@ public class DataManagementService {
         fileService.saveInventory(inventoryToViewTransformer.transform(inventory));
         fileService.savePlannerServants(plannerServantToViewTransformer.transformAllFromViews(clearedPlannerList));
         fileService.savePriorityServants(plannerServantToViewTransformer.transformAllFromViews(clearedPriorityList));
+        fileService.saveDarkMode(darkMode.getValue());
     }
 
     private List<UserServantView> clearUnnecessaryEmptyUserRows(List<UserServantView> servantList) {

@@ -7,6 +7,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
@@ -141,5 +142,9 @@ public class MainController {
 
     public void invalidateCache() {
         dataManagementService.invalidateCache();
+    }
+
+    public void toggleDarkMode() {
+        dataManagementService.darkModeProperty().set(!dataManagementService.darkModeProperty().get());
     }
 }

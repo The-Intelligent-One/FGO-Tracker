@@ -39,14 +39,27 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent root = loader.load();
-        mainController = loader.getController();
+        Scene scene = createMainScene();
         Alert loadingAlert = createServantLoadingAlert();
-        Scene scene = new Scene(root);
         mainController.initTables(primaryStage, scene);
-        scene.getStylesheets().add("tableStyle.css");
         setupAndShowPrimaryStage(primaryStage, scene);
         loadingAlert.show();
+    }
+
+    private Scene createMainScene() throws java.io.IOException {
+        Parent root = loader.load();
+        mainController = loader.getController();
+        Scene scene = new Scene(root);
+        scene.getStylesheets().add("tableStyle.css");
+        scene.getStylesheets().add("dark-mode.css");
+        dataManagementService.darkModeProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                scene.getStylesheets().add("dark-mode.css");
+            } else {
+                scene.getStylesheets().remove("dark-mode.css");
+            }
+        });
+        return scene;
     }
 
     private void setupAndShowPrimaryStage(Stage primaryStage, Scene scene) {
@@ -64,7 +77,7 @@ public class MainApp extends Application {
     private Alert createServantLoadingAlert() {
         String selectedRegion = dataManagementService.getGameRegion();
         if (selectedRegion.isEmpty()) {
-            selectedRegion = letUserChooseRegion();
+            selectedRegion = showRegionChooser();
         }
         Alert loadingAlert = setupLoadingAlert();
         new Thread(createLoadingTaskWithAlert(selectedRegion, loadingAlert)).start();
@@ -79,7 +92,7 @@ public class MainApp extends Application {
         return loadingAlert;
     }
 
-    private String letUserChooseRegion() {
+    private String showRegionChooser() {
         ChoiceDialog<String> regionDialog = new ChoiceDialog<>();
         regionDialog.setTitle("FGO Region");
         regionDialog.setContentText("Which region are you playing on?");

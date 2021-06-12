@@ -7,7 +7,6 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
@@ -40,11 +39,6 @@ public class MainController {
     @FXML
     private PlannerController ltPlannerController;
 
-    @FXML
-    private VBox rootNode;
-
-    private Stage primaryStage;
-    private Scene mainScene;
     private DataManagementService dataManagementService;
 
     public void initialize() {
@@ -68,9 +62,7 @@ public class MainController {
         dataManagementService.saveUserState();
     }
 
-    public void initTables(Stage primaryStage, Scene scene) {
-        this.primaryStage = primaryStage;
-        this.mainScene = scene;
+    public void initTables() {
         plannerController.setPlannerType(PlannerType.REGULAR);
         plannerController.init();
         priorityPlannerController.setPlannerType(PlannerType.PRIORITY);
@@ -103,7 +95,7 @@ public class MainController {
                 showNewUpdateAlert(latest);
             }
         } catch (IOException e) {
-            log.error(e.getLocalizedMessage());
+            log.error(e.getLocalizedMessage(), e);
             return;
         }
     }
@@ -120,7 +112,7 @@ public class MainController {
                     Desktop.getDesktop().browse(
                             new URI("https://github.com/The-Intelligent-One/FGO-Tracker/releases"));
                 } catch (IOException | URISyntaxException e) {
-                    log.error(e.getLocalizedMessage());
+                    log.error(e.getLocalizedMessage(), e);
                 }
             }
         });

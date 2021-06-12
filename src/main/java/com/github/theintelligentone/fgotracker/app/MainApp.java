@@ -41,7 +41,7 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         Scene scene = createMainScene();
         Alert loadingAlert = createServantLoadingAlert();
-        mainController.initTables(primaryStage, scene);
+        mainController.initTables();
         setupAndShowPrimaryStage(primaryStage, scene);
         loadingAlert.show();
     }
@@ -80,7 +80,11 @@ public class MainApp extends Application {
             selectedRegion = showRegionChooser();
         }
         Alert loadingAlert = setupLoadingAlert();
-        new Thread(createLoadingTaskWithAlert(selectedRegion, loadingAlert)).start();
+        if (selectedRegion == null) {
+            Platform.exit();
+        } else {
+            new Thread(createLoadingTaskWithAlert(selectedRegion, loadingAlert)).start();
+        }
         return loadingAlert;
     }
 
@@ -101,10 +105,7 @@ public class MainApp extends Application {
         regionDialog.getItems().addAll("JP", "NA");
         regionDialog.setSelectedItem("NA");
         Optional<String> dialogResult = regionDialog.showAndWait();
-        return dialogResult.orElseGet(() -> {
-            Platform.exit();
-            return null;
-        });
+        return dialogResult.orElse(null);
     }
 
     private Task<Object> createLoadingTaskWithAlert(String selectedRegion, Alert loadingAlert) {

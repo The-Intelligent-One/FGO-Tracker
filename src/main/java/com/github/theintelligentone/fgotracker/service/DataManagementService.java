@@ -40,7 +40,7 @@ public class DataManagementService {
     public static final String VERSION = "v0.2.1-beta";
     public static final int[] MAX_LEVELS = {65, 60, 65, 70, 80, 90};
 
-    private static final int MIN_TABLE_SIZE = 30;
+    private static final int MIN_TABLE_SIZE = 25;
     private static final String NAME_FORMAT = "%s [%s]";
     private static final Map<String, Integer> ROSTER_IMPORT_INDEX_MAP = Map.of(
             "name", 0,

@@ -23,6 +23,7 @@ import javax.imageio.ImageIO;
 import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -56,7 +57,7 @@ public class FileManagementService {
     public FileManagementService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
         try {
-            initFileStructure();
+            Files.createDirectories(Path.of(BASE_DATA_PATH, IMAGE_FOLDER_PATH));
         } catch (IOException e) {
             log.error(e.getLocalizedMessage());
         }
@@ -96,39 +97,37 @@ public class FileManagementService {
     }
 
     public List<Servant> loadFullServantData(String gameRegion) {
-        List<Servant> servantList = getDataListFromFile(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + FULL_DATA_FILE,
+        return getDataListFromFile(new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + FULL_DATA_FILE),
                 new TypeReference<>() {});
-        return servantList;
     }
 
     public List<UpgradeMaterial> loadMaterialData(String gameRegion) {
-        List<UpgradeMaterial> itemList = getDataListFromFile(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + MATERIAL_DATA_FILE,
-                new TypeReference<>() {});
+        List<UpgradeMaterial> itemList = getDataListFromFile(
+                new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + MATERIAL_DATA_FILE), new TypeReference<>() {});
         itemList.forEach(this::loadImageForMaterial);
         return itemList;
     }
 
     public List<UserServant> loadUserData() {
-        return getDataListFromFile(BASE_DATA_PATH + USER_DATA_PATH, USER_SERVANT_FILE, new TypeReference<>() {});
+        return getDataListFromFile(new File(BASE_DATA_PATH + USER_DATA_PATH, USER_SERVANT_FILE), new TypeReference<>() {});
     }
 
     public List<PlannerServant> loadPlannedServantData() {
-        return getDataListFromFile(BASE_DATA_PATH + USER_DATA_PATH, PLANNED_SERVANT_FILE, new TypeReference<>() {});
+        return getDataListFromFile(new File(BASE_DATA_PATH + USER_DATA_PATH, PLANNED_SERVANT_FILE), new TypeReference<>() {});
     }
 
     public List<PlannerServant> loadPriorityServantData() {
-        return getDataListFromFile(BASE_DATA_PATH + USER_DATA_PATH, PRIORITY_SERVANT_FILE, new TypeReference<>() {});
+        return getDataListFromFile(new File(BASE_DATA_PATH + USER_DATA_PATH, PRIORITY_SERVANT_FILE), new TypeReference<>() {});
     }
 
     public Map<String, Integer> getClassAttackRate() {
-        File file = new File(BASE_DATA_PATH, CLASS_ATTACK_FILE);
         Map<String, Integer> classAttackMap = new HashMap<>();
-        if (file.length() != 0) {
-            try {
-                classAttackMap = objectMapper.readValue(file, new TypeReference<>() {});
-            } catch (IOException e) {
-                log.error(e.getLocalizedMessage());
-            }
+        try {
+            classAttackMap = objectMapper.readValue(new File(BASE_DATA_PATH, CLASS_ATTACK_FILE), new TypeReference<>() {});
+        } catch (FileNotFoundException e) {
+            log.debug("No valid class damage multiplier file found. Loading blank value");
+        } catch (IOException e) {
+            log.error(e.getLocalizedMessage(), e);
         }
         return classAttackMap;
     }
@@ -140,28 +139,27 @@ public class FileManagementService {
     }
 
     public Map<String, Map<Integer, CardPlacementData>> getCardData() {
-        File file = new File(BASE_DATA_PATH, CARD_DATA_FILE);
         Map<String, Map<Integer, CardPlacementData>> cardDataMap = new HashMap<>();
-        if (file.length() != 0) {
-            try {
-                cardDataMap = objectMapper.readValue(file, new TypeReference<>() {});
-            } catch (IOException e) {
-                log.error(e.getLocalizedMessage());
-            }
+        try {
+            cardDataMap = objectMapper.readValue(new File(BASE_DATA_PATH, CARD_DATA_FILE), new TypeReference<>() {});
+        } catch (FileNotFoundException e) {
+            log.debug("No valid card data file found, loading blank value");
+        } catch (IOException e) {
+            log.error(e.getLocalizedMessage(), e);
         }
         return cardDataMap;
     }
 
     public Map<String, VersionDTO> getCurrentVersion() {
-        File file = new File(BASE_DATA_PATH, VERSION_FILE);
         Map<String, VersionDTO> versionMap = new HashMap<>();
         try {
-            versionMap = objectMapper.readValue(file, new TypeReference<>() {});
-        } catch (JsonMappingException e) {
+            versionMap = objectMapper.readValue(new File(BASE_DATA_PATH, VERSION_FILE), new TypeReference<>() {});
+        } catch (JsonMappingException | FileNotFoundException e) {
+            log.debug("No valid DB version file found. Loading blank values");
             versionMap.put("NA", new VersionDTO());
             versionMap.put("JP", new VersionDTO());
         } catch (IOException e) {
-            log.error(e.getLocalizedMessage());
+            log.error(e.getLocalizedMessage(), e);
         }
         return versionMap;
     }
@@ -169,12 +167,12 @@ public class FileManagementService {
     public boolean loadDarkMode() {
         File file = new File(BASE_DATA_PATH + USER_DATA_PATH, DARKMODE_FILE);
         boolean darkMode = true;
-        if (file.length() != 0) {
-            try {
-                darkMode = objectMapper.readValue(file, new TypeReference<>() {});
-            } catch (IOException e) {
-                log.error(e.getLocalizedMessage());
-            }
+        try {
+            darkMode = objectMapper.readValue(file, new TypeReference<>() {});
+        } catch (FileNotFoundException e) {
+            log.debug("No valid dark mode setting file found. Defaulting to on.");
+        } catch (IOException e) {
+            log.error(e.getLocalizedMessage(), e);
         }
         return darkMode;
     }
@@ -182,9 +180,11 @@ public class FileManagementService {
     public String loadGameRegion() {
         String regionAsString = "";
         try {
-            regionAsString = Files.readString(Path.of(BASE_DATA_PATH + USER_DATA_PATH, GAME_REGION_FILE));
+            regionAsString = Files.readString(new File(BASE_DATA_PATH + USER_DATA_PATH, GAME_REGION_FILE).toPath());
+        } catch (NoSuchFileException e) {
+            log.debug("No valid game region file found. Loading blank value.");
         } catch (IOException e) {
-            log.error(e.getLocalizedMessage());
+            log.error(e.getLocalizedMessage(), e);
         }
         return regionAsString;
     }
@@ -203,7 +203,7 @@ public class FileManagementService {
         try {
             Files.writeString(Path.of(BASE_DATA_PATH + USER_DATA_PATH, GAME_REGION_FILE), region);
         } catch (IOException e) {
-            log.error(e.getLocalizedMessage());
+            log.error(e.getLocalizedMessage(), e);
         }
     }
 
@@ -216,7 +216,7 @@ public class FileManagementService {
     }
 
     public Inventory loadInventory() {
-        List<UpgradeMaterialCost> matList = getDataListFromFile(BASE_DATA_PATH + USER_DATA_PATH, INVENTORY_FILE,
+        List<UpgradeMaterialCost> matList = getDataListFromFile(new File(BASE_DATA_PATH + USER_DATA_PATH, INVENTORY_FILE),
                 new TypeReference<>() {});
         Inventory result = new Inventory();
         result.setLabel("Inventory");
@@ -231,49 +231,41 @@ public class FileManagementService {
                 throw new IOException();
             }
         } catch (IOException e) {
-            log.error(e.getLocalizedMessage());
+            log.error(e.getLocalizedMessage(), e);
         }
     }
 
-    private void initFileStructure() throws IOException {
-        createFileIfDoesNotExist(CACHE_PATH + "NA_" + FULL_DATA_FILE);
-        createFileIfDoesNotExist(CACHE_PATH + "JP_" + FULL_DATA_FILE);
-        createFileIfDoesNotExist(CACHE_PATH + "NA_" + MATERIAL_DATA_FILE);
-        createFileIfDoesNotExist(CACHE_PATH + "JP_" + MATERIAL_DATA_FILE);
-        createFileIfDoesNotExist(USER_DATA_PATH + USER_SERVANT_FILE);
-        createFileIfDoesNotExist(USER_DATA_PATH + INVENTORY_FILE);
-        createFileIfDoesNotExist(USER_DATA_PATH + GAME_REGION_FILE);
-        createFileIfDoesNotExist(USER_DATA_PATH + DARKMODE_FILE);
-        createFileIfDoesNotExist(VERSION_FILE);
-        Files.createDirectories(Path.of(BASE_DATA_PATH, IMAGE_FOLDER_PATH));
-    }
-
-    private void createFileIfDoesNotExist(String filePath) throws IOException {
-        File file = new File(BASE_DATA_PATH, filePath);
+    private void createFileIfDoesNotExist(File file) {
         if (file.getParentFile().mkdirs()) {
-            log.debug("File structure created for path: {}", filePath);
+            log.debug("File structure created for path: {}", file.getPath());
         }
-        if (file.createNewFile()) {
-            log.debug("File created with path: {}", filePath);
+        try {
+            if (file.createNewFile()) {
+                log.debug("File created with path: {}", file.getPath());
+            }
+        } catch (IOException e) {
+            log.error(e.getLocalizedMessage(), e);
         }
     }
 
     private void saveDataToFile(Object data, File file) {
+        createFileIfDoesNotExist(file);
         try {
             objectMapper.writeValue(file, data);
         } catch (IOException e) {
-            log.error(e.getLocalizedMessage());
+            log.error(e.getLocalizedMessage(), e);
         }
     }
 
-    private <T> List<T> getDataListFromFile(String directory, String filename, TypeReference<List<T>> expectedType) {
-        File file = new File(directory, filename);
+    private <T> List<T> getDataListFromFile(File file, TypeReference<List<T>> expectedType) {
         List<T> basicDataList = new ArrayList<>();
         if (file.length() != 0) {
             try {
                 basicDataList = objectMapper.readValue(file, expectedType);
+            } catch (FileNotFoundException e) {
+                log.debug("Didn't find file: " + file + ", data list loaded as empty.");
             } catch (IOException e) {
-                log.error(e.getLocalizedMessage());
+                log.error(e.getLocalizedMessage(), e);
             }
         }
         return basicDataList;
@@ -288,7 +280,7 @@ public class FileManagementService {
                     .build();
             strings = csvReader.readAll();
         } catch (IOException | CsvException e) {
-            log.error(e.getLocalizedMessage());
+            log.error(e.getLocalizedMessage(), e);
         }
         return strings;
     }
@@ -305,7 +297,7 @@ public class FileManagementService {
             csvReader.readNext();
             strings.add(csvReader.readNext());
         } catch (IOException | CsvException e) {
-            log.error(e.getLocalizedMessage());
+            log.error(e.getLocalizedMessage(), e);
         }
         return transformToInventoryMap(strings);
     }
@@ -329,7 +321,7 @@ public class FileManagementService {
         try {
             strings = csvReader.readAll();
         } catch (IOException | CsvException e) {
-            log.error(e.getLocalizedMessage());
+            log.error(e.getLocalizedMessage(), e);
         }
         return strings.stream().map(this::buildLookupObject).collect(Collectors.toList());
     }

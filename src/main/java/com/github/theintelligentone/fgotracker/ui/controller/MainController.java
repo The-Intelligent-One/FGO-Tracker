@@ -96,7 +96,6 @@ public class MainController {
             }
         } catch (IOException e) {
             log.error(e.getLocalizedMessage(), e);
-            return;
         }
     }
 
@@ -121,7 +120,11 @@ public class MainController {
     public void showUserGuide() {
         WebView helpView = new WebView();
         helpView.getEngine().load(getClass().getResource("/userguide.html").toString());
-        helpView.getEngine().setUserStyleSheetLocation(getClass().getResource("/userguide.css").toString());
+        if (dataManagementService.darkModeProperty().getValue()) {
+            helpView.getEngine().setUserStyleSheetLocation(getClass().getResource("/userguide-dark.css").toString());
+        } else {
+            helpView.getEngine().setUserStyleSheetLocation(getClass().getResource("/userguide.css").toString());
+        }
         VBox.setVgrow(helpView, Priority.ALWAYS);
         VBox vBox = new VBox(helpView);
         vBox.setFillWidth(true);
@@ -129,6 +132,7 @@ public class MainController {
         Stage helpStage = new Stage();
         vBox.minHeightProperty().bind(helpStage.heightProperty());
         helpStage.setScene(scene);
+        helpStage.setTitle("FGO Tracker User Guide");
         helpStage.show();
     }
 

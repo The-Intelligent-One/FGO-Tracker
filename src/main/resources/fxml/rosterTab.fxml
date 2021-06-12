@@ -21,7 +21,7 @@
                     <TableColumn fx:id="attributeColumn" text="Attr."/>
                 </columns>
             </TableColumn>
-            <TableColumn fx:id="deckColumn" text="Deck">
+            <TableColumn fx:id="deckColumn" text="Deck" sortable="false">
                 <columns>
                     <TableColumn text="C1">
                         <cellValueFactory>
@@ -114,7 +114,7 @@
                     </TableColumn>
                 </columns>
             </TableColumn>
-            <TableColumn fx:id="notesColumn" text="Notes">
+            <TableColumn fx:id="notesColumn" text="Notes" sortable="false">
                 <cellValueFactory>
                     <UserServantValueFactory property="notes"/>
                 </cellValueFactory>

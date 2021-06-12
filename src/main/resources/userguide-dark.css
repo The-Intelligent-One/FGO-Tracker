@@ -1,8 +1,14 @@
 body {
     padding-right: 2%;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: white;
+    background-color: #373e43;    
 }
 
 img {
     max-width: 100%;
+}
+
+a {
+    color: lightblue;
 }

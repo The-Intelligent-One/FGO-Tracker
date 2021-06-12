@@ -182,7 +182,7 @@ public class DataManagementService {
         priorityPlannerServantList.remove(dummy);
     }
 
-    public void refreshAllData() {
+    private void refreshAllData() {
         if (newVersionAvailable()) {
             refreshCache();
         } else {
@@ -610,5 +610,12 @@ public class DataManagementService {
 
     private int convertToInt(String data) {
         return !(data == null || data.isEmpty()) ? Integer.parseInt(data) : 0;
+    }
+
+    public void invalidateCache() {
+        for (Map.Entry<String, VersionDTO> entry : currentVersion.entrySet()) {
+            entry.getValue().setTimestamp(0);
+        }
+        fileService.saveNewVersion(currentVersion);
     }
 }

@@ -10,7 +10,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
 import org.kohsuke.github.GHRelease;
@@ -135,7 +134,12 @@ public class MainController {
         vBox.setFillWidth(true);
         Scene scene = new Scene(vBox);
         Stage helpStage = new Stage();
+        vBox.minHeightProperty().bind(helpStage.heightProperty());
         helpStage.setScene(scene);
         helpStage.show();
+    }
+
+    public void invalidateCache() {
+        dataManagementService.invalidateCache();
     }
 }

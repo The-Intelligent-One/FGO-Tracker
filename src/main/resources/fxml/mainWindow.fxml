@@ -9,6 +9,11 @@
     <MenuBar>
         <Menu>
             <graphic>
+                <Label onMouseClicked="#invalidateCache" text="Invalidate Cache"/>
+            </graphic>
+        </Menu>
+        <Menu>
+            <graphic>
                 <Label onMouseClicked="#saveUserData" text="Save"/>
             </graphic>
         </Menu>

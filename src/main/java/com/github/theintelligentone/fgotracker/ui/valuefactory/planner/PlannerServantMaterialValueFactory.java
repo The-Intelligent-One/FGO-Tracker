@@ -19,7 +19,7 @@ public class PlannerServantMaterialValueFactory implements Callback<TableColumn.
     @Override
     public ObservableValue<Number> call(TableColumn.CellDataFeatures<PlannerServantView, Number> param) {
         ObservableIntegerValue result = new SimpleIntegerProperty();
-        if (param.getValue().getBaseServant().getValue() != null && param.getValue().getBaseServant().getValue().getBaseServant().getValue() != null) {
+        if (param.getValue().baseServantProperty().getValue() != null && param.getValue().baseServantProperty().getValue().baseServantProperty().getValue() != null) {
             result = new ServantUtils().getPlannedMatUse(param.getValue(), matId);
         }
         return result;

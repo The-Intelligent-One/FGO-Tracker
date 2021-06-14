@@ -21,7 +21,7 @@ public class PlannerServantViewFactory {
 
     public ObservableList<PlannerServantView> createForLTPlanner(ObservableList<UserServantView> servants) {
         ObservableList<PlannerServantView> result = FXCollections.observableArrayList(
-                param -> new Observable[]{param.getBaseServant(), param.getDesLevel(), param.getDesSkill1(), param.getDesSkill2(), param.getDesSkill3()});
+                param -> new Observable[]{param.baseServantProperty(), param.desLevelProperty(), param.desSkill1Property(), param.desSkill2Property(), param.desSkill3Property()});
         result.addAll(servants.stream().map(this::createFromUserServantForLTPlanner).collect(Collectors.toList()));
         servants.addListener((ListChangeListener<? super UserServantView>) c -> {
             result.clear();
@@ -32,16 +32,17 @@ public class PlannerServantViewFactory {
 
     public PlannerServantView createFromUserServant(UserServantView servant) {
         PlannerServantView result = new PlannerServantView();
-        if (servant.getBaseServant() != null && servant.getBaseServant().getValue() != null) {
+        if (servant.baseServantProperty() != null && servant.baseServantProperty().getValue() != null) {
             result = PlannerServantView.builder()
-                    .svtId(servant.getSvtId())
+                    .svtId(servant.svtIdProperty())
                     .baseServant(new SimpleObjectProperty<>(servant))
-                    .desLevel(new SimpleIntegerProperty(servant.getLevel().intValue()))
-                    .desSkill1(new SimpleIntegerProperty(servant.getSkillLevel1().intValue()))
-                    .desSkill2(new SimpleIntegerProperty(servant.getSkillLevel2().intValue()))
-                    .desSkill3(new SimpleIntegerProperty(servant.getSkillLevel3().intValue()))
-                    .ascensionMaterials(convertMaterialMapToList(servant.getBaseServant().getValue().getAscensionMaterials()))
-                    .skillMaterials(convertMaterialMapToList(servant.getBaseServant().getValue().getSkillMaterials()))
+                    .desLevel(new SimpleIntegerProperty(servant.levelProperty().intValue()))
+                    .desSkill1(new SimpleIntegerProperty(servant.skillLevel1Property().intValue()))
+                    .desSkill2(new SimpleIntegerProperty(servant.skillLevel2Property().intValue()))
+                    .desSkill3(new SimpleIntegerProperty(servant.skillLevel3Property().intValue()))
+                    .ascensionMaterials(
+                            convertMaterialMapToList(servant.baseServantProperty().getValue().getAscensionMaterials()))
+                    .skillMaterials(convertMaterialMapToList(servant.baseServantProperty().getValue().getSkillMaterials()))
                     .build();
         }
         return result;
@@ -49,17 +50,18 @@ public class PlannerServantViewFactory {
 
     private PlannerServantView createFromUserServantForLTPlanner(UserServantView servant) {
         PlannerServantView result = new PlannerServantView();
-        if (servant.getBaseServant() != null && servant.getBaseServant().getValue() != null) {
+        if (servant.baseServantProperty() != null && servant.baseServantProperty().getValue() != null) {
             result = PlannerServantView.builder()
-                    .svtId(servant.getSvtId())
+                    .svtId(servant.svtIdProperty())
                     .baseServant(new SimpleObjectProperty<>(servant))
                     .desLevel(new SimpleIntegerProperty(
-                            DataManagementService.MAX_LEVELS[servant.getBaseServant().getValue().getRarity()]))
+                            DataManagementService.MAX_LEVELS[servant.baseServantProperty().getValue().getRarity()]))
                     .desSkill1(new SimpleIntegerProperty(MAX_SKILL_LEVEL))
                     .desSkill2(new SimpleIntegerProperty(MAX_SKILL_LEVEL))
                     .desSkill3(new SimpleIntegerProperty(MAX_SKILL_LEVEL))
-                    .ascensionMaterials(convertMaterialMapToList(servant.getBaseServant().getValue().getAscensionMaterials()))
-                    .skillMaterials(convertMaterialMapToList(servant.getBaseServant().getValue().getSkillMaterials()))
+                    .ascensionMaterials(
+                            convertMaterialMapToList(servant.baseServantProperty().getValue().getAscensionMaterials()))
+                    .skillMaterials(convertMaterialMapToList(servant.baseServantProperty().getValue().getSkillMaterials()))
                     .build();
         }
         return result;

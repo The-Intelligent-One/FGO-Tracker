@@ -159,11 +159,11 @@ public class DataManagementService {
 
     private void initDataLists() {
         userServantList = FXCollections.observableArrayList(
-                param -> new Observable[]{param.getSvtId(), param.getLevel(), param.getSkillLevel1(), param.getSkillLevel2(), param.getSkillLevel3(), param.getAscension()});
+                param -> new Observable[]{param.svtIdProperty(), param.levelProperty(), param.skillLevel1Property(), param.skillLevel2Property(), param.skillLevel3Property(), param.ascensionProperty()});
         plannerServantList = FXCollections.observableArrayList(
-                param -> new Observable[]{param.getBaseServant(), param.getDesLevel(), param.getDesSkill1(), param.getDesSkill2(), param.getDesSkill3()});
+                param -> new Observable[]{param.baseServantProperty(), param.desLevelProperty(), param.desSkill1Property(), param.desSkill2Property(), param.desSkill3Property()});
         priorityPlannerServantList = FXCollections.observableArrayList(
-                param -> new Observable[]{param.getBaseServant(), param.getDesLevel(), param.getDesSkill1(), param.getDesSkill2(), param.getDesSkill3()});
+                param -> new Observable[]{param.baseServantProperty(), param.desLevelProperty(), param.desSkill1Property(), param.desSkill2Property(), param.desSkill3Property()});
         userServantList.addListener(this::removeServantFromPlannersWhenRemovedFromRoster);
         userServantList.addListener(this::updateRosterNameListOnChange);
         servantNameList = FXCollections.observableArrayList();
@@ -173,16 +173,16 @@ public class DataManagementService {
     private void updateRosterNameListOnChange(ListChangeListener.Change<? extends UserServantView> c) {
         userServantNameList.clear();
         userServantNameList.addAll(c.getList().stream()
-                .filter(svt -> svt.getBaseServant().getValue() != null)
-                .map(svt -> String.format(NAME_FORMAT, svt.getBaseServant().getValue().getName(),
-                        svt.getBaseServant().getValue().getClassName()))
+                .filter(svt -> svt.baseServantProperty().getValue() != null)
+                .map(svt -> String.format(NAME_FORMAT, svt.baseServantProperty().getValue().getName(),
+                        svt.baseServantProperty().getValue().getClassName()))
                 .collect(Collectors.toList()));
     }
 
     private void removeServantFromPlannersWhenRemovedFromRoster(ListChangeListener.Change<? extends UserServantView> c) {
-        List<Long> ids = c.getList().stream().map(svt -> svt.getSvtId().get()).collect(Collectors.toList());
+        List<Long> ids = c.getList().stream().map(svt -> svt.svtIdProperty().get()).collect(Collectors.toList());
         plannerServantList.removeIf(
-                svt -> svt.getBaseServant().getValue() != null && !ids.contains(svt.getSvtId().longValue()));
+                svt -> svt.baseServantProperty().getValue() != null && !ids.contains(svt.svtIdProperty().longValue()));
         PlannerServantView dummy = new PlannerServantView();
         plannerServantList.add(dummy);
         plannerServantList.remove(dummy);
@@ -247,8 +247,8 @@ public class DataManagementService {
         List<PlannerServantView> plannerServants = plannerServantToViewTransformer.transformAll(
                 servants);
         plannerServants.forEach(svt -> {
-            if (svt.getSvtId().longValue() != 0L) {
-                svt.getBaseServant().set(findUserServantById(svt.getSvtId().longValue()));
+            if (svt.svtIdProperty().longValue() != 0L) {
+                svt.baseServantProperty().set(findUserServantById(svt.svtIdProperty().longValue()));
             }
         });
         return plannerServants;
@@ -313,14 +313,14 @@ public class DataManagementService {
     }
 
     private UserServantView findUserServantById(long svtId) {
-        return userServantList.stream().filter(svt -> svtId == svt.getSvtId().longValue()).findFirst().get();
+        return userServantList.stream().filter(svt -> svtId == svt.svtIdProperty().longValue()).findFirst().get();
     }
 
     public UserServantView findUserServantByFormattedName(String name) {
         return userServantList.stream()
-                .filter(svt -> svt.getBaseServant().getValue() != null)
-                .filter(svt -> name.equalsIgnoreCase(String.format(NAME_FORMAT, svt.getBaseServant().getValue().getName(),
-                        svt.getBaseServant().getValue().getClassName())))
+                .filter(svt -> svt.baseServantProperty().getValue() != null)
+                .filter(svt -> name.equalsIgnoreCase(String.format(NAME_FORMAT, svt.baseServantProperty().getValue().getName(),
+                        svt.baseServantProperty().getValue().getClassName())))
                 .findFirst().orElse(null);
     }
 
@@ -410,13 +410,13 @@ public class DataManagementService {
     public void replaceBaseServantInRow(int index, UserServantView servant, String newServantName) {
         Servant newBaseServant = findServantByFormattedName(newServantName);
         if (newBaseServant != null) {
-            if (servant.getBaseServant() == null || servant.getBaseServant().getValue() == null) {
+            if (servant.baseServantProperty() == null || servant.baseServantProperty().getValue() == null) {
                 userServantList.set(index, userServantToViewTransformer.transform(
                         new UserServantFactory().createUserServantFromBaseServant(newBaseServant)));
             } else {
-                servant.getSvtId().set(newBaseServant.getId());
-                servant.getRarity().set(newBaseServant.getRarity());
-                servant.getBaseServant().set(newBaseServant);
+                servant.svtIdProperty().set(newBaseServant.getId());
+                servant.rarityProperty().set(newBaseServant.getRarity());
+                servant.baseServantProperty().set(newBaseServant);
                 userServantList.set(index, servant);
             }
         }
@@ -427,11 +427,11 @@ public class DataManagementService {
         UserServantView newBaseServant = findUserServantByFormattedName(newServantName);
         if (newBaseServant != null) {
             PlannerServantView fromUserServant;
-            if (servant.getBaseServant().getValue() == null) {
+            if (servant.baseServantProperty().getValue() == null) {
                 fromUserServant = new PlannerServantViewFactory().createFromUserServant(newBaseServant);
             } else {
-                servant.getSvtId().set(newBaseServant.getSvtId().longValue());
-                servant.getBaseServant().set(newBaseServant);
+                servant.svtIdProperty().set(newBaseServant.svtIdProperty().longValue());
+                servant.baseServantProperty().set(newBaseServant);
                 fromUserServant = servant;
             }
             switch (plannerType) {
@@ -459,7 +459,7 @@ public class DataManagementService {
     private List<UserServantView> clearUnnecessaryEmptyUserRows(List<UserServantView> servantList) {
         List<UserServantView> newList = new ArrayList<>(servantList);
         int index = newList.size() - 1;
-        while (!newList.isEmpty() && newList.get(index).getBaseServant().getValue() == null) {
+        while (!newList.isEmpty() && newList.get(index).baseServantProperty().getValue() == null) {
             newList.remove(index--);
         }
         return newList;
@@ -468,7 +468,7 @@ public class DataManagementService {
     private List<PlannerServantView> clearUnnecessaryEmptyPlannerRows(List<PlannerServantView> servantList) {
         List<PlannerServantView> newList = new ArrayList<>(servantList);
         int index = newList.size() - 1;
-        while (!newList.isEmpty() && newList.get(index).getBaseServant().getValue() == null) {
+        while (!newList.isEmpty() && newList.get(index).baseServantProperty().getValue() == null) {
             newList.remove(index--);
         }
         return newList;
@@ -487,9 +487,9 @@ public class DataManagementService {
             }
         }
         for (UpgradeMaterialCostView mat : inventory.getInventory()) {
-            Integer amount = processedData.get(mat.getItem().getValue().getName());
+            Integer amount = processedData.get(mat.itemProperty().getValue().getName());
             if (amount != null) {
-                mat.getAmount().set(amount);
+                mat.amountProperty().set(amount);
             }
         }
         return notFoundNames;
@@ -527,11 +527,12 @@ public class DataManagementService {
                 csvLine -> buildPlannerServantFromStringArray(csvLine, managerLookup)).collect(
                 Collectors.toList());
         List<String> notFoundNames = importedServants.stream()
-                .filter(svt -> svt.getBaseServant().getValue() != null && svt.getSvtId().getValue() == 0)
-                .map(svt -> svt.getBaseServant().getValue().getBaseServant().getValue().getName())
+                .filter(svt -> svt.baseServantProperty().getValue() != null && svt.svtIdProperty().getValue() == 0)
+                .map(svt -> svt.baseServantProperty().getValue().baseServantProperty().getValue().getName())
                 .collect(Collectors.toList());
         importedServants = importedServants.stream().filter(
-                svt -> svt.getBaseServant().getValue() == null || svt.getSvtId().getValue() != 0).collect(Collectors.toList());
+                svt -> svt.baseServantProperty().getValue() == null || svt.svtIdProperty().getValue() != 0).collect(
+                Collectors.toList());
         importedServants = clearUnnecessaryEmptyPlannerRows(importedServants);
         switch (plannerType) {
             case REGULAR:
@@ -558,15 +559,15 @@ public class DataManagementService {
                 baseUserServant = userServantToViewTransformer.transform(new UserServant());
                 baseServant = new Servant();
                 baseServant.setName(servantName);
-                baseUserServant.getBaseServant().set(baseServant);
+                baseUserServant.baseServantProperty().set(baseServant);
                 servant = new PlannerServantView();
-                servant.getBaseServant().set(baseUserServant);
+                servant.baseServantProperty().set(baseUserServant);
             } else {
                 servant = new PlannerServantViewFactory().createFromUserServant(baseUserServant);
-                servant.getDesLevel().set(Math.max(Math.min(convertToInt(importedData[9]), 100), 1));
-                servant.getDesSkill1().set(Math.max(Math.min(convertToInt(importedData[10]), 10), 1));
-                servant.getDesSkill2().set(Math.max(Math.min(convertToInt(importedData[11]), 10), 1));
-                servant.getDesSkill3().set(Math.max(Math.min(convertToInt(importedData[12]), 10), 1));
+                servant.desLevelProperty().set(Math.max(Math.min(convertToInt(importedData[9]), 100), 1));
+                servant.desSkill1Property().set(Math.max(Math.min(convertToInt(importedData[10]), 10), 1));
+                servant.desSkill2Property().set(Math.max(Math.min(convertToInt(importedData[11]), 10), 1));
+                servant.desSkill3Property().set(Math.max(Math.min(convertToInt(importedData[12]), 10), 1));
             }
         }
         return servant;

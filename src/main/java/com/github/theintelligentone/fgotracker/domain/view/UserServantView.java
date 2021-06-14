@@ -2,9 +2,9 @@ package com.github.theintelligentone.fgotracker.domain.view;
 
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import javafx.beans.property.*;
-import lombok.Data;
+import lombok.Setter;
 
-@Data
+@Setter
 public class UserServantView {
     private LongProperty svtId;
     private ObjectProperty<Servant> baseServant;

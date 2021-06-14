@@ -18,7 +18,7 @@ public class UserServantNpDamageValueFactory implements Callback<TableColumn.Cel
     @Override
     public ObservableValue<Number> call(TableColumn.CellDataFeatures<UserServantView, Number> param) {
         SimpleIntegerProperty damage = new SimpleIntegerProperty();
-        if (param.getValue().getBaseServant().getValue() != null) {
+        if (param.getValue().baseServantProperty().getValue() != null) {
             damage.set(calculateNpDamage(param.getValue()));
         }
         return damage;
@@ -26,8 +26,8 @@ public class UserServantNpDamageValueFactory implements Callback<TableColumn.Cel
 
     private int calculateNpDamage(UserServantView servant) {
         int damage = 0;
-        NoblePhantasm np = servant.getBaseServant().getValue().getNoblePhantasms().get(
-                servant.getBaseServant().getValue().getNoblePhantasms().size() - 1);
+        NoblePhantasm np = servant.baseServantProperty().getValue().getNoblePhantasms().get(
+                servant.baseServantProperty().getValue().getNoblePhantasms().size() - 1);
         FgoFunction dmgFnc = findDamagingNpFunction(np);
         if (dmgFnc != null) {
             damage = calculateDamage(servant, dmgFnc, np.getCard());
@@ -38,7 +38,7 @@ public class UserServantNpDamageValueFactory implements Callback<TableColumn.Cel
     private int calculateDamage(UserServantView servant, FgoFunction np, String card) {
         int svtAtk = calculateBaseAtk(servant);
         return Math.toIntExact(Math.round(
-                svtAtk * getNpMultiplier(servant.getNpLevel(), np) * getCardMultiplier(card) * BASE_DAMAGE_MULTIPLIER));
+                svtAtk * getNpMultiplier(servant.npLevelProperty(), np) * getCardMultiplier(card) * BASE_DAMAGE_MULTIPLIER));
     }
 
     private double getCardMultiplier(String card) {
@@ -50,8 +50,8 @@ public class UserServantNpDamageValueFactory implements Callback<TableColumn.Cel
     }
 
     private int calculateBaseAtk(UserServantView servant) {
-        return servant.getFouAtk().add(
-                servant.getBaseServant().getValue().getAtkGrowth().get(servant.getLevel().subtract(1).get())).intValue();
+        return servant.fouAtkProperty().add(
+                servant.baseServantProperty().getValue().getAtkGrowth().get(servant.levelProperty().subtract(1).get())).intValue();
     }
 
     private FgoFunction findDamagingNpFunction(NoblePhantasm noblePhantasm) {

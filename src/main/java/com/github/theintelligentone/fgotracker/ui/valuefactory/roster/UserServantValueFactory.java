@@ -22,7 +22,7 @@ public class UserServantValueFactory<T> extends PropertyValueFactory<UserServant
     @Override
     public ObservableValue<T> call(TableColumn.CellDataFeatures<UserServantView, T> param) {
         ObservableValue<T> call;
-        if (param.getValue().getBaseServant().getValue() == null) {
+        if (param.getValue().baseServantProperty().getValue() == null) {
             call = super.call(new TableColumn.CellDataFeatures<>(param.getTableView(), param.getTableColumn(), null));
         } else {
             call = super.call(param);

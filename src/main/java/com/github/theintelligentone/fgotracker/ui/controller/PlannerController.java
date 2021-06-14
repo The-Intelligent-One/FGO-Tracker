@@ -238,9 +238,9 @@ public class PlannerController {
             if ("Inventory".equalsIgnoreCase(event.getRowValue().getLabel())) {
                 long matId = ((InventoryValueFactory) event.getTableColumn().getCellValueFactory()).getMatId();
                 event.getRowValue().getInventory().stream()
-                        .filter(material -> matId == material.getId().longValue())
+                        .filter(material -> matId == material.idProperty().longValue())
                         .findFirst().get()
-                        .getAmount().set(servantUtils.getNewValueIfValid(event, 0, 99_999));
+                        .amountProperty().set(servantUtils.getNewValueIfValid(event, 0, 99_999));
                 event.getTableView().refresh();
             }
         });
@@ -249,17 +249,18 @@ public class PlannerController {
 
     private ObservableList<UpgradeMaterialCostView> createListOfRemainingMats(InventoryView inventory, InventoryView planned) {
         ObservableList<UpgradeMaterialCostView> result = FXCollections.observableArrayList(
-                param -> new Observable[]{param.getAmount()});
+                param -> new Observable[]{param.amountProperty()});
         for (int index = 0; index < inventory.getInventory().size(); index++) {
             UpgradeMaterialCostView matAmount = inventory.getInventory().get(index);
             UpgradeMaterialCostView matPlan = planned.getInventory().get(index);
             UpgradeMaterialCostView mat = new UpgradeMaterialCostView();
-            mat.setId(matAmount.getId());
-            mat.setItem(matAmount.getItem());
-            NumberBinding sumBinding = Bindings.createIntegerBinding(() -> 0, matAmount.getAmount(), matPlan.getAmount());
-            sumBinding = sumBinding.add(matAmount.getAmount());
-            sumBinding = sumBinding.subtract(matPlan.getAmount());
-            mat.getAmount().bind(sumBinding);
+            mat.setId(matAmount.idProperty());
+            mat.setItem(matAmount.itemProperty());
+            NumberBinding sumBinding = Bindings.createIntegerBinding(() -> 0, matAmount.amountProperty(),
+                    matPlan.amountProperty());
+            sumBinding = sumBinding.add(matAmount.amountProperty());
+            sumBinding = sumBinding.subtract(matPlan.amountProperty());
+            mat.amountProperty().bind(sumBinding);
             result.add(mat);
         }
         return result;
@@ -267,16 +268,16 @@ public class PlannerController {
 
     private ObservableList<UpgradeMaterialCostView> getSumOfNeededMats() {
         ObservableList<UpgradeMaterialCostView> result = FXCollections.observableArrayList(
-                param -> new Observable[]{param.getAmount()});
+                param -> new Observable[]{param.amountProperty()});
         for (UpgradeMaterialCostView mat : dataManagementService.getInventory().getInventory()) {
             UpgradeMaterialCostView matCost = new UpgradeMaterialCostView();
-            matCost.setId(mat.getId());
-            matCost.setItem(mat.getItem());
+            matCost.setId(mat.idProperty());
+            matCost.setItem(mat.itemProperty());
             int sumValue = getPlannedMatUseSum(plannerTable.getItems(), mat);
             IntegerProperty sum = new SimpleIntegerProperty(sumValue);
             plannerTable.getItems().addListener((ListChangeListener<? super PlannerServantView>) c -> sum.set(
                     getPlannedMatUseSum((List<PlannerServantView>) c.getList(), mat)));
-            matCost.getAmount().bind(sum);
+            matCost.amountProperty().bind(sum);
             result.add(matCost);
         }
         return result;
@@ -285,8 +286,8 @@ public class PlannerController {
     private int getPlannedMatUseSum(List<PlannerServantView> servants, UpgradeMaterialCostView mat) {
         ServantUtils servantUtils = new ServantUtils();
         return servants.stream()
-                .filter(servant -> servant.getBaseServant().getValue() != null && servant.getBaseServant().getValue().getBaseServant().getValue() != null)
-                .map(servant -> servantUtils.getPlannedMatUse(servant, mat.getId().longValue()))
+                .filter(servant -> servant.baseServantProperty().getValue() != null && servant.baseServantProperty().getValue().baseServantProperty().getValue() != null)
+                .map(servant -> servantUtils.getPlannedMatUse(servant, mat.idProperty().longValue()))
                 .mapToInt(ObservableNumberValue::intValue)
                 .reduce(Integer::sum).orElse(0);
     }
@@ -412,10 +413,10 @@ public class PlannerController {
     }
 
     private void initDesiredInfoColumns() {
-        initDesiredInfoColumn(0, event -> event.getRowValue().getDesLevel(), 1, 100);
-        initDesiredInfoColumn(1, event -> event.getRowValue().getDesSkill1(), 1, 10);
-        initDesiredInfoColumn(2, event -> event.getRowValue().getDesSkill2(), 1, 10);
-        initDesiredInfoColumn(3, event -> event.getRowValue().getDesSkill3(), 1, 10);
+        initDesiredInfoColumn(0, event -> event.getRowValue().desLevelProperty(), 1, 100);
+        initDesiredInfoColumn(1, event -> event.getRowValue().desSkill1Property(), 1, 10);
+        initDesiredInfoColumn(2, event -> event.getRowValue().desSkill2Property(), 1, 10);
+        initDesiredInfoColumn(3, event -> event.getRowValue().desSkill3Property(), 1, 10);
         desired.getColumns().forEach(col1 -> col1.setPrefWidth(MainController.SHORT_CELL_WIDTH));
         desired.getColumns().forEach(col -> {
             TableColumn<PlannerServantView, Integer> actualCol = (TableColumn<PlannerServantView, Integer>) col;
@@ -427,7 +428,7 @@ public class PlannerController {
                                        Function<TableColumn.CellEditEvent<PlannerServantView, ?>, IntegerProperty> getProperty,
                                        int min, int max) {
         desired.getColumns().get(columnIndex).setOnEditCommit(event -> {
-            if (event.getRowValue().getSvtId().longValue() != 0) {
+            if (event.getRowValue().svtIdProperty().longValue() != 0) {
                 getProperty.apply(event).set(
                         servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, min, max));
                 plannerTable.refresh();
@@ -450,10 +451,10 @@ public class PlannerController {
                 event.getTableView().refresh();
             }
         });
-        initCurrentInfoColumn(level, param -> param.getValue().getBaseServant().getValue().getLevel());
-        initCurrentInfoColumn(skill1, param -> param.getValue().getBaseServant().getValue().getSkillLevel1());
-        initCurrentInfoColumn(skill2, param -> param.getValue().getBaseServant().getValue().getSkillLevel2());
-        initCurrentInfoColumn(skill3, param -> param.getValue().getBaseServant().getValue().getSkillLevel3());
+        initCurrentInfoColumn(level, param -> param.getValue().baseServantProperty().getValue().levelProperty());
+        initCurrentInfoColumn(skill1, param -> param.getValue().baseServantProperty().getValue().skillLevel1Property());
+        initCurrentInfoColumn(skill2, param -> param.getValue().baseServantProperty().getValue().skillLevel2Property());
+        initCurrentInfoColumn(skill3, param -> param.getValue().baseServantProperty().getValue().skillLevel3Property());
         current.getColumns().forEach(col -> col.setPrefWidth(MainController.SHORT_CELL_WIDTH));
     }
 
@@ -531,7 +532,7 @@ public class PlannerController {
     }
 
     private boolean validServant(TableColumn.CellDataFeatures<PlannerServantView, Integer> param) {
-        return param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getValue() != null && param.getValue().getBaseServant().getValue().getBaseServant() != null;
+        return param.getValue().baseServantProperty() != null && param.getValue().baseServantProperty().getValue() != null && param.getValue().baseServantProperty().getValue().baseServantProperty() != null;
     }
 
     private ObservableList<PlannerServantView> createLTPlannerServantList() {

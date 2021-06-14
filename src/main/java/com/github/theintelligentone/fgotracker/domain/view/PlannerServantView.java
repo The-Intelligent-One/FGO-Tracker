@@ -4,11 +4,11 @@ import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
 import javafx.beans.property.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Setter;
 
 import java.util.List;
 
-@Data
+@Setter
 @Builder
 @AllArgsConstructor
 public class PlannerServantView {
@@ -30,6 +30,15 @@ public class PlannerServantView {
         this.desSkill3 = new SimpleIntegerProperty(0);
     }
 
+    public LongProperty svtIdProperty() {
+        return svtId;
+    }
+
+
+    public ObjectProperty<UserServantView> baseServantProperty() {
+        return baseServant;
+    }
+
     public IntegerProperty desLevelProperty() {
         return desLevel;
     }
@@ -44,5 +53,13 @@ public class PlannerServantView {
 
     public IntegerProperty desSkill3Property() {
         return desSkill3;
+    }
+
+    public List<UpgradeCost> getAscensionMaterials() {
+        return ascensionMaterials;
+    }
+
+    public List<UpgradeCost> getSkillMaterials() {
+        return skillMaterials;
     }
 }

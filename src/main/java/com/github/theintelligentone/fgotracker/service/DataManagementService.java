@@ -17,6 +17,7 @@ import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import com.github.theintelligentone.fgotracker.domain.view.UpgradeMaterialCostView;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
+import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.transformer.InventoryToViewTransformer;
 import com.github.theintelligentone.fgotracker.service.transformer.PlannerServantToViewTransformer;
 import com.github.theintelligentone.fgotracker.service.transformer.UserServantToViewTransformer;
@@ -58,7 +59,7 @@ public class DataManagementService {
     private static Map<String, String> MAT_NAME_TRANSLATE_MAP;
 
     private final DataRequestService requestService;
-    private final FileManagementService fileService;
+    private final FileManagementServiceFacade fileService;
     private final UserServantToViewTransformer userServantToViewTransformer;
     private final InventoryToViewTransformer inventoryToViewTransformer;
     private final PlannerServantToViewTransformer plannerServantToViewTransformer;
@@ -85,7 +86,7 @@ public class DataManagementService {
     public DataManagementService() {
         ObjectMapper objectMapper = new ObjectMapper();
         this.requestService = new DataRequestService(objectMapper);
-        this.fileService = new FileManagementService(objectMapper);
+        this.fileService = new FileManagementServiceFacade(objectMapper);
         this.userServantToViewTransformer = new UserServantToViewTransformer();
         this.inventoryToViewTransformer = new InventoryToViewTransformer();
         this.plannerServantToViewTransformer = new PlannerServantToViewTransformer();

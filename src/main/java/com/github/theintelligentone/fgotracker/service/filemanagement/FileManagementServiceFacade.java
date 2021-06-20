@@ -1,7 +1,6 @@
 package com.github.theintelligentone.fgotracker.service.filemanagement;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
@@ -12,6 +11,7 @@ import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
+import com.github.theintelligentone.fgotracker.service.filemanagement.cache.CacheFileServiceFacade;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
@@ -21,22 +21,14 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class FileManagementServiceFacade {
     private static final String BASE_DATA_PATH = "data/";
-    private static final String CACHE_PATH = "cache/";
     private static final String USER_DATA_PATH = "userdata/";
-    private static final String OFFLINE_BASE_PATH = "/offline/";
     private static final String MANAGER_DB_PATH = "/managerDB-v1.3.3.csv";
-
-    private static final String VERSION_FILE = "dbVersion.json";
-    private static final String SERVANT_DATA_FILE = "servants.json";
-    private static final String CLASS_ATTACK_FILE = "classAttack.json";
-    private static final String CARD_DATA_FILE = "cardData.json";
 
     private static final String GAME_REGION_FILE = "region.json";
     private static final String USER_SERVANT_FILE = "servants.json";
@@ -49,44 +41,16 @@ public class FileManagementServiceFacade {
     private static final int LINES_TO_SKIP_IN_LT_CSV = 12;
 
     private final ObjectMapper objectMapper;
-    private final FileService fileService;
-    private final MaterialFileService materialFileService;
+    private final CacheFileServiceFacade cacheFileServiceFacade;
 
     public FileManagementServiceFacade(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        fileService = new FileService(objectMapper);
-        materialFileService = new MaterialFileService(fileService);
+        FileService fileService = new FileService(objectMapper);
+        cacheFileServiceFacade = new CacheFileServiceFacade(fileService);
     }
 
     public void loadOfflineData() {
-        copyOfflineBackupToCache("NA_" + SERVANT_DATA_FILE);
-        copyOfflineBackupToCache("JP_" + SERVANT_DATA_FILE);
-        materialFileService.prepareOfflineMaterialData();
-        copyOfflineBackupToCache(VERSION_FILE);
-        copyOfflineBackupToCache(CARD_DATA_FILE);
-        copyOfflineBackupToCache(CLASS_ATTACK_FILE);
-    }
-
-    private void copyOfflineBackupToCache(String filePath) {
-        try (InputStream servantStream = getClass().getResource(OFFLINE_BASE_PATH + filePath).openStream()) {
-            File file = new File(BASE_DATA_PATH + CACHE_PATH, filePath);
-            createFileIfDoesNotExist(file);
-            Files.copy(servantStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-        } catch (IOException e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
-    }
-
-    public void saveFullServantData(List<Servant> servants, String gameRegion) {
-        saveDataToFile(servants, new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + SERVANT_DATA_FILE));
-    }
-
-    public void saveClassAttackRate(Map<String, Integer> classAttackRate) {
-        saveDataToFile(classAttackRate, new File(BASE_DATA_PATH + CACHE_PATH, CLASS_ATTACK_FILE));
-    }
-
-    public void saveCardData(Map<String, Map<Integer, CardPlacementData>> cardData) {
-        saveDataToFile(cardData, new File(BASE_DATA_PATH + CACHE_PATH, CARD_DATA_FILE));
+        cacheFileServiceFacade.loadOfflineData();
     }
 
     public void saveUserServants(List<UserServant> servants) {
@@ -105,11 +69,6 @@ public class FileManagementServiceFacade {
         saveDataToFile(inventory.getInventory(), new File(BASE_DATA_PATH + USER_DATA_PATH, INVENTORY_FILE));
     }
 
-    public List<Servant> loadFullServantData(String gameRegion) {
-        return getDataListFromFile(new File(BASE_DATA_PATH + CACHE_PATH, gameRegion + "_" + SERVANT_DATA_FILE),
-                new TypeReference<>() {});
-    }
-
     public List<UserServant> loadUserData() {
         return getDataListFromFile(new File(BASE_DATA_PATH + USER_DATA_PATH, USER_SERVANT_FILE), new TypeReference<>() {});
     }
@@ -120,45 +79,6 @@ public class FileManagementServiceFacade {
 
     public List<PlannerServant> loadPriorityServantData() {
         return getDataListFromFile(new File(BASE_DATA_PATH + USER_DATA_PATH, PRIORITY_SERVANT_FILE), new TypeReference<>() {});
-    }
-
-    public Map<String, Integer> getClassAttackRate() {
-        Map<String, Integer> classAttackMap = new HashMap<>();
-        try {
-            classAttackMap = objectMapper.readValue(new File(BASE_DATA_PATH + CACHE_PATH, CLASS_ATTACK_FILE),
-                    new TypeReference<>() {});
-        } catch (FileNotFoundException e) {
-            log.debug("No valid class damage multiplier file found. Loading blank value");
-        } catch (IOException e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
-        return classAttackMap;
-    }
-
-    public Map<String, Map<Integer, CardPlacementData>> getCardData() {
-        Map<String, Map<Integer, CardPlacementData>> cardDataMap = new HashMap<>();
-        try {
-            cardDataMap = objectMapper.readValue(new File(BASE_DATA_PATH + CACHE_PATH, CARD_DATA_FILE), new TypeReference<>() {});
-        } catch (FileNotFoundException e) {
-            log.debug("No valid card data file found, loading blank value");
-        } catch (IOException e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
-        return cardDataMap;
-    }
-
-    public Map<String, VersionDTO> getCurrentVersion() {
-        Map<String, VersionDTO> versionMap = new HashMap<>();
-        try {
-            versionMap = objectMapper.readValue(new File(BASE_DATA_PATH + CACHE_PATH, VERSION_FILE), new TypeReference<>() {});
-        } catch (JsonMappingException | FileNotFoundException e) {
-            log.debug("No valid DB version file found. Loading blank values");
-            versionMap.put("NA", new VersionDTO());
-            versionMap.put("JP", new VersionDTO());
-        } catch (IOException e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
-        return versionMap;
     }
 
     public boolean loadDarkMode() {
@@ -184,11 +104,6 @@ public class FileManagementServiceFacade {
             log.error(e.getLocalizedMessage(), e);
         }
         return regionAsString;
-    }
-
-    public void saveNewVersion(Map<String, VersionDTO> versionMap) {
-        File file = new File(BASE_DATA_PATH + CACHE_PATH, VERSION_FILE);
-        saveDataToFile(versionMap, file);
     }
 
     public void saveDarkMode(boolean value) {
@@ -319,10 +234,42 @@ public class FileManagementServiceFacade {
     }
 
     public void saveMaterialData(List<UpgradeMaterial> materials, String gameRegion) {
-        materialFileService.saveMaterialData(materials, gameRegion);
+        cacheFileServiceFacade.saveMaterialData(materials, gameRegion);
+    }
+
+    public void saveFullServantData(List<Servant> servants, String gameRegion) {
+        cacheFileServiceFacade.saveFullServantData(servants, gameRegion);
+    }
+
+    public void saveClassAttackRate(Map<String, Integer> classAttackRate) {
+        cacheFileServiceFacade.saveClassAttackRateData(classAttackRate);
+    }
+
+    public void saveCardData(Map<String, Map<Integer, CardPlacementData>> cardDataMap) {
+        cacheFileServiceFacade.saveCardData(cardDataMap);
+    }
+
+    public void saveNewVersion(Map<String, VersionDTO> versionMap) {
+        cacheFileServiceFacade.saveCurrentVersion(versionMap);
     }
 
     public List<UpgradeMaterial> loadMaterialData(String gameRegion) {
-        return materialFileService.loadMaterialData(gameRegion);
+        return cacheFileServiceFacade.loadMaterialData(gameRegion);
+    }
+
+    public List<Servant> loadFullServantData(String gameRegion) {
+        return cacheFileServiceFacade.loadFullServantData(gameRegion);
+    }
+
+    public Map<String, Integer> loadClassAttackRate() {
+        return cacheFileServiceFacade.loadClassAttackRate();
+    }
+
+    public Map<String, Map<Integer, CardPlacementData>> loadCardData() {
+        return cacheFileServiceFacade.loadCardData();
+    }
+
+    public Map<String, VersionDTO> loadCurrentVersion() {
+        return cacheFileServiceFacade.loadCurrentVersion();
     }
 }

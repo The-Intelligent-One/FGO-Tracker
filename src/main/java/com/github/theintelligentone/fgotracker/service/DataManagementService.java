@@ -259,8 +259,8 @@ public class DataManagementService {
         servantDataList = fileService.loadFullServantData(gameRegion);
         materials = fileService.loadMaterialData(gameRegion);
         iconsResized = true;
-        CLASS_ATTACK_MULTIPLIER = fileService.getClassAttackRate();
-        CARD_DATA = fileService.getCardData();
+        CLASS_ATTACK_MULTIPLIER = fileService.loadClassAttackRate();
+        CARD_DATA = fileService.loadCardData();
     }
 
     private void refreshCache() {
@@ -289,7 +289,7 @@ public class DataManagementService {
     }
 
     private boolean newVersionAvailable() {
-        currentVersion = fileService.getCurrentVersion();
+        currentVersion = fileService.loadCurrentVersion();
         Map<String, VersionDTO> onlineVersion = requestService.getOnlineVersion();
         boolean needUpdate = false;
         if (!onlineVersion.isEmpty() && (onlineVersion.get(gameRegion).getTimestamp() > currentVersion.get(
@@ -298,7 +298,7 @@ public class DataManagementService {
             currentVersion.put(gameRegion, onlineVersion.get(gameRegion));
         } else if (currentVersion.get(gameRegion).getTimestamp() == 0) {
             fileService.loadOfflineData();
-            currentVersion = fileService.getCurrentVersion();
+            currentVersion = fileService.loadCurrentVersion();
         }
         return needUpdate;
     }

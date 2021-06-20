@@ -1,7 +1,8 @@
-package com.github.theintelligentone.fgotracker.service.filemanagement;
+package com.github.theintelligentone.fgotracker.service.filemanagement.cache;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
+import com.github.theintelligentone.fgotracker.service.filemanagement.FileService;
 
 import java.util.List;
 
@@ -22,12 +23,6 @@ public class MaterialFileService {
         fileService.saveDataToCache(materials, gameRegion + "_" + MATERIAL_DATA_FILE);
     }
 
-    public void prepareOfflineMaterialData() {
-        fileService.copyOfflineBackupToCache("NA_" + MATERIAL_DATA_FILE);
-        fileService.copyOfflineBackupToCache("JP_" + MATERIAL_DATA_FILE);
-        fileService.copyImagesFromOfflineBackupToCache(IMAGE_FOLDER_PATH);
-    }
-
     public List<UpgradeMaterial> loadMaterialData(String gameRegion) {
         List<UpgradeMaterial> itemList = fileService.loadDataListFromCache(gameRegion + "_" + MATERIAL_DATA_FILE,
                 new TypeReference<>() {});
@@ -35,7 +30,13 @@ public class MaterialFileService {
         return itemList;
     }
 
-    public void loadImageForMaterial(UpgradeMaterial material) {
+    public void prepareOfflineMaterialData() {
+        fileService.copyOfflineBackupToCache("NA_" + MATERIAL_DATA_FILE);
+        fileService.copyOfflineBackupToCache("JP_" + MATERIAL_DATA_FILE);
+        fileService.copyImagesFromOfflineBackupToCache(IMAGE_FOLDER_PATH);
+    }
+
+    private void loadImageForMaterial(UpgradeMaterial material) {
         material.setIconImage(fileService.getImageFromFolder(IMAGE_FOLDER_PATH, material.getId() + "." + PNG_FORMAT));
     }
 }

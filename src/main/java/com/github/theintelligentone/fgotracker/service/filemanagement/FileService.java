@@ -16,7 +16,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 public class FileService {
@@ -67,6 +69,10 @@ public class FileService {
         return getDataListFromFile(new File(BASE_DATA_PATH + CACHE_PATH, relativePath), expectedType);
     }
 
+    public <T> Map<String, T> loadDataMapFromCache(String relativePath, TypeReference<Map<String, T>> expectedType) {
+        return getDataMapFromFile(new File(BASE_DATA_PATH + CACHE_PATH, relativePath), expectedType);
+    }
+
     public Image getImageFromFolder(String imageFolder, String fileName) {
         File file = new File(BASE_DATA_PATH + CACHE_PATH + imageFolder, fileName);
         return new Image(file.toURI().toString());
@@ -106,17 +112,31 @@ public class FileService {
     }
 
     private <T> List<T> getDataListFromFile(File file, TypeReference<List<T>> expectedType) {
-        List<T> basicDataList = new ArrayList<>();
+        List<T> dataList = new ArrayList<>();
         if (file.length() != 0) {
             try {
-                basicDataList = objectMapper.readValue(file, expectedType);
+                dataList = objectMapper.readValue(file, expectedType);
             } catch (FileNotFoundException e) {
                 log.debug("Didn't find file: " + file + ", data list loaded as empty.");
             } catch (IOException e) {
                 log.error(e.getLocalizedMessage(), e);
             }
         }
-        return basicDataList;
+        return dataList;
+    }
+
+    private <T> Map<String, T> getDataMapFromFile(File file, TypeReference<Map<String, T>> expectedType) {
+        Map<String, T> dataMap = new HashMap<>();
+        if (file.length() != 0) {
+            try {
+                dataMap = objectMapper.readValue(file, expectedType);
+            } catch (FileNotFoundException e) {
+                log.debug("Didn't find file: " + file + ", data map loaded as empty.");
+            } catch (IOException e) {
+                log.error(e.getLocalizedMessage(), e);
+            }
+        }
+        return dataMap;
     }
 
     public void copyImagesFromOfflineBackupToCache(String imageFolderPath) {

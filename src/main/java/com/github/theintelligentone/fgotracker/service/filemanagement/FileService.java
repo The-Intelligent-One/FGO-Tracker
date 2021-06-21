@@ -1,5 +1,6 @@
 package com.github.theintelligentone.fgotracker.service.filemanagement;
 
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.embed.swing.SwingFXUtils;
@@ -28,17 +29,6 @@ public class FileService {
     private static final String OFFLINE_BASE_PATH = "/offline/";
     private static final String MANAGER_DB_PATH = "/managerDB-v1.3.3.csv";
 
-    private static final String VERSION_FILE = "dbVersion.json";
-    private static final String SERVANT_DATA_FILE = "servants.json";
-    private static final String CLASS_ATTACK_FILE = "classAttack.json";
-    private static final String CARD_DATA_FILE = "cardData.json";
-
-    private static final String GAME_REGION_FILE = "region.json";
-    private static final String USER_SERVANT_FILE = "servants.json";
-    private static final String PLANNED_SERVANT_FILE = "planned.json";
-    private static final String PRIORITY_SERVANT_FILE = "priority.json";
-    private static final String INVENTORY_FILE = "inventory.json";
-    private static final String DARKMODE_FILE = "darkmode.json";
     private ObjectMapper objectMapper;
 
     public FileService(ObjectMapper objectMapper) {
@@ -73,9 +63,35 @@ public class FileService {
         return getDataMapFromFile(new File(BASE_DATA_PATH + CACHE_PATH, relativePath), expectedType);
     }
 
+    public <T extends Object> T loadUserData(String relativePath, TypeReference<T> expectedType) {
+        return loadData(new File(BASE_DATA_PATH + USER_DATA_PATH, relativePath), expectedType);
+    }
+
     public Image getImageFromFolder(String imageFolder, String fileName) {
         File file = new File(BASE_DATA_PATH + CACHE_PATH + imageFolder, fileName);
         return new Image(file.toURI().toString());
+    }
+
+    public void copyOfflineBackupToCache(String filePath) {
+        try (InputStream servantStream = getClass().getResource(OFFLINE_BASE_PATH + filePath).openStream()) {
+            File file = new File(BASE_DATA_PATH + CACHE_PATH, filePath);
+            createFileIfDoesNotExist(file);
+            Files.copy(servantStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+        } catch (IOException e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
+    }
+
+    public void copyImagesFromOfflineBackupToCache(String imageFolderPath) {
+        try {
+            File imageFolder = new File(getClass().getResource(OFFLINE_BASE_PATH + imageFolderPath).toURI());
+            for (File file : imageFolder.listFiles()) {
+                Files.copy(file.toPath(), new File(BASE_DATA_PATH + CACHE_PATH + imageFolderPath, file.getName()).toPath(),
+                        StandardCopyOption.REPLACE_EXISTING);
+            }
+        } catch (URISyntaxException | IOException e) {
+            log.error(e.getLocalizedMessage(), e);
+        }
     }
 
     private void createFileIfDoesNotExist(File file) {
@@ -139,25 +155,30 @@ public class FileService {
         return dataMap;
     }
 
-    public void copyImagesFromOfflineBackupToCache(String imageFolderPath) {
-        try {
-            File imageFolder = new File(getClass().getResource(OFFLINE_BASE_PATH + imageFolderPath).toURI());
-            for (File file : imageFolder.listFiles()) {
-                Files.copy(file.toPath(), new File(BASE_DATA_PATH + CACHE_PATH + imageFolderPath, file.getName()).toPath(),
-                        StandardCopyOption.REPLACE_EXISTING);
+    private <T extends Object> T loadData(File file, TypeReference<T> expectedType) {
+        T data = null;
+        if (file.length() != 0) {
+            try {
+                data = objectMapper.readValue(file, expectedType);
+            } catch (FileNotFoundException e) {
+                log.debug("Didn't find file: " + file + ", data list loaded as empty.");
+            } catch (JsonParseException e) {
+                log.error("Couldn't parse file, attempting to load as String. Error message: \n" + e.getLocalizedMessage(), e);
+                data = (T) loadFileAsString(file);
+            } catch (Exception e) {
+                log.error(e.getLocalizedMessage(), e);
             }
-        } catch (URISyntaxException | IOException e) {
-            log.error(e.getLocalizedMessage(), e);
         }
+        return data;
     }
 
-    public void copyOfflineBackupToCache(String filePath) {
-        try (InputStream servantStream = getClass().getResource(OFFLINE_BASE_PATH + filePath).openStream()) {
-            File file = new File(BASE_DATA_PATH + CACHE_PATH, filePath);
-            createFileIfDoesNotExist(file);
-            Files.copy(servantStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    private String loadFileAsString(File file) {
+        String dataList = "";
+        try {
+            dataList = Files.readString(file.toPath());
         } catch (IOException e) {
             log.error(e.getLocalizedMessage(), e);
         }
+        return dataList;
     }
 }

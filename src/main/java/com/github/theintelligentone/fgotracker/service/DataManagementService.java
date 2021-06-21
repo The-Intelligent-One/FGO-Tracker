@@ -235,7 +235,7 @@ public class DataManagementService {
     }
 
     private List<UserServantView> createAssociatedUserServantList() {
-        List<UserServant> userServants = fileService.loadUserData();
+        List<UserServant> userServants = fileService.loadRoster();
         userServants.forEach(svt -> {
             if (svt.getSvtId() != 0L) {
                 svt.setBaseServant(findServantById(svt.getSvtId()));
@@ -450,7 +450,7 @@ public class DataManagementService {
         List<UserServantView> clearedUserList = clearUnnecessaryEmptyUserRows(userServantList);
         List<PlannerServantView> clearedPlannerList = clearUnnecessaryEmptyPlannerRows(plannerServantList);
         List<PlannerServantView> clearedPriorityList = clearUnnecessaryEmptyPlannerRows(priorityPlannerServantList);
-        fileService.saveUserServants(userServantToViewTransformer.transformAll(clearedUserList));
+        fileService.saveRoster(userServantToViewTransformer.transformAll(clearedUserList));
         fileService.saveInventory(inventoryToViewTransformer.transform(inventory));
         fileService.savePlannerServants(plannerServantToViewTransformer.transformAllFromViews(clearedPlannerList));
         fileService.savePriorityServants(plannerServantToViewTransformer.transformAllFromViews(clearedPriorityList));

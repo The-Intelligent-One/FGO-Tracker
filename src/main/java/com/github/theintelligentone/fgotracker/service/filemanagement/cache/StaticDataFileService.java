@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class StaticDataFileService {
     private static final String VERSION_FILE = "dbVersion.json";
-    private static final String CLASS_ATTACK_FILE = "classAttack.json";
+    private static final String CLASS_ATTACKRATE_FILE = "classAttack.json";
     private static final String CARD_DATA_FILE = "cardData.json";
     private final FileService fileService;
 
@@ -17,7 +17,7 @@ public class StaticDataFileService {
     public StaticDataFileService(FileService fileService) {this.fileService = fileService;}
 
     public void saveClassAttackRateData(Map<String, Integer> classAttackRate) {
-        fileService.saveDataToCache(classAttackRate, CLASS_ATTACK_FILE);
+        fileService.saveDataToCache(classAttackRate, CLASS_ATTACKRATE_FILE);
     }
 
     public void saveCardData(Map<String, Map<Integer, CardPlacementData>> cardDataMap) {
@@ -29,7 +29,7 @@ public class StaticDataFileService {
     }
 
     public Map<String, Integer> loadClassAttackRate() {
-        return fileService.loadDataMapFromCache(CLASS_ATTACK_FILE, new TypeReference<>() {});
+        return fileService.loadDataMapFromCache(CLASS_ATTACKRATE_FILE, new TypeReference<>() {});
     }
 
     public Map<String, Map<Integer, CardPlacementData>> loadCardData() {
@@ -50,6 +50,6 @@ public class StaticDataFileService {
     public void prepareOfflineStaticData() {
         fileService.copyOfflineBackupToCache(VERSION_FILE);
         fileService.copyOfflineBackupToCache(CARD_DATA_FILE);
-        fileService.copyOfflineBackupToCache(CLASS_ATTACK_FILE);
+        fileService.copyOfflineBackupToCache(CLASS_ATTACKRATE_FILE);
     }
 }

@@ -455,6 +455,7 @@ public class DataManagementService {
         fileService.savePlannerServants(plannerServantToViewTransformer.transformAllFromViews(clearedPlannerList));
         fileService.savePriorityServants(plannerServantToViewTransformer.transformAllFromViews(clearedPriorityList));
         fileService.saveDarkMode(darkMode.getValue());
+        fileService.saveGameRegion(gameRegion);
     }
 
     private List<UserServantView> clearUnnecessaryEmptyUserRows(List<UserServantView> servantList) {

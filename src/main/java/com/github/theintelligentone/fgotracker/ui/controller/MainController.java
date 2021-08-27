@@ -2,7 +2,7 @@ package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
 import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
-import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -39,10 +39,10 @@ public class MainController {
     @FXML
     private PlannerController ltPlannerController;
 
-    private DataManagementService dataManagementService;
+    private DataManagementServiceFacade dataManagementServiceFacade;
 
     public void initialize() {
-        dataManagementService = MainApp.getDataManagementService();
+        dataManagementServiceFacade = MainApp.getDataManagementServiceFacade();
         checkForUpdates(null);
     }
 
@@ -59,7 +59,7 @@ public class MainController {
     }
 
     public void saveUserData() {
-        dataManagementService.saveUserState();
+        dataManagementServiceFacade.saveUserState();
     }
 
     public void initTables() {
@@ -73,7 +73,7 @@ public class MainController {
 
     public void showAboutInfo() {
         Alert aboutAlert = new Alert(Alert.AlertType.INFORMATION);
-        aboutAlert.setTitle("FGO Tracker " + DataManagementService.VERSION);
+        aboutAlert.setTitle("FGO Tracker " + DataManagementServiceFacade.VERSION);
         aboutAlert.setHeaderText("");
         aboutAlert.setContentText(
                 "Tracker app for Fate/Grand Order. Heavily inspired by FGO Manager by zuth. Based on Atlas Academy DB.");
@@ -90,7 +90,7 @@ public class MainController {
             } else {
                 latest = repo.listReleases().toList().get(0);
             }
-            GHRelease current = repo.getReleaseByTagName(DataManagementService.VERSION);
+            GHRelease current = repo.getReleaseByTagName(DataManagementServiceFacade.VERSION);
             if (current == null || latest.getPublished_at().after(current.getPublished_at())) {
                 showNewUpdateAlert(latest);
             }
@@ -125,7 +125,7 @@ public class MainController {
         VBox vBox = new VBox(helpView);
         vBox.setFillWidth(true);
         Scene scene = new Scene(vBox);
-        if (dataManagementService.darkModeProperty().getValue()) {
+        if (dataManagementServiceFacade.darkModeProperty().getValue()) {
             helpView.getEngine().setUserStyleSheetLocation(getClass().getResource("/styles/userguide-dark.css").toString());
             scene.getStylesheets().add("styles/dark-mode.css");
         } else {
@@ -139,10 +139,10 @@ public class MainController {
     }
 
     public void invalidateCache() {
-        dataManagementService.invalidateCache();
+        dataManagementServiceFacade.invalidateCache();
     }
 
     public void toggleDarkMode() {
-        dataManagementService.darkModeProperty().set(!dataManagementService.darkModeProperty().get());
+        dataManagementServiceFacade.darkModeProperty().set(!dataManagementServiceFacade.darkModeProperty().get());
     }
 }

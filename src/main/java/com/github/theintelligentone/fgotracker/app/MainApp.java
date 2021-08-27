@@ -1,6 +1,6 @@
 package com.github.theintelligentone.fgotracker.app;
 
-import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.ui.controller.MainController;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -23,7 +23,7 @@ import java.util.Optional;
 public class MainApp extends Application {
     private static final String MAIN_WINDOW_FXML = "/fxml/mainWindow.fxml";
     @Getter
-    private static DataManagementService dataManagementService;
+    private static DataManagementServiceFacade dataManagementServiceFacade;
     private FXMLLoader loader;
     private MainController mainController;
 
@@ -33,7 +33,7 @@ public class MainApp extends Application {
 
     @Override
     public void init() {
-        dataManagementService = new DataManagementService();
+        dataManagementServiceFacade = new DataManagementServiceFacade();
         loader = new FXMLLoader(getClass().getResource(MAIN_WINDOW_FXML));
     }
 
@@ -52,7 +52,7 @@ public class MainApp extends Application {
         Scene scene = new Scene(root);
         scene.getStylesheets().add("styles/tableStyle.css");
         scene.getStylesheets().add("styles/dark-mode.css");
-        dataManagementService.darkModeProperty().addListener((observable, oldValue, newValue) -> {
+        dataManagementServiceFacade.darkModeProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 scene.getStylesheets().add("styles/dark-mode.css");
             } else {
@@ -75,7 +75,7 @@ public class MainApp extends Application {
     }
 
     private Alert createServantLoadingAlert() {
-        String selectedRegion = dataManagementService.getGameRegion();
+        String selectedRegion = dataManagementServiceFacade.getGameRegion();
         if (selectedRegion.isEmpty()) {
             selectedRegion = showRegionChooser();
         }
@@ -112,7 +112,7 @@ public class MainApp extends Application {
         Task<Object> loadingTask = new Task<>() {
             @Override
             protected Object call() {
-                dataManagementService.initApp(selectedRegion);
+                dataManagementServiceFacade.initApp(selectedRegion);
                 this.succeeded();
                 return null;
             }

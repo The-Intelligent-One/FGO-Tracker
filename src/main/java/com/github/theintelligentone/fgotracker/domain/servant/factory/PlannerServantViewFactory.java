@@ -3,7 +3,7 @@ package com.github.theintelligentone.fgotracker.domain.servant.factory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
 import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
-import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -55,7 +55,7 @@ public class PlannerServantViewFactory {
                     .svtId(servant.svtIdProperty())
                     .baseServant(new SimpleObjectProperty<>(servant))
                     .desLevel(new SimpleIntegerProperty(
-                            DataManagementService.MAX_LEVELS[servant.baseServantProperty().getValue().getRarity()]))
+                            DataManagementServiceFacade.MAX_LEVELS[servant.baseServantProperty().getValue().getRarity()]))
                     .desSkill1(new SimpleIntegerProperty(MAX_SKILL_LEVEL))
                     .desSkill2(new SimpleIntegerProperty(MAX_SKILL_LEVEL))
                     .desSkill3(new SimpleIntegerProperty(MAX_SKILL_LEVEL))

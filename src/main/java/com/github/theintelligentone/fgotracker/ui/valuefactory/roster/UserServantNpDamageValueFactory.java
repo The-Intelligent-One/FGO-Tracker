@@ -3,7 +3,8 @@ package com.github.theintelligentone.fgotracker.ui.valuefactory.roster;
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.FgoFunction;
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.NoblePhantasm;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
-import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import com.github.theintelligentone.fgotracker.service.datamanagement.CacheManagementService;
+import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
@@ -42,7 +43,7 @@ public class UserServantNpDamageValueFactory implements Callback<TableColumn.Cel
     }
 
     private double getCardMultiplier(String card) {
-        return DataManagementService.CARD_DATA.get(card).get(1).getAdjustAtk() / PERCANTAGE_SCALE;
+        return CacheManagementService.CARD_DATA.get(card).get(1).getAdjustAtk() / PERCANTAGE_SCALE;
     }
 
     private double getNpMultiplier(IntegerProperty npLevel, FgoFunction np) {

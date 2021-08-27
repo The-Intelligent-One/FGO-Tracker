@@ -2,7 +2,7 @@ package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
-import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AscensionCheckBoxTableCell;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
@@ -27,7 +27,7 @@ import java.util.stream.IntStream;
 
 public class RosterController {
     private static final String[] ONE_TO_FIVE = {"1", "2", "3", "4", "5"};
-    private DataManagementService dataManagementService;
+    private DataManagementServiceFacade dataManagementServiceFacade;
     private ServantUtils servantUtils;
 
     @FXML
@@ -92,7 +92,7 @@ public class RosterController {
     private TableColumn<UserServantView, String> notesColumn;
 
     public void initialize() {
-        dataManagementService = MainApp.getDataManagementService();
+        dataManagementServiceFacade = MainApp.getDataManagementServiceFacade();
         servantUtils = new ServantUtils();
         tableSetup();
     }
@@ -120,16 +120,16 @@ public class RosterController {
         MenuItem importButton = new MenuItem("Import roster from csv");
         importButton.setOnAction(event -> importUserServantsFromCsv());
         MenuItem removeRowButton = new MenuItem("Delete row");
-        removeRowButton.setOnAction(event -> dataManagementService.removeUserServant(row.getItem()));
+        removeRowButton.setOnAction(event -> dataManagementServiceFacade.removeUserServant(row.getItem()));
         MenuItem clearRowButton = new MenuItem("Clear row");
-        clearRowButton.setOnAction(event -> dataManagementService.eraseUserServant(row.getItem()));
+        clearRowButton.setOnAction(event -> dataManagementServiceFacade.eraseUserServant(row.getItem()));
         MenuItem addRowAboveButton = new MenuItem("Insert row above");
         addRowAboveButton.setOnAction(
-                event -> dataManagementService.saveUserServant(row.getTableView().getItems().indexOf(row.getItem()),
+                event -> dataManagementServiceFacade.saveUserServant(row.getTableView().getItems().indexOf(row.getItem()),
                         new UserServantView()));
         MenuItem addRowBelowButton = new MenuItem("Insert row below");
         addRowBelowButton.setOnAction(
-                event -> dataManagementService.saveUserServant(row.getTableView().getItems().indexOf(row.getItem()) + 1,
+                event -> dataManagementServiceFacade.saveUserServant(row.getTableView().getItems().indexOf(row.getItem()) + 1,
                         new UserServantView()));
         MenuItem addMultipleRowsButton = new MenuItem("Add X new rows");
         addMultipleRowsButton.setOnAction(event -> {
@@ -138,7 +138,7 @@ public class RosterController {
             prompt.setTitle("Add X new rows");
             prompt.setHeaderText("");
             prompt.showAndWait().ifPresent(s -> IntStream.range(0, Integer.parseInt(s)).forEach(
-                    i -> dataManagementService.saveUserServant(new UserServantView())));
+                    i -> dataManagementServiceFacade.saveUserServant(new UserServantView())));
         });
         ContextMenu menu = new ContextMenu(importButton, addRowAboveButton, addRowBelowButton, addMultipleRowsButton,
                 clearRowButton, removeRowButton);
@@ -146,7 +146,7 @@ public class RosterController {
     }
 
     private void importUserServantsFromCsv() {
-        if (dataManagementService.isDataLoaded()) {
+        if (dataManagementServiceFacade.isDataLoaded()) {
             displayFileChooserForUserCsvImport();
         } else {
             showNotLoadedYetAlert();
@@ -170,7 +170,7 @@ public class RosterController {
     }
 
     private void loadRosterDataFromCsv(File csvFile) {
-        List<String> notFoundNames = dataManagementService.importUserServantsFromCsv(csvFile);
+        List<String> notFoundNames = dataManagementServiceFacade.importUserServantsFromCsv(csvFile);
         if (notFoundNames != null && !notFoundNames.isEmpty()) {
             displayNotFoundAlert(notFoundNames);
         }
@@ -330,9 +330,9 @@ public class RosterController {
         nameColumn.setPrefWidth(MainController.NAME_CELL_WIDTH);
         nameColumn.setOnEditCommit(event -> {
             if (event.getNewValue().isEmpty()) {
-                dataManagementService.eraseUserServant(event.getRowValue());
+                dataManagementServiceFacade.eraseUserServant(event.getRowValue());
             } else {
-                dataManagementService.replaceBaseServantInRow(event.getTablePosition().getRow(), event.getRowValue(),
+                dataManagementServiceFacade.replaceBaseServantInRow(event.getTablePosition().getRow(), event.getRowValue(),
                         event.getNewValue());
                 event.getTableView().refresh();
             }
@@ -347,11 +347,11 @@ public class RosterController {
     }
 
     public void setup() {
-        rosterTable.setItems(dataManagementService.getUserServantList());
+        rosterTable.setItems(dataManagementServiceFacade.getUserServantList());
         if (rosterTable.getItems().size() == 0) {
-            IntStream.range(0, 10).forEach(i -> dataManagementService.saveUserServant(new UserServantView()));
+            IntStream.range(0, 10).forEach(i -> dataManagementServiceFacade.saveUserServant(new UserServantView()));
         }
-        nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementService.getServantNameList()));
+        nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementServiceFacade.getServantNameList()));
     }
 
     private EventHandler<TableColumn.CellEditEvent<UserServantView, Integer>> propertyCommitWithLimits(int min, int max,

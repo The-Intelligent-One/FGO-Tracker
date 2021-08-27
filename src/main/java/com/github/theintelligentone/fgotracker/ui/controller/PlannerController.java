@@ -8,7 +8,7 @@ import com.github.theintelligentone.fgotracker.domain.servant.factory.PlannerSer
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import com.github.theintelligentone.fgotracker.domain.view.UpgradeMaterialCostView;
-import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.service.transformer.InventoryToViewTransformer;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
@@ -92,20 +92,20 @@ public class PlannerController {
     @FXML
     private TableColumn<PlannerServantView, Integer> skill3;
 
-    private DataManagementService dataManagementService;
+    private DataManagementServiceFacade dataManagementServiceFacade;
     private ServantUtils servantUtils;
     @Setter
     private PlannerType plannerType;
 
     public void initialize() {
-        dataManagementService = MainApp.getDataManagementService();
+        dataManagementServiceFacade = MainApp.getDataManagementServiceFacade();
         servantUtils = new ServantUtils();
         tableInit();
     }
 
     private List<TableColumn<PlannerServantView, Number>> createColumnsForAllMats() {
         List<TableColumn<PlannerServantView, Number>> columns = new ArrayList<>();
-        dataManagementService.getMaterials().forEach(mat -> addColumnForMaterial(columns, mat));
+        dataManagementServiceFacade.getMaterials().forEach(mat -> addColumnForMaterial(columns, mat));
         return columns;
     }
 
@@ -135,7 +135,7 @@ public class PlannerController {
     }
 
     private void resizeIconIfNeeded(UpgradeMaterial mat, TableColumn<PlannerServantView, Number> newCol, ImageView imageView) {
-        if (!dataManagementService.isIconsResized()) {
+        if (dataManagementServiceFacade.isIconsNotResized()) {
             imageView.setPreserveRatio(true);
             imageView.setFitWidth(newCol.getWidth());
             SnapshotParameters parameters = new SnapshotParameters();
@@ -147,8 +147,8 @@ public class PlannerController {
     public void setup() {
         plannerTab.setOnSelectionChanged(event -> refreshOnTabSelected());
         setupTables();
-        if (!dataManagementService.isIconsResized()) {
-            dataManagementService.saveMaterialData();
+        if (dataManagementServiceFacade.isIconsNotResized()) {
+            dataManagementServiceFacade.saveMaterialData();
         }
     }
 
@@ -162,7 +162,7 @@ public class PlannerController {
         if (PlannerType.LT == plannerType) {
             loadLTData();
         } else {
-            plannerTable.setItems(dataManagementService.getPlannerServantList(plannerType));
+            plannerTable.setItems(dataManagementServiceFacade.getPaddedPlannerServantList(plannerType));
         }
     }
 
@@ -170,7 +170,7 @@ public class PlannerController {
         if (PlannerType.LT != plannerType) {
             plannerTable.setEditable(true);
             nameColumn.setCellFactory(
-                    AutoCompleteTextFieldTableCell.forTableColumn(dataManagementService.getUserServantNameList()));
+                    AutoCompleteTextFieldTableCell.forTableColumn(dataManagementServiceFacade.getUserServantNameList()));
         }
         plannerTable.getColumns().addAll(createColumnsForAllMats());
         plannerTable.setRowFactory(param -> {
@@ -209,14 +209,14 @@ public class PlannerController {
         InventoryToViewTransformer transformer = new InventoryToViewTransformer();
         sumTable.getColumns().addAll(createColumnsForAllMatsForSum());
         sumTable.getStyleClass().add("sum-table");
-        InventoryView inventory = dataManagementService.getInventory();
+        InventoryView inventory = dataManagementServiceFacade.getInventory();
         sumTable.getItems().add(inventory);
-        Inventory plannedBase = dataManagementService.createEmptyInventory();
+        Inventory plannedBase = dataManagementServiceFacade.createEmptyInventory();
         plannedBase.setLabel("Plan");
         InventoryView planned = transformer.transform(plannedBase);
         planned.setInventory(getSumOfNeededMats());
         sumTable.getItems().add(planned);
-        Inventory sumBase = dataManagementService.createEmptyInventory();
+        Inventory sumBase = dataManagementServiceFacade.createEmptyInventory();
         sumBase.setLabel("Sum");
         InventoryView sum = transformer.transform(sumBase);
         sum.setInventory(createListOfRemainingMats(inventory, planned));
@@ -225,7 +225,7 @@ public class PlannerController {
 
     private List<TableColumn<InventoryView, Integer>> createColumnsForAllMatsForSum() {
         List<TableColumn<InventoryView, Integer>> columns = new ArrayList<>();
-        dataManagementService.getMaterials().forEach(mat -> addSumColumnForMaterial(columns, mat));
+        dataManagementServiceFacade.getMaterials().forEach(mat -> addSumColumnForMaterial(columns, mat));
         return columns;
     }
 
@@ -269,7 +269,7 @@ public class PlannerController {
     private ObservableList<UpgradeMaterialCostView> getSumOfNeededMats() {
         ObservableList<UpgradeMaterialCostView> result = FXCollections.observableArrayList(
                 param -> new Observable[]{param.amountProperty()});
-        for (UpgradeMaterialCostView mat : dataManagementService.getInventory().getInventory()) {
+        for (UpgradeMaterialCostView mat : dataManagementServiceFacade.getInventory().getInventory()) {
             UpgradeMaterialCostView matCost = new UpgradeMaterialCostView();
             matCost.setId(mat.idProperty());
             matCost.setItem(mat.itemProperty());
@@ -356,14 +356,14 @@ public class PlannerController {
         List<MenuItem> editableMenuItems = new ArrayList<>();
         addNewMenuItem(editableMenuItems, "Import servants for planner from CSV", event -> importPlannerServantsFromCsv());
         addNewMenuItem(editableMenuItems, "Delete row",
-                event -> dataManagementService.removePlannerServant(row.getItem(), plannerType));
+                event -> dataManagementServiceFacade.removePlannerServant(row.getItem(), plannerType));
         addNewMenuItem(editableMenuItems, "Clear row",
-                event -> dataManagementService.erasePlannerServant(row.getItem(), plannerType));
+                event -> dataManagementServiceFacade.erasePlannerServant(row.getItem(), plannerType));
         addNewMenuItem(editableMenuItems, "Insert row above",
-                event -> dataManagementService.savePlannerServant(row.getTableView().getItems().indexOf(row.getItem()),
+                event -> dataManagementServiceFacade.savePlannerServant(row.getTableView().getItems().indexOf(row.getItem()),
                         new PlannerServantView(), plannerType));
         addNewMenuItem(editableMenuItems, "Insert row below",
-                event -> dataManagementService.savePlannerServant(row.getTableView().getItems().indexOf(row.getItem()) + 1,
+                event -> dataManagementServiceFacade.savePlannerServant(row.getTableView().getItems().indexOf(row.getItem()) + 1,
                         new PlannerServantView(), plannerType));
         addNewMenuItem(editableMenuItems, "Add X new rows", event -> {
             TextInputDialog prompt = new TextInputDialog("10");
@@ -371,7 +371,7 @@ public class PlannerController {
             prompt.setTitle("Add X new rows");
             prompt.setHeaderText("");
             prompt.showAndWait().ifPresent(s -> IntStream.range(0, Integer.parseInt(s)).forEach(
-                    i -> dataManagementService.savePlannerServant(new PlannerServantView(), plannerType)));
+                    i -> dataManagementServiceFacade.savePlannerServant(new PlannerServantView(), plannerType)));
         });
         return editableMenuItems;
     }
@@ -383,7 +383,7 @@ public class PlannerController {
     }
 
     private void refreshOnTabSelected() {
-        if (plannerTab.isSelected() && dataManagementService.isDataLoaded()) {
+        if (plannerTab.isSelected() && dataManagementServiceFacade.isDataLoaded()) {
             syncScrollbars();
         }
     }
@@ -444,9 +444,9 @@ public class PlannerController {
         nameColumn.setPrefWidth(MainController.NAME_CELL_WIDTH);
         nameColumn.setOnEditCommit(event -> {
             if (event.getNewValue().isEmpty()) {
-                dataManagementService.erasePlannerServant(event.getRowValue(), plannerType);
+                dataManagementServiceFacade.erasePlannerServant(event.getRowValue(), plannerType);
             } else {
-                dataManagementService.replaceBaseServantInPlannerRow(event.getTablePosition().getRow(), event.getRowValue(),
+                dataManagementServiceFacade.replaceBaseServantInPlannerRow(event.getTablePosition().getRow(), event.getRowValue(),
                         event.getNewValue(), plannerType);
                 event.getTableView().refresh();
             }
@@ -471,7 +471,7 @@ public class PlannerController {
     }
 
     private void importInventoryFromCsv() {
-        if (dataManagementService.isDataLoaded()) {
+        if (dataManagementServiceFacade.isDataLoaded()) {
             File csvFile = importCsvFile();
             if (csvFile != null) {
                 loadInventoryDataFromCsv(csvFile);
@@ -482,7 +482,7 @@ public class PlannerController {
     }
 
     private void importPlannerServantsFromCsv() {
-        if (dataManagementService.isDataLoaded()) {
+        if (dataManagementServiceFacade.isDataLoaded()) {
             File csvFile = importCsvFile();
             if (csvFile != null) {
                 loadPlannerDataFromCsv(csvFile);
@@ -500,14 +500,14 @@ public class PlannerController {
     }
 
     private void loadInventoryDataFromCsv(File csvFile) {
-        List<String> notFoundNames = dataManagementService.importInventoryFromCsv(csvFile);
+        List<String> notFoundNames = dataManagementServiceFacade.importInventoryFromCsv(csvFile);
         if (notFoundNames != null && !notFoundNames.isEmpty()) {
             displayNotFoundAlert(notFoundNames);
         }
     }
 
     private void loadPlannerDataFromCsv(File csvFile) {
-        List<String> notFoundNames = dataManagementService.importPlannerServantsFromCsv(csvFile, plannerType);
+        List<String> notFoundNames = dataManagementServiceFacade.importPlannerServantsFromCsv(csvFile, plannerType);
         if (notFoundNames != null && !notFoundNames.isEmpty()) {
             displayNotFoundAlert(notFoundNames);
         }
@@ -536,6 +536,6 @@ public class PlannerController {
     }
 
     private ObservableList<PlannerServantView> createLTPlannerServantList() {
-        return new PlannerServantViewFactory().createForLTPlanner(dataManagementService.getUserServantList());
+        return new PlannerServantViewFactory().createForLTPlanner(dataManagementServiceFacade.getUserServantList());
     }
 }

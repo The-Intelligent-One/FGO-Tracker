@@ -2,11 +2,13 @@ package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
 import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
-import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
@@ -20,6 +22,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 @Slf4j
 public class MainController {
@@ -39,10 +42,10 @@ public class MainController {
     @FXML
     private PlannerController ltPlannerController;
 
-    private DataManagementService dataManagementService;
+    private DataManagementServiceFacade dataManagementServiceFacade;
 
     public void initialize() {
-        dataManagementService = MainApp.getDataManagementService();
+        dataManagementServiceFacade = MainApp.getDataManagementServiceFacade();
         checkForUpdates(null);
     }
 
@@ -55,11 +58,17 @@ public class MainController {
     }
 
     public void tearDown() {
-        saveUserData();
+        saveUserData(null);
     }
 
-    public void saveUserData() {
-        dataManagementService.saveUserState();
+    public void saveUserData(MouseEvent actionEvent) {
+        dataManagementServiceFacade.saveUserState();
+        if (actionEvent != null) {
+            Alert saveConfirmAlert = new Alert(Alert.AlertType.INFORMATION);
+            saveConfirmAlert.setTitle("Save");
+            saveConfirmAlert.setHeaderText("User data saved");
+            saveConfirmAlert.show();
+        }
     }
 
     public void initTables() {
@@ -73,7 +82,7 @@ public class MainController {
 
     public void showAboutInfo() {
         Alert aboutAlert = new Alert(Alert.AlertType.INFORMATION);
-        aboutAlert.setTitle("FGO Tracker " + DataManagementService.VERSION);
+        aboutAlert.setTitle("FGO Tracker " + DataManagementServiceFacade.VERSION);
         aboutAlert.setHeaderText("");
         aboutAlert.setContentText(
                 "Tracker app for Fate/Grand Order. Heavily inspired by FGO Manager by zuth. Based on Atlas Academy DB.");
@@ -90,27 +99,37 @@ public class MainController {
             } else {
                 latest = repo.listReleases().toList().get(0);
             }
-            GHRelease current = repo.getReleaseByTagName(DataManagementService.VERSION);
-            if (current == null || latest.getPublished_at().after(current.getPublished_at())) {
+            GHRelease current = repo.getReleaseByTagName(DataManagementServiceFacade.VERSION);
+            if (current != null && latest.getPublished_at().after(current.getPublished_at())) {
                 showNewUpdateAlert(latest);
+            } else if (actionEvent != null) {
+                showNoNewUpdateAlert();
             }
         } catch (IOException e) {
             log.error(e.getLocalizedMessage(), e);
         }
     }
 
+    private void showNoNewUpdateAlert() {
+        Alert noUpdateAlert = new Alert(Alert.AlertType.INFORMATION);
+        noUpdateAlert.setTitle("Update Checker");
+        noUpdateAlert.setHeaderText("No new updates available");
+        noUpdateAlert.show();
+    }
+
     private void showNewUpdateAlert(GHRelease latest) {
         Alert newUpdateAlert = new Alert(Alert.AlertType.CONFIRMATION);
         newUpdateAlert.setTitle("New Update Available!");
-        newUpdateAlert.setHeaderText("New version available: " + latest.getName() + "\n" +
-                latest.getBody());
+        newUpdateAlert.setHeaderText("New version available: " + latest.getName());
         newUpdateAlert.setContentText(
-                "Would you like to download it (this will open the releases page in your browser)?");
+                "Would you like to download it (this will open the releases page in your browser and close the app)?");
+        newUpdateAlert.setResizable(true);
         newUpdateAlert.showAndWait().ifPresent(buttonType -> {
             if (buttonType.getButtonData().isDefaultButton()) {
                 try {
                     Desktop.getDesktop().browse(
                             new URI("https://github.com/The-Intelligent-One/FGO-Tracker/releases"));
+                    Platform.exit();
                 } catch (IOException | URISyntaxException e) {
                     log.error(e.getLocalizedMessage(), e);
                 }
@@ -120,16 +139,18 @@ public class MainController {
 
     public void showUserGuide() {
         WebView helpView = new WebView();
-        helpView.getEngine().load(getClass().getResource("/userguide.html").toString());
+        helpView.getEngine().load(Objects.requireNonNull(getClass().getResource("/userguide.html")).toString());
         VBox.setVgrow(helpView, Priority.ALWAYS);
         VBox vBox = new VBox(helpView);
         vBox.setFillWidth(true);
         Scene scene = new Scene(vBox);
-        if (dataManagementService.darkModeProperty().getValue()) {
-            helpView.getEngine().setUserStyleSheetLocation(getClass().getResource("/styles/userguide-dark.css").toString());
+        if (dataManagementServiceFacade.darkModeProperty().getValue()) {
+            helpView.getEngine().setUserStyleSheetLocation(
+                    Objects.requireNonNull(getClass().getResource("/styles/userguide-dark.css")).toString());
             scene.getStylesheets().add("styles/dark-mode.css");
         } else {
-            helpView.getEngine().setUserStyleSheetLocation(getClass().getResource("/styles/userguide.css").toString());
+            helpView.getEngine().setUserStyleSheetLocation(
+                    Objects.requireNonNull(getClass().getResource("/styles/userguide.css")).toString());
         }
         Stage helpStage = new Stage();
         vBox.minHeightProperty().bind(helpStage.heightProperty());
@@ -139,10 +160,14 @@ public class MainController {
     }
 
     public void invalidateCache() {
-        dataManagementService.invalidateCache();
+        dataManagementServiceFacade.invalidateCache();
+        Alert invalidateConfirmAlert = new Alert(Alert.AlertType.INFORMATION);
+        invalidateConfirmAlert.setTitle("Invalidate cache");
+        invalidateConfirmAlert.setHeaderText("Cache invalidated and will be redownloaded at next launch");
+        invalidateConfirmAlert.show();
     }
 
     public void toggleDarkMode() {
-        dataManagementService.darkModeProperty().set(!dataManagementService.darkModeProperty().get());
+        dataManagementServiceFacade.darkModeProperty().set(!dataManagementServiceFacade.darkModeProperty().get());
     }
 }

@@ -2,14 +2,16 @@ package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
-import com.github.theintelligentone.fgotracker.service.DataManagementService;
+import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AscensionCheckBoxTableCell;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
 import javafx.beans.binding.Bindings;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.css.PseudoClass;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.ComboBoxTableCell;
@@ -20,11 +22,12 @@ import javafx.util.converter.IntegerStringConverter;
 
 import java.io.File;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.IntStream;
 
 public class RosterController {
     private static final String[] ONE_TO_FIVE = {"1", "2", "3", "4", "5"};
-    private DataManagementService dataManagementService;
+    private DataManagementServiceFacade dataManagementServiceFacade;
     private ServantUtils servantUtils;
 
     @FXML
@@ -89,7 +92,7 @@ public class RosterController {
     private TableColumn<UserServantView, String> notesColumn;
 
     public void initialize() {
-        dataManagementService = MainApp.getDataManagementService();
+        dataManagementServiceFacade = MainApp.getDataManagementServiceFacade();
         servantUtils = new ServantUtils();
         tableSetup();
     }
@@ -117,16 +120,16 @@ public class RosterController {
         MenuItem importButton = new MenuItem("Import roster from csv");
         importButton.setOnAction(event -> importUserServantsFromCsv());
         MenuItem removeRowButton = new MenuItem("Delete row");
-        removeRowButton.setOnAction(event -> dataManagementService.removeUserServant(row.getItem()));
+        removeRowButton.setOnAction(event -> dataManagementServiceFacade.removeUserServant(row.getItem()));
         MenuItem clearRowButton = new MenuItem("Clear row");
-        clearRowButton.setOnAction(event -> dataManagementService.eraseUserServant(row.getItem()));
+        clearRowButton.setOnAction(event -> dataManagementServiceFacade.eraseUserServant(row.getItem()));
         MenuItem addRowAboveButton = new MenuItem("Insert row above");
         addRowAboveButton.setOnAction(
-                event -> dataManagementService.saveUserServant(row.getTableView().getItems().indexOf(row.getItem()),
+                event -> dataManagementServiceFacade.saveUserServant(row.getTableView().getItems().indexOf(row.getItem()),
                         new UserServantView()));
         MenuItem addRowBelowButton = new MenuItem("Insert row below");
         addRowBelowButton.setOnAction(
-                event -> dataManagementService.saveUserServant(row.getTableView().getItems().indexOf(row.getItem()) + 1,
+                event -> dataManagementServiceFacade.saveUserServant(row.getTableView().getItems().indexOf(row.getItem()) + 1,
                         new UserServantView()));
         MenuItem addMultipleRowsButton = new MenuItem("Add X new rows");
         addMultipleRowsButton.setOnAction(event -> {
@@ -135,7 +138,7 @@ public class RosterController {
             prompt.setTitle("Add X new rows");
             prompt.setHeaderText("");
             prompt.showAndWait().ifPresent(s -> IntStream.range(0, Integer.parseInt(s)).forEach(
-                    i -> dataManagementService.saveUserServant(new UserServantView())));
+                    i -> dataManagementServiceFacade.saveUserServant(new UserServantView())));
         });
         ContextMenu menu = new ContextMenu(importButton, addRowAboveButton, addRowBelowButton, addMultipleRowsButton,
                 clearRowButton, removeRowButton);
@@ -143,7 +146,7 @@ public class RosterController {
     }
 
     private void importUserServantsFromCsv() {
-        if (dataManagementService.isDataLoaded()) {
+        if (dataManagementServiceFacade.isDataLoaded()) {
             displayFileChooserForUserCsvImport();
         } else {
             showNotLoadedYetAlert();
@@ -167,7 +170,7 @@ public class RosterController {
     }
 
     private void loadRosterDataFromCsv(File csvFile) {
-        List<String> notFoundNames = dataManagementService.importUserServantsFromCsv(csvFile);
+        List<String> notFoundNames = dataManagementServiceFacade.importUserServantsFromCsv(csvFile);
         if (notFoundNames != null && !notFoundNames.isEmpty()) {
             displayNotFoundAlert(notFoundNames);
         }
@@ -208,15 +211,15 @@ public class RosterController {
         npColumn.getColumns().forEach(column -> column.setPrefWidth(MainController.MID_CELL_WIDTH));
         npTypeColumn.setCellValueFactory(param -> {
             SimpleStringProperty result = new SimpleStringProperty();
-            if (param.getValue().getBaseServant().getValue() != null) {
-                result.set(servantUtils.determineNpCard(param.getValue().getBaseServant().getValue()));
+            if (param.getValue().baseServantProperty().getValue() != null) {
+                result.set(servantUtils.determineNpCard(param.getValue().baseServantProperty().getValue()));
             }
             return result;
         });
         npTargetColumn.setCellValueFactory(param -> {
             SimpleStringProperty result = new SimpleStringProperty();
-            if (param.getValue().getBaseServant().getValue() != null) {
-                result.set(servantUtils.determineNpTarget(param.getValue().getBaseServant().getValue()));
+            if (param.getValue().baseServantProperty().getValue() != null) {
+                result.set(servantUtils.determineNpTarget(param.getValue().baseServantProperty().getValue()));
             }
             return result;
         });
@@ -238,8 +241,8 @@ public class RosterController {
         attributeColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
         attributeColumn.setCellValueFactory(param -> {
             SimpleStringProperty name = new SimpleStringProperty();
-            if (param.getValue().getBaseServant().getValue() != null) {
-                String attribute = param.getValue().getBaseServant().getValue().getAttribute();
+            if (param.getValue().baseServantProperty().getValue() != null) {
+                String attribute = param.getValue().baseServantProperty().getValue().getAttribute();
                 name.set(attribute.substring(0, 1).toUpperCase() + attribute.substring(1));
             }
             return name;
@@ -250,8 +253,8 @@ public class RosterController {
         classColumn.setPrefWidth(MainController.LONG_CELL_WIDTH);
         classColumn.setCellValueFactory(param -> {
             SimpleStringProperty name = new SimpleStringProperty();
-            if (param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getValue() != null) {
-                String className = param.getValue().getBaseServant().getValue().getClassName();
+            if (param.getValue().baseServantProperty() != null && param.getValue().baseServantProperty().getValue() != null) {
+                String className = param.getValue().baseServantProperty().getValue().getClassName();
                 name.set(className.substring(0, 1).toUpperCase() + className.substring(1));
             }
             return name;
@@ -266,78 +269,43 @@ public class RosterController {
     private void skill1ColumnSetup() {
         skill1Column.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         skill1Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        skill1Column.setOnEditCommit(event -> {
-            if (event.getRowValue().getSvtId().longValue() != 0) {
-                event.getRowValue().getSkillLevel1().set(servantUtils.getNewValueIfValid(event, 1, 10));
-                rosterTable.refresh();
-            }
-        });
+        skill1Column.setOnEditCommit(propertyCommitWithLimits(1, 10, event -> event.getRowValue().skillLevel1Property()));
     }
 
     private void skill2ColumnSetup() {
         skill2Column.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         skill2Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        skill2Column.setOnEditCommit(event -> {
-            if (event.getRowValue().getSvtId().longValue() != 0) {
-                event.getRowValue().getSkillLevel2().set(servantUtils.getNewValueIfValid(event, 1, 10));
-                rosterTable.refresh();
-            }
-        });
+        skill2Column.setOnEditCommit(propertyCommitWithLimits(1, 10, event -> event.getRowValue().skillLevel2Property()));
     }
 
     private void skill3ColumnSetup() {
         skill3Column.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         skill3Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        skill3Column.setOnEditCommit(event -> {
-            if (event.getRowValue().getSvtId().longValue() != 0) {
-                event.getRowValue().getSkillLevel3().set(servantUtils.getNewValueIfValid(event, 1, 10));
-                rosterTable.refresh();
-            }
-        });
+        skill3Column.setOnEditCommit(propertyCommitWithLimits(1, 10, event -> event.getRowValue().skillLevel3Property()));
     }
 
     private void bondColumnSetup() {
         bondColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         bondColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        bondColumn.setOnEditCommit(event -> {
-            if (event.getRowValue().getSvtId().longValue() != 0) {
-                event.getRowValue().getBondLevel().set(servantUtils.getNewValueIfValid(event, 0, 15));
-                rosterTable.refresh();
-            }
-        });
+        bondColumn.setOnEditCommit(propertyCommitWithLimits(0, 15, event -> event.getRowValue().bondLevelProperty()));
     }
 
     private void levelColumnSetup() {
         levelColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         levelColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        levelColumn.setOnEditCommit(event -> {
-            if (event.getRowValue().getSvtId().longValue() != 0) {
-                event.getRowValue().getLevel().set(servantUtils.getNewValueIfValid(event, 1, 100));
-                rosterTable.refresh();
-            }
-        });
+        levelColumn.setOnEditCommit(propertyCommitWithLimits(1, 100, event -> event.getRowValue().levelProperty()));
     }
 
     private void atkColumnSetup() {
         atkColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
         atkColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        atkColumn.setOnEditCommit(event -> {
-            if (event.getRowValue().getSvtId().longValue() != 0) {
-                event.getRowValue().getFouAtk().set(servantUtils.getNewValueIfValid(event, 0, 2000));
-                rosterTable.refresh();
-            }
-        });
+        atkColumn.setOnEditCommit(propertyCommitWithLimits(0, 2000, event -> event.getRowValue().fouAtkProperty()));
     }
 
     private void hpColumnSetup() {
         hpColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
         hpColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        hpColumn.setOnEditCommit(event -> {
-            if (event.getRowValue().getSvtId().longValue() != 0) {
-                event.getRowValue().getFouHp().set(servantUtils.getNewValueIfValid(event, 0, 2000));
-                rosterTable.refresh();
-            }
-        });
+        hpColumn.setOnEditCommit(propertyCommitWithLimits(0, 2000, event -> event.getRowValue().fouHpProperty()));
     }
 
     private void npLvlColumnSetup() {
@@ -348,10 +316,10 @@ public class RosterController {
             return tableCell;
         });
         npLvlColumn.setOnEditCommit(event -> {
-            if (event.getRowValue().getSvtId().longValue() != 0) {
+            if (event.getRowValue().svtIdProperty().longValue() != 0) {
                 int input = Integer.parseInt(event.getNewValue());
                 if (input <= 5 && input >= 1) {
-                    event.getRowValue().getNpLevel().set(input);
+                    event.getRowValue().npLevelProperty().set(input);
                 }
                 rosterTable.refresh();
             }
@@ -362,27 +330,37 @@ public class RosterController {
         nameColumn.setPrefWidth(MainController.NAME_CELL_WIDTH);
         nameColumn.setOnEditCommit(event -> {
             if (event.getNewValue().isEmpty()) {
-                dataManagementService.eraseUserServant(event.getRowValue());
+                dataManagementServiceFacade.eraseUserServant(event.getRowValue());
             } else {
-                dataManagementService.replaceBaseServantInRow(event.getTablePosition().getRow(), event.getRowValue(),
+                dataManagementServiceFacade.replaceBaseServantInRow(event.getTablePosition().getRow(), event.getRowValue(),
                         event.getNewValue());
                 event.getTableView().refresh();
             }
         });
         nameColumn.setCellValueFactory(param -> {
             SimpleStringProperty name = new SimpleStringProperty();
-            if (param.getValue().getBaseServant() != null && param.getValue().getBaseServant().getValue() != null) {
-                name.set(param.getValue().getBaseServant().getValue().getName());
+            if (param.getValue().baseServantProperty() != null && param.getValue().baseServantProperty().getValue() != null) {
+                name.set(param.getValue().baseServantProperty().getValue().getName());
             }
             return name;
         });
     }
 
     public void setup() {
-        rosterTable.setItems(dataManagementService.getUserServantList());
+        rosterTable.setItems(dataManagementServiceFacade.getUserServantList());
         if (rosterTable.getItems().size() == 0) {
-            IntStream.range(0, 10).forEach(i -> dataManagementService.saveUserServant(new UserServantView()));
+            IntStream.range(0, 10).forEach(i -> dataManagementServiceFacade.saveUserServant(new UserServantView()));
         }
-        nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementService.getServantNameList()));
+        nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementServiceFacade.getServantNameList()));
+    }
+
+    private EventHandler<TableColumn.CellEditEvent<UserServantView, Integer>> propertyCommitWithLimits(int min, int max,
+                                                                                                       Function<TableColumn.CellEditEvent<UserServantView, Integer>, IntegerProperty> getProperty) {
+        return event -> {
+            if (event.getRowValue().svtIdProperty().longValue() != 0) {
+                getProperty.apply(event).set(servantUtils.getNewValueIfValid(event, min, max));
+                rosterTable.refresh();
+            }
+        };
     }
 }

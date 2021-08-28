@@ -11,8 +11,8 @@ public class AscensionCheckBoxTableCell extends CheckBoxTableCell<UserServantVie
     public void updateItem(Boolean item, boolean empty) {
         super.updateItem(item, empty);
         UserServantView servant = getTableRow().getItem();
-        if (servant != null && (servant.getBaseServant().getValue() == null || !servantIsAtLevelWithAscension(servant))) {
-            servant.getAscension().set(false);
+        if (servant != null && (servant.baseServantProperty().getValue() == null || !servantIsAtLevelWithAscension(servant))) {
+            servant.ascensionProperty().set(false);
             setText(null);
             setGraphic(null);
         }
@@ -20,10 +20,10 @@ public class AscensionCheckBoxTableCell extends CheckBoxTableCell<UserServantVie
 
     private boolean servantIsAtLevelWithAscension(UserServantView servant) {
         boolean result = false;
-        if (servant.getBaseServant() != null && servant.getBaseServant().getValue() != null) {
+        if (servant.baseServantProperty() != null && servant.baseServantProperty().getValue() != null) {
             List<Integer> levelsWithAscension = new ServantUtils().createListOfAscensionLevels(
-                    servant.getBaseServant().getValue().getRarity());
-            result = levelsWithAscension.contains(servant.getLevel().intValue());
+                    servant.baseServantProperty().getValue().getRarity());
+            result = levelsWithAscension.contains(servant.levelProperty().intValue());
         }
         return result;
     }

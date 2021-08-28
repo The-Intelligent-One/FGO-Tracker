@@ -17,9 +17,9 @@ public class UpgradeMaterialCostToViewTransformer {
 
     public UpgradeMaterialCost transform(UpgradeMaterialCostView mat) {
         UpgradeMaterialCost result = new UpgradeMaterialCost();
-        result.setId(mat.getId().longValue());
-        result.setItem(mat.getItem().getValue());
-        result.setAmount(mat.getAmount().intValue());
+        result.setId(mat.idProperty().longValue());
+        result.setItem(mat.itemProperty().getValue());
+        result.setAmount(mat.amountProperty().intValue());
         return result;
     }
 }

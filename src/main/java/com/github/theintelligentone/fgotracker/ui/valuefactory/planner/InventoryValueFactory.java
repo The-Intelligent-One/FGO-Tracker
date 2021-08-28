@@ -23,8 +23,8 @@ public class InventoryValueFactory implements Callback<TableColumn.CellDataFeatu
     }
 
     private ObservableValue<Integer> getAmountOfMaterial(InventoryView inventory) {
-        IntegerProperty property = inventory.getInventory().stream().filter(mat -> mat.getId().longValue() == matId).map(
-                UpgradeMaterialCostView::getAmount).findFirst().orElse(null);
+        IntegerProperty property = inventory.getInventory().stream().filter(mat -> mat.idProperty().longValue() == matId).map(
+                UpgradeMaterialCostView::amountProperty).findFirst().orElse(null);
         return property == null ? new SimpleIntegerProperty(0).asObject() : property.asObject();
     }
 }

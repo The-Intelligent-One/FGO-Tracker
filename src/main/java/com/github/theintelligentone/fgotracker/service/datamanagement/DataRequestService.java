@@ -1,4 +1,4 @@
-package com.github.theintelligentone.fgotracker.service;
+package com.github.theintelligentone.fgotracker.service.datamanagement;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -99,10 +99,10 @@ public class DataRequestService {
     }
 
     private boolean isNotEventItem(UpgradeMaterial mat) {
-        return Arrays.asList(EXCLUDED_MATERIAL_TYPES).stream().noneMatch(mat.getType()::equalsIgnoreCase);
+        return Arrays.stream(EXCLUDED_MATERIAL_TYPES).noneMatch(mat.getType()::equalsIgnoreCase);
     }
 
     private boolean isForSkillOrAsc(UpgradeMaterial mat) {
-        return Arrays.asList(MATERIAL_USES).stream().anyMatch(mat.getUses()::contains);
+        return Arrays.stream(MATERIAL_USES).anyMatch(mat.getUses()::contains);
     }
 }

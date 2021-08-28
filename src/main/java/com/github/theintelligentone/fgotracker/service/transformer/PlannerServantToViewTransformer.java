@@ -45,16 +45,16 @@ public class PlannerServantToViewTransformer {
     }
 
     public PlannerServant transform(PlannerServantView servant) {
-        UserServant transformedUserServant = servant.getBaseServant().getValue() == null
+        UserServant transformedUserServant = servant.baseServantProperty().getValue() == null
                 ? null
-                : userServantToViewTransformer.transform(servant.getBaseServant().getValue());
+                : userServantToViewTransformer.transform(servant.baseServantProperty().getValue());
         return PlannerServant.builder()
-                .svtId(servant.getSvtId().longValue())
+                .svtId(servant.svtIdProperty().longValue())
                 .baseServant(transformedUserServant)
-                .desLevel(servant.getDesLevel().intValue())
-                .desSkill1(servant.getDesSkill1().intValue())
-                .desSkill2(servant.getDesSkill2().intValue())
-                .desSkill3(servant.getDesSkill3().intValue())
+                .desLevel(servant.desLevelProperty().intValue())
+                .desSkill1(servant.desSkill1Property().intValue())
+                .desSkill2(servant.desSkill2Property().intValue())
+                .desSkill3(servant.desSkill3Property().intValue())
                 .skillMaterials(servant.getSkillMaterials())
                 .ascensionMaterials(servant.getAscensionMaterials())
                 .build();

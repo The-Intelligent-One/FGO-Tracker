@@ -8,6 +8,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
@@ -57,11 +58,17 @@ public class MainController {
     }
 
     public void tearDown() {
-        saveUserData();
+        saveUserData(null);
     }
 
-    public void saveUserData() {
+    public void saveUserData(MouseEvent actionEvent) {
         dataManagementServiceFacade.saveUserState();
+        if (actionEvent != null) {
+            Alert saveConfirmAlert = new Alert(Alert.AlertType.INFORMATION);
+            saveConfirmAlert.setTitle("Save");
+            saveConfirmAlert.setHeaderText("User data saved");
+            saveConfirmAlert.show();
+        }
     }
 
     public void initTables() {
@@ -154,6 +161,10 @@ public class MainController {
 
     public void invalidateCache() {
         dataManagementServiceFacade.invalidateCache();
+        Alert invalidateConfirmAlert = new Alert(Alert.AlertType.INFORMATION);
+        invalidateConfirmAlert.setTitle("Invalidate cache");
+        invalidateConfirmAlert.setHeaderText("Cache invalidated and will be redownloaded at next launch");
+        invalidateConfirmAlert.show();
     }
 
     public void toggleDarkMode() {

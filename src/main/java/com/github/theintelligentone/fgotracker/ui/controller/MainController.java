@@ -3,6 +3,7 @@ package com.github.theintelligentone.fgotracker.ui.controller;
 import com.github.theintelligentone.fgotracker.app.MainApp;
 import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -103,15 +104,16 @@ public class MainController {
     private void showNewUpdateAlert(GHRelease latest) {
         Alert newUpdateAlert = new Alert(Alert.AlertType.CONFIRMATION);
         newUpdateAlert.setTitle("New Update Available!");
-        newUpdateAlert.setHeaderText("New version available: " + latest.getName() + "\n" +
-                latest.getBody());
+        newUpdateAlert.setHeaderText("New version available: " + latest.getName());
         newUpdateAlert.setContentText(
-                "Would you like to download it (this will open the releases page in your browser)?");
+                "Would you like to download it (this will open the releases page in your browser and close the app)?");
+        newUpdateAlert.setResizable(true);
         newUpdateAlert.showAndWait().ifPresent(buttonType -> {
             if (buttonType.getButtonData().isDefaultButton()) {
                 try {
                     Desktop.getDesktop().browse(
                             new URI("https://github.com/The-Intelligent-One/FGO-Tracker/releases"));
+                    Platform.exit();
                 } catch (IOException | URISyntaxException e) {
                     log.error(e.getLocalizedMessage(), e);
                 }

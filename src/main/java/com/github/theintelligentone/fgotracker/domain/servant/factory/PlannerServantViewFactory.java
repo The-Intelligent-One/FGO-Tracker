@@ -71,4 +71,23 @@ public class PlannerServantViewFactory {
         return materials.entrySet().stream().sorted(Map.Entry.comparingByKey()).map(Map.Entry::getValue).collect(
                 Collectors.toList());
     }
+
+    public PlannerServantView createFromPreviousUserServant(UserServantView servant,
+                                                            PlannerServantView previousServant) {
+        PlannerServantView result = new PlannerServantView();
+        if (servant.baseServantProperty() != null && servant.baseServantProperty().getValue() != null) {
+            result = PlannerServantView.builder()
+                    .svtId(servant.svtIdProperty())
+                    .baseServant(new SimpleObjectProperty<>(servant))
+                    .desLevel(new SimpleIntegerProperty(previousServant.desLevelProperty().intValue()))
+                    .desSkill1(new SimpleIntegerProperty(previousServant.desSkill1Property().intValue()))
+                    .desSkill2(new SimpleIntegerProperty(previousServant.desSkill1Property().intValue()))
+                    .desSkill3(new SimpleIntegerProperty(previousServant.desSkill1Property().intValue()))
+                    .ascensionMaterials(
+                            convertMaterialMapToList(servant.baseServantProperty().getValue().getAscensionMaterials()))
+                    .skillMaterials(convertMaterialMapToList(servant.baseServantProperty().getValue().getSkillMaterials()))
+                    .build();
+        }
+        return result;
+    }
 }

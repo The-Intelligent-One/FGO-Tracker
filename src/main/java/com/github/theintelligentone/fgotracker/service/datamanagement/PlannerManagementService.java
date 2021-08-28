@@ -100,9 +100,7 @@ public class PlannerManagementService {
             if (servant.baseServantProperty().getValue() == null) {
                 fromUserServant = new PlannerServantViewFactory().createFromUserServant(newBaseServant);
             } else {
-                servant.svtIdProperty().set(newBaseServant.svtIdProperty().longValue());
-                servant.baseServantProperty().set(newBaseServant);
-                fromUserServant = servant;
+                fromUserServant = new PlannerServantViewFactory().createFromPreviousUserServant(newBaseServant, servant);
             }
             getPlannerServantList(plannerType).set(index, fromUserServant);
         }

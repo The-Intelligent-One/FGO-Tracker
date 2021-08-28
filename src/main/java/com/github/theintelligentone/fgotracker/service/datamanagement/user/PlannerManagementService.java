@@ -1,4 +1,4 @@
-package com.github.theintelligentone.fgotracker.service.datamanagement;
+package com.github.theintelligentone.fgotracker.service.datamanagement.user;
 
 import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;

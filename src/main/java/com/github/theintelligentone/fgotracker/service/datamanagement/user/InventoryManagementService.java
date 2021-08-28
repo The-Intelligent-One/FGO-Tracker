@@ -1,4 +1,4 @@
-package com.github.theintelligentone.fgotracker.service.datamanagement;
+package com.github.theintelligentone.fgotracker.service.datamanagement.user;
 
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;

@@ -8,6 +8,9 @@ import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
+import com.github.theintelligentone.fgotracker.service.datamanagement.user.InventoryManagementService;
+import com.github.theintelligentone.fgotracker.service.datamanagement.user.PlannerManagementService;
+import com.github.theintelligentone.fgotracker.service.datamanagement.user.UserServantManagementService;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.transformer.UserServantToViewTransformer;
 import javafx.beans.property.BooleanProperty;
@@ -19,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DataManagementServiceFacade {
-    public static final String VERSION = "v0.2.3";
+    public static final String VERSION = "v0.2.4";
     public static final int[] MAX_LEVELS = {65, 60, 65, 70, 80, 90};
 
     public static final int MIN_TABLE_SIZE = 25;

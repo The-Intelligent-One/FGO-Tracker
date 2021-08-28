@@ -20,6 +20,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Objects;
 
 @Slf4j
 public class MainController {
@@ -91,7 +92,7 @@ public class MainController {
                 latest = repo.listReleases().toList().get(0);
             }
             GHRelease current = repo.getReleaseByTagName(DataManagementServiceFacade.VERSION);
-            if (current == null || latest.getPublished_at().after(current.getPublished_at())) {
+            if (current != null && latest.getPublished_at().after(current.getPublished_at())) {
                 showNewUpdateAlert(latest);
             }
         } catch (IOException e) {
@@ -120,16 +121,18 @@ public class MainController {
 
     public void showUserGuide() {
         WebView helpView = new WebView();
-        helpView.getEngine().load(getClass().getResource("/userguide.html").toString());
+        helpView.getEngine().load(Objects.requireNonNull(getClass().getResource("/userguide.html")).toString());
         VBox.setVgrow(helpView, Priority.ALWAYS);
         VBox vBox = new VBox(helpView);
         vBox.setFillWidth(true);
         Scene scene = new Scene(vBox);
         if (dataManagementServiceFacade.darkModeProperty().getValue()) {
-            helpView.getEngine().setUserStyleSheetLocation(getClass().getResource("/styles/userguide-dark.css").toString());
+            helpView.getEngine().setUserStyleSheetLocation(
+                    Objects.requireNonNull(getClass().getResource("/styles/userguide-dark.css")).toString());
             scene.getStylesheets().add("styles/dark-mode.css");
         } else {
-            helpView.getEngine().setUserStyleSheetLocation(getClass().getResource("/styles/userguide.css").toString());
+            helpView.getEngine().setUserStyleSheetLocation(
+                    Objects.requireNonNull(getClass().getResource("/styles/userguide.css")).toString());
         }
         Stage helpStage = new Stage();
         vBox.minHeightProperty().bind(helpStage.heightProperty());

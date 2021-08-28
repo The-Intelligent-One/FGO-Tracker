@@ -9,6 +9,7 @@ import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class InventoryManagementService {
     private final InventoryToViewTransformer inventoryToViewTransformer;
@@ -21,9 +22,25 @@ public class InventoryManagementService {
         if (inventory.getInventory().size() == 0) {
             inventory = createEmptyInventory(materials);
         } else {
+            for (UpgradeMaterial mat : materials) {
+                Optional<UpgradeMaterialCost> optionalMat = inventory.getInventory().stream()
+                        .filter(upgradeMaterialCost -> upgradeMaterialCost.getId() == mat.getId())
+                        .findAny();
+                if (optionalMat.isPresent()) {
+                    optionalMat.get().setItem(mat);
+                } else {
+                    UpgradeMaterialCost newMat = new UpgradeMaterialCost();
+                    newMat.setId(mat.getId());
+                    newMat.setItem(mat);
+                    newMat.setAmount(0);
+                    inventory.getInventory().add(newMat);
+                }
+            }
+
             for (UpgradeMaterialCost mat : inventory.getInventory()) {
-                mat.setItem(materials.stream().filter(
-                        material -> material.getId() == mat.getId()).findFirst().get());
+                mat.setItem(materials.stream()
+                        .filter(material -> material.getId() == mat.getId())
+                        .findFirst().get());
             }
         }
         inventory.setLabel("Inventory");

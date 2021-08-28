@@ -23,7 +23,7 @@ public class DataManagementServiceFacade {
     public static final int[] MAX_LEVELS = {65, 60, 65, 70, 80, 90};
 
     public static final int MIN_TABLE_SIZE = 25;
-    public static final String NAME_FORMAT = "%s [%s]";
+    public static final String NAME_FORMAT = "%s [%d* %s]";
 
     private final BooleanProperty darkMode;
     private final FileManagementServiceFacade fileServiceFacade;

@@ -63,7 +63,8 @@ public class CacheManagementService {
             loadFromCache();
         }
         servantNameList.addAll(
-                servantDataList.stream().map(svt -> String.format(NAME_FORMAT, svt.getName(), svt.getClassName())).collect(
+                servantDataList.stream().map(
+                        svt -> String.format(NAME_FORMAT, svt.getName(), svt.getRarity(), svt.getClassName())).collect(
                         Collectors.toList()));
     }
 
@@ -124,7 +125,8 @@ public class CacheManagementService {
 
     public Servant findServantByFormattedName(String name) {
         return servantDataList.stream().filter(
-                svt -> name.equalsIgnoreCase(String.format(NAME_FORMAT, svt.getName(), svt.getClassName()))).findFirst().orElse(
+                svt -> name.equalsIgnoreCase(
+                        String.format(NAME_FORMAT, svt.getName(), svt.getRarity(), svt.getClassName()))).findFirst().orElse(
                 null);
     }
 

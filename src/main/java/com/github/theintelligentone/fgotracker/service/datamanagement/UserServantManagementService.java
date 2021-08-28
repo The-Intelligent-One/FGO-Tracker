@@ -44,6 +44,7 @@ public class UserServantManagementService {
             userServantNameList.addAll(c.getList().stream()
                     .filter(svt -> svt.baseServantProperty().getValue() != null)
                     .map(svt -> String.format(NAME_FORMAT, svt.baseServantProperty().getValue().getName(),
+                            svt.baseServantProperty().getValue().getRarity(),
                             svt.baseServantProperty().getValue().getClassName()))
                     .collect(Collectors.toList()));
         });
@@ -103,15 +104,11 @@ public class UserServantManagementService {
         userServantList.set(userServantList.indexOf(servant), new UserServantView());
     }
 
-    public UserServantView findUserServantById(long svtId) {
-        return userServantList.stream().filter(
-                svt -> svtId == svt.svtIdProperty().longValue()).findFirst().get();
-    }
-
     public UserServantView findUserServantByFormattedName(String name) {
         return userServantList.stream()
                 .filter(svt -> svt.baseServantProperty().getValue() != null)
                 .filter(svt -> name.equalsIgnoreCase(String.format(NAME_FORMAT, svt.baseServantProperty().getValue().getName(),
+                        svt.baseServantProperty().getValue().getRarity(),
                         svt.baseServantProperty().getValue().getClassName())))
                 .findFirst().orElse(null);
     }

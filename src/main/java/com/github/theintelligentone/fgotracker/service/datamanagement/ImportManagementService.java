@@ -149,7 +149,8 @@ public class ImportManagementService {
         UserServantView baseUserServant = null;
         if (baseServant.getName() != null && !baseServant.getName().isEmpty()) {
             baseUserServant = findUserServantByFormattedName(
-                    String.format(NAME_FORMAT, baseServant.getName(), baseServant.getClassName()), userServants);
+                    String.format(NAME_FORMAT, baseServant.getName(), baseServant.getRarity(), baseServant.getClassName()),
+                    userServants);
         }
         return baseUserServant;
     }
@@ -192,6 +193,7 @@ public class ImportManagementService {
         return userServantList.stream()
                 .filter(svt -> svt.baseServantProperty().getValue() != null)
                 .filter(svt -> name.equalsIgnoreCase(String.format(NAME_FORMAT, svt.baseServantProperty().getValue().getName(),
+                        svt.baseServantProperty().getValue().getRarity(),
                         svt.baseServantProperty().getValue().getClassName())))
                 .findFirst().orElse(null);
     }

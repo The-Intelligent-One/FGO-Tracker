@@ -95,10 +95,19 @@ public class MainController {
             GHRelease current = repo.getReleaseByTagName(DataManagementServiceFacade.VERSION);
             if (current != null && latest.getPublished_at().after(current.getPublished_at())) {
                 showNewUpdateAlert(latest);
+            } else if (actionEvent != null) {
+                showNoNewUpdateAlert();
             }
         } catch (IOException e) {
             log.error(e.getLocalizedMessage(), e);
         }
+    }
+
+    private void showNoNewUpdateAlert() {
+        Alert noUpdateAlert = new Alert(Alert.AlertType.INFORMATION);
+        noUpdateAlert.setTitle("Update Checker");
+        noUpdateAlert.setHeaderText("No new updates available");
+        noUpdateAlert.show();
     }
 
     private void showNewUpdateAlert(GHRelease latest) {

@@ -20,10 +20,12 @@ public class OptionsFileService {
     }
 
     public boolean loadDarkMode() {
-        return fileService.loadUserData(DARKMODE_FILE, new TypeReference<>() {});
+        Boolean darkMode = fileService.loadUserData(DARKMODE_FILE, new TypeReference<>() {});
+        return darkMode == null || darkMode;
     }
 
     public String loadGameRegion() {
-        return fileService.loadUserData(GAME_REGION_FILE, new TypeReference<>() {});
+        String region = fileService.loadUserData(GAME_REGION_FILE, new TypeReference<>() {});
+        return region == null ? "" : region;
     }
 }

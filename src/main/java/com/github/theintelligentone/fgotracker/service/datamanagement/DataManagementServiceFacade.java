@@ -12,7 +12,6 @@ import com.github.theintelligentone.fgotracker.service.datamanagement.user.UserD
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.transformer.UserServantToViewTransformer;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 
 import java.io.File;
@@ -26,26 +25,22 @@ public class DataManagementServiceFacade {
     public static final int MIN_TABLE_SIZE = 25;
     public static final String NAME_FORMAT = "%s [%d* %s]";
 
-    private final BooleanProperty darkMode;
-    private final FileManagementServiceFacade fileServiceFacade;
-
     private final ImportManagementService importManagementService;
     private final CacheManagementService cacheManagementService;
     private final UserDataManagementServiceFacade userDataManagementServiceFacade;
 
     public DataManagementServiceFacade() {
-        darkMode = new SimpleBooleanProperty(true);
         ObjectMapper objectMapper = new ObjectMapper();
         DataRequestService requestService = new DataRequestService(objectMapper);
-        fileServiceFacade = new FileManagementServiceFacade(objectMapper);
+        FileManagementServiceFacade fileServiceFacade = new FileManagementServiceFacade(objectMapper);
         cacheManagementService = new CacheManagementService(fileServiceFacade, requestService);
         UserServantToViewTransformer userServantToViewTransformer = new UserServantToViewTransformer();
         importManagementService = new ImportManagementService(fileServiceFacade, userServantToViewTransformer);
-        userDataManagementServiceFacade = new UserDataManagementServiceFacade(userServantToViewTransformer);
+        userDataManagementServiceFacade = new UserDataManagementServiceFacade(fileServiceFacade, userServantToViewTransformer);
     }
 
     public BooleanProperty darkModeProperty() {
-        return darkMode;
+        return userDataManagementServiceFacade.getDarkMode();
     }
 
     public ObservableList<PlannerServantView> getPaddedPlannerServantList(PlannerType plannerType) {
@@ -63,17 +58,7 @@ public class DataManagementServiceFacade {
     public void initApp(String selectedRegion) {
         cacheManagementService.initApp(selectedRegion);
         userDataManagementServiceFacade.initDataLists();
-        refreshAllData();
-    }
-
-    private void refreshAllData() {
-        darkMode.set(fileServiceFacade.loadDarkMode());
-        userDataManagementServiceFacade.refreshUserServants(fileServiceFacade.loadRoster(),
-                cacheManagementService.getServantList());
-        userDataManagementServiceFacade.refreshInventory(fileServiceFacade.loadInventory(),
-                cacheManagementService.getMaterials());
-        userDataManagementServiceFacade.refreshPlannerServants(PlannerType.REGULAR, fileServiceFacade.loadPlannedServantData());
-        userDataManagementServiceFacade.refreshPlannerServants(PlannerType.PRIORITY, fileServiceFacade.loadPriorityServantData());
+        userDataManagementServiceFacade.refreshAllData(cacheManagementService.getServantList(), cacheManagementService.getMaterials());
     }
 
     public void saveMaterialData() {
@@ -135,17 +120,11 @@ public class DataManagementServiceFacade {
     }
 
     public void saveUserState() {
-        fileServiceFacade.saveRoster(userDataManagementServiceFacade.getClearedUserServantList());
-        fileServiceFacade.saveInventory(userDataManagementServiceFacade.getExportInventory());
-        fileServiceFacade.savePlannerServants(userDataManagementServiceFacade.getClearedPlannerServantList(PlannerType.REGULAR));
-        fileServiceFacade.savePriorityServants(
-                userDataManagementServiceFacade.getClearedPlannerServantList(PlannerType.PRIORITY));
-        fileServiceFacade.saveDarkMode(darkMode.getValue());
-        fileServiceFacade.saveGameRegion(cacheManagementService.getGameRegion());
+        userDataManagementServiceFacade.saveUserState(cacheManagementService.getGameRegion());
     }
 
     public List<String> importInventoryFromCsv(File sourceFile) {
-        return importManagementService.createInventoryFromCsvLines(fileServiceFacade.importInventoryCsv(sourceFile),
+        return importManagementService.createInventoryFromCsvLines(sourceFile,
                 cacheManagementService.getMaterials(),
                 userDataManagementServiceFacade.getInventory());
     }

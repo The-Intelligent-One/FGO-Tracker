@@ -9,20 +9,54 @@ import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
+import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.transformer.UserServantToViewTransformer;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
+import lombok.Getter;
 
 import java.util.List;
 
 public class UserDataManagementServiceFacade {
+    @Getter
+    private final BooleanProperty darkMode;
+
+    private final FileManagementServiceFacade fileServiceFacade;
     private final UserServantManagementService userServantManagementService;
     private final InventoryManagementService inventoryManagementService;
     private final PlannerManagementService plannerManagementService;
 
-    public UserDataManagementServiceFacade(UserServantToViewTransformer userServantToViewTransformer) {
+    public UserDataManagementServiceFacade(
+            FileManagementServiceFacade fileServiceFacade,
+            UserServantToViewTransformer userServantToViewTransformer) {
+        this.fileServiceFacade = fileServiceFacade;
+        darkMode = new SimpleBooleanProperty(true);
         userServantManagementService = new UserServantManagementService(userServantToViewTransformer);
         inventoryManagementService = new InventoryManagementService();
         plannerManagementService = new PlannerManagementService();
+    }
+
+    public void refreshAllData(List<Servant> servantList, List<UpgradeMaterial> materials) {
+        darkMode.set(fileServiceFacade.loadDarkMode());
+        userServantManagementService.refreshUserServants(fileServiceFacade.loadRoster(), servantList);
+        inventoryManagementService.refreshInventory(fileServiceFacade.loadInventory(), materials);
+        refreshPlannerServants(PlannerType.REGULAR, fileServiceFacade.loadPlannedServantData());
+        refreshPlannerServants(PlannerType.PRIORITY, fileServiceFacade.loadPriorityServantData());
+    }
+
+    private void refreshPlannerServants(PlannerType plannerType, List<PlannerServant> loadedPlannedServantData) {
+        plannerManagementService.refreshPlannerServants(plannerType, loadedPlannedServantData,
+                userServantManagementService.getPaddedUserServantList());
+    }
+
+    public void saveUserState(String gameRegion) {
+        fileServiceFacade.saveRoster(getClearedUserServantList());
+        fileServiceFacade.saveInventory(getExportInventory());
+        fileServiceFacade.savePlannerServants(getClearedPlannerServantList(PlannerType.REGULAR));
+        fileServiceFacade.savePriorityServants(getClearedPlannerServantList(PlannerType.PRIORITY));
+        fileServiceFacade.saveDarkMode(darkMode.getValue());
+        fileServiceFacade.saveGameRegion(gameRegion);
     }
 
     public ObservableList<PlannerServantView> getPaddedPlannerServantList(PlannerType plannerType) {
@@ -37,19 +71,6 @@ public class UserDataManagementServiceFacade {
         plannerManagementService.initDataLists();
         userServantManagementService.initDataLists(plannerManagementService.getPaddedPlannerServantList(PlannerType.REGULAR),
                 plannerManagementService.getPaddedPlannerServantList(PlannerType.PRIORITY));
-    }
-
-    public void refreshUserServants(List<UserServant> loadedRoster, List<Servant> servantList) {
-        userServantManagementService.refreshUserServants(loadedRoster, servantList);
-    }
-
-    public void refreshInventory(Inventory loadedInventory, List<UpgradeMaterial> materials) {
-        inventoryManagementService.refreshInventory(loadedInventory, materials);
-    }
-
-    public void refreshPlannerServants(PlannerType plannerType, List<PlannerServant> loadedPlannedServantData) {
-        plannerManagementService.refreshPlannerServants(plannerType, loadedPlannedServantData,
-                userServantManagementService.getPaddedUserServantList());
     }
 
     public Inventory createEmptyInventory(List<UpgradeMaterial> materials) {

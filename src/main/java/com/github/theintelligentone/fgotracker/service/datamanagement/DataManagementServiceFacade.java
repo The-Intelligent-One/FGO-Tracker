@@ -8,6 +8,7 @@ import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
+import com.github.theintelligentone.fgotracker.service.datamanagement.cache.CacheManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.datamanagement.user.UserDataManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.transformer.UserServantToViewTransformer;
@@ -26,14 +27,14 @@ public class DataManagementServiceFacade {
     public static final String NAME_FORMAT = "%s [%d* %s]";
 
     private final ImportManagementService importManagementService;
-    private final CacheManagementService cacheManagementService;
+    private final CacheManagementServiceFacade cacheManagementService;
     private final UserDataManagementServiceFacade userDataManagementServiceFacade;
 
     public DataManagementServiceFacade() {
         ObjectMapper objectMapper = new ObjectMapper();
         DataRequestService requestService = new DataRequestService(objectMapper);
         FileManagementServiceFacade fileServiceFacade = new FileManagementServiceFacade(objectMapper);
-        cacheManagementService = new CacheManagementService(fileServiceFacade, requestService);
+        cacheManagementService = new CacheManagementServiceFacade(fileServiceFacade, requestService);
         UserServantToViewTransformer userServantToViewTransformer = new UserServantToViewTransformer();
         importManagementService = new ImportManagementService(fileServiceFacade, userServantToViewTransformer);
         userDataManagementServiceFacade = new UserDataManagementServiceFacade(fileServiceFacade, userServantToViewTransformer);

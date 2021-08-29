@@ -1,5 +1,6 @@
 package com.github.theintelligentone.fgotracker.service.filemanagement.cache;
 
+import com.github.theintelligentone.fgotracker.domain.event.BasicEvent;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.other.VersionDTO;
@@ -12,12 +13,14 @@ import java.util.Map;
 public class CacheFileServiceFacade {
     private final MaterialFileService materialFileService;
     private final ServantFileService servantFileService;
+    private final EventFileService eventFileService;
     private final StaticDataFileService staticDataFileService;
 
     public CacheFileServiceFacade(FileService fileService) {
         materialFileService = new MaterialFileService(fileService);
         servantFileService = new ServantFileService(fileService);
         staticDataFileService = new StaticDataFileService(fileService);
+        eventFileService = new EventFileService(fileService);
     }
 
     public void loadOfflineData() {
@@ -64,5 +67,13 @@ public class CacheFileServiceFacade {
 
     public void saveCurrentVersion(Map<String, VersionDTO> versionMap) {
         staticDataFileService.saveCurrentVersion(versionMap);
+    }
+
+    public List<BasicEvent> loadBasicEventData(String gameRegion) {
+        return eventFileService.loadBasicEventData(gameRegion);
+    }
+
+    public void saveBasicEventData(List<BasicEvent> basicEvents, String gameRegion) {
+        eventFileService.saveBasicEventData(basicEvents, gameRegion);
     }
 }

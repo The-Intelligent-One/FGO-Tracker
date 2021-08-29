@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.ChoiceBox?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<Tab xmlns="http://javafx.com/javafx"
+     xmlns:fx="http://javafx.com/fxml"
+     fx:controller="com.github.theintelligentone.fgotracker.ui.controller.EventsController"
+     text="Events">
+    <VBox>
+        <ChoiceBox fx:id="eventDropdown"/>
+        <TextField fx:id="eventNameField"/>
+    </VBox>
+</Tab>

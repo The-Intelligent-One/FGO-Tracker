@@ -2,6 +2,7 @@ package com.github.theintelligentone.fgotracker.service.datamanagement;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.theintelligentone.fgotracker.domain.event.BasicEvent;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.other.VersionDTO;
@@ -12,10 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.Instant;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -33,6 +32,8 @@ public class DataRequestService {
     private static final String CARD_DETAILS_URL = "https://api.atlasacademy.io/export/NA/NiceCard.json";
     private static final String VERSION_URL = "https://api.atlasacademy.io/info";
     private static final int HOLY_GRAIL_ID = 7999;
+    private static final String NA_BASIC_EVENT_URL = "https://api.atlasacademy.io/export/NA/basic_event.json";
+    private static final String JP_BASIC_EVENT_URL = "https://api.atlasacademy.io/export/JP/basic_event_lang_en.json";
     private final ObjectMapper objectMapper;
 
     public DataRequestService(ObjectMapper objectMapper) {
@@ -47,6 +48,18 @@ public class DataRequestService {
     public List<UpgradeMaterial> getAllMaterialData(String gameRegion) {
         List<UpgradeMaterial> dataList = getDataFromUrl(MAT_URL.get(gameRegion), new TypeReference<>() {});
         return dataList.stream().filter(this::isMat).collect(Collectors.toList());
+    }
+
+    public List<BasicEvent> getBasicEventData(String gameRegion) {
+        List<BasicEvent> allBasicEvents = new ArrayList<>();
+        List<BasicEvent> basicEventsJp = getDataFromUrl(JP_BASIC_EVENT_URL, new TypeReference<>() {});
+        if ("NA".equals(gameRegion)) {
+            allBasicEvents.addAll(getDataFromUrl(NA_BASIC_EVENT_URL, new TypeReference<>() {}));
+            Instant lastTimeStamp = allBasicEvents.get(allBasicEvents.size() - 1).getStartedAt();
+            basicEventsJp.removeIf(basicEvent -> lastTimeStamp.isAfter(basicEvent.getStartedAt()));
+        }
+        allBasicEvents.addAll(basicEventsJp);
+        return allBasicEvents;
     }
 
     public Map<String, Integer> getClassAttackRate() {

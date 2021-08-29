@@ -1,6 +1,8 @@
 package com.github.theintelligentone.fgotracker.service.datamanagement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.github.theintelligentone.fgotracker.domain.event.BasicEvent;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
@@ -32,6 +34,7 @@ public class DataManagementServiceFacade {
 
     public DataManagementServiceFacade() {
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
         DataRequestService requestService = new DataRequestService(objectMapper);
         FileManagementServiceFacade fileServiceFacade = new FileManagementServiceFacade(objectMapper);
         cacheManagementService = new CacheManagementServiceFacade(fileServiceFacade, requestService);
@@ -62,6 +65,10 @@ public class DataManagementServiceFacade {
 
     public String getGameRegion() {
         return cacheManagementService.getGameRegion();
+    }
+
+    public List<BasicEvent> getBasicEvents() {
+        return cacheManagementService.getBasicEvents();
     }
 
     public InventoryView getInventory() {

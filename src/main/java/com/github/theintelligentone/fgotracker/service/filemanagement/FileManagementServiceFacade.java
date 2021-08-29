@@ -1,6 +1,7 @@
 package com.github.theintelligentone.fgotracker.service.filemanagement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.theintelligentone.fgotracker.domain.event.BasicEvent;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
@@ -136,5 +137,13 @@ public class FileManagementServiceFacade {
 
     public String loadGameRegion() {
         return userFileServiceFacade.loadGameRegion();
+    }
+
+    public List<BasicEvent> loadBasicEventData(String gameRegion) {
+        return cacheFileServiceFacade.loadBasicEventData(gameRegion);
+    }
+
+    public void saveBasicEventData(List<BasicEvent> basicEvents, String gameRegion) {
+        cacheFileServiceFacade.saveBasicEventData(basicEvents, gameRegion);
     }
 }

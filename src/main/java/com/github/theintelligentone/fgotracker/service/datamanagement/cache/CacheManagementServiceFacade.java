@@ -1,5 +1,6 @@
 package com.github.theintelligentone.fgotracker.service.datamanagement.cache;
 
+import com.github.theintelligentone.fgotracker.domain.event.BasicEvent;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataRequestService;
@@ -13,12 +14,14 @@ public class CacheManagementServiceFacade {
     private final VersionManagementService versionManagementService;
     private final ServantManagementService servantManagementService;
     private final MaterialManagementService materialManagementService;
+    private final EventManagementService eventManagementService;
 
     public CacheManagementServiceFacade(FileManagementServiceFacade fileServiceFacade,
                                         DataRequestService requestService) {
         versionManagementService = new VersionManagementService(fileServiceFacade, requestService);
         servantManagementService = new ServantManagementService(fileServiceFacade, requestService);
         materialManagementService = new MaterialManagementService(fileServiceFacade, requestService);
+        eventManagementService = new EventManagementService(fileServiceFacade, requestService);
     }
 
     public List<Servant> getServantList() {
@@ -41,6 +44,10 @@ public class CacheManagementServiceFacade {
         return materialManagementService.getMaterials();
     }
 
+    public List<BasicEvent> getBasicEvents() {
+        return eventManagementService.getBasicEvents();
+    }
+
     public boolean isDataLoaded() {
         return servantManagementService.isDataLoaded();
     }
@@ -56,8 +63,10 @@ public class CacheManagementServiceFacade {
     }
 
     private void loadFromCache() {
-        servantManagementService.loadServantDataFromCache(versionManagementService.getGameRegion());
-        materialManagementService.loadMaterialDataFromCache(versionManagementService.getGameRegion());
+        String gameRegion = versionManagementService.getGameRegion();
+        servantManagementService.loadServantDataFromCache(gameRegion);
+        materialManagementService.loadMaterialDataFromCache(gameRegion);
+        eventManagementService.loadBasicEventDataFromCache(gameRegion);
     }
 
     private void refreshCache() {
@@ -66,12 +75,15 @@ public class CacheManagementServiceFacade {
     }
 
     private void downloadNewData() {
-        servantManagementService.downloadNewServantData(versionManagementService.getGameRegion());
-        materialManagementService.downloadNewMaterialData(versionManagementService.getGameRegion());
+        String gameRegion = versionManagementService.getGameRegion();
+        servantManagementService.downloadNewServantData(gameRegion);
+        materialManagementService.downloadNewMaterialData(gameRegion);
+        eventManagementService.downloadNewBasicEventData(gameRegion);
     }
 
     private void saveNewDataToCache() {
         servantManagementService.saveServantDataToCache(versionManagementService.getGameRegion());
+        eventManagementService.saveBasicEventData(versionManagementService.getGameRegion());
         versionManagementService.saveVersion();
     }
 

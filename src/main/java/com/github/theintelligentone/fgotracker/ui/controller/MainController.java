@@ -41,6 +41,8 @@ public class MainController {
     private PlannerController priorityPlannerController;
     @FXML
     private PlannerController ltPlannerController;
+    @FXML
+    private EventsController eventsTabController;
 
     private DataManagementServiceFacade dataManagementServiceFacade;
 
@@ -50,11 +52,12 @@ public class MainController {
     }
 
 
-    public void tableSetup() {
+    public void setup() {
         rosterTabController.setup();
         plannerController.setup();
         priorityPlannerController.setup();
         ltPlannerController.setup();
+        eventsTabController.setup();
     }
 
     public void tearDown() {

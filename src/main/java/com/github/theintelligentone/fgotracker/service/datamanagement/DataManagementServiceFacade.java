@@ -43,6 +43,30 @@ public class DataManagementServiceFacade {
         return userDataManagementServiceFacade.getDarkMode();
     }
 
+    public ObservableList<String> getServantNameList() {
+        return cacheManagementService.getServantNameList();
+    }
+
+    public boolean isIconsNotResized() {
+        return !cacheManagementService.isIconsResized();
+    }
+
+    public List<UpgradeMaterial> getMaterials() {
+        return cacheManagementService.getMaterials();
+    }
+
+    public ObservableList<String> getUserServantNameList() {
+        return userDataManagementServiceFacade.getUserServantNameList();
+    }
+
+    public String getGameRegion() {
+        return cacheManagementService.getGameRegion();
+    }
+
+    public InventoryView getInventory() {
+        return userDataManagementServiceFacade.getInventory();
+    }
+
     public ObservableList<PlannerServantView> getPaddedPlannerServantList(PlannerType plannerType) {
         return userDataManagementServiceFacade.getPaddedPlannerServantList(plannerType);
     }
@@ -58,8 +82,26 @@ public class DataManagementServiceFacade {
     public void initApp(String selectedRegion) {
         cacheManagementService.initApp(selectedRegion);
         userDataManagementServiceFacade.initDataLists();
-        userDataManagementServiceFacade.refreshAllData(cacheManagementService.getServantList(), cacheManagementService.getMaterials());
+        userDataManagementServiceFacade.refreshAllData(cacheManagementService.getServantList(),
+                cacheManagementService.getMaterials());
     }
+
+    public List<String> importInventoryFromCsv(File sourceFile) {
+        return importManagementService.createInventoryFromCsvLines(sourceFile,
+                cacheManagementService.getMaterials(),
+                userDataManagementServiceFacade.getInventory());
+    }
+
+    public List<String> importPlannerServantsFromCsv(File sourceFile, PlannerType plannerType) {
+        List<PlannerServantView> importedServants = new ArrayList<>();
+        List<String> notFoundNames = importManagementService.createPlannerServantListFromCsvLines(
+                userDataManagementServiceFacade.getPaddedUserServantList(), cacheManagementService.getServantList(),
+                importedServants,
+                sourceFile);
+        userDataManagementServiceFacade.saveImportedPlannerServants(plannerType, importedServants);
+        return notFoundNames;
+    }
+
 
     public void saveMaterialData() {
         cacheManagementService.saveMaterialData();
@@ -75,6 +117,14 @@ public class DataManagementServiceFacade {
                 cacheManagementService.getServantList());
         userDataManagementServiceFacade.saveImportedUserServants(importedServants);
         return notFoundNames;
+    }
+
+    public void saveUserState() {
+        userDataManagementServiceFacade.saveUserState(cacheManagementService.getGameRegion());
+    }
+
+    public void invalidateCache() {
+        cacheManagementService.invalidateCache();
     }
 
     public void eraseUserServant(UserServantView servant) {
@@ -117,53 +167,5 @@ public class DataManagementServiceFacade {
     public void replaceBaseServantInPlannerRow(int index, PlannerServantView servant, String newServantName,
                                                PlannerType plannerType) {
         userDataManagementServiceFacade.replaceBaseServantInPlannerRow(index, servant, newServantName, plannerType);
-    }
-
-    public void saveUserState() {
-        userDataManagementServiceFacade.saveUserState(cacheManagementService.getGameRegion());
-    }
-
-    public List<String> importInventoryFromCsv(File sourceFile) {
-        return importManagementService.createInventoryFromCsvLines(sourceFile,
-                cacheManagementService.getMaterials(),
-                userDataManagementServiceFacade.getInventory());
-    }
-
-    public List<String> importPlannerServantsFromCsv(File sourceFile, PlannerType plannerType) {
-        List<PlannerServantView> importedServants = new ArrayList<>();
-        List<String> notFoundNames = importManagementService.createPlannerServantListFromCsvLines(
-                userDataManagementServiceFacade.getPaddedUserServantList(), cacheManagementService.getServantList(),
-                importedServants,
-                sourceFile);
-        userDataManagementServiceFacade.saveImportedPlannerServants(plannerType, importedServants);
-        return notFoundNames;
-    }
-
-    public void invalidateCache() {
-        cacheManagementService.invalidateCache();
-    }
-
-    public ObservableList<String> getServantNameList() {
-        return cacheManagementService.getServantNameList();
-    }
-
-    public boolean isIconsNotResized() {
-        return !cacheManagementService.isIconsResized();
-    }
-
-    public List<UpgradeMaterial> getMaterials() {
-        return cacheManagementService.getMaterials();
-    }
-
-    public ObservableList<String> getUserServantNameList() {
-        return userDataManagementServiceFacade.getUserServantNameList();
-    }
-
-    public String getGameRegion() {
-        return cacheManagementService.getGameRegion();
-    }
-
-    public InventoryView getInventory() {
-        return userDataManagementServiceFacade.getInventory();
     }
 }

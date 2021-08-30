@@ -32,8 +32,8 @@ public class DataRequestService {
     private static final Map<String, String> MAT_URL = Map.of(
             NA_REGION, "https://api.atlasacademy.io/export/NA/nice_item.json",
             JP_REGION, "https://api.atlasacademy.io/export/JP/nice_item_lang_en.json");
-    private static final String CLASS_ATTACK_RATE_URL = "https://api.atlasacademy.io/export/NA/NiceClassAttackRate.json";
-    private static final String CARD_DETAILS_URL = "https://api.atlasacademy.io/export/NA/NiceCard.json";
+    private static final String CLASS_ATTACK_RATE_URL = "https://api.atlasacademy.io/export/JP/NiceClassAttackRate.json";
+    private static final String CARD_DETAILS_URL = "https://api.atlasacademy.io/export/JP/NiceCard.json";
     private static final String VERSION_URL = "https://api.atlasacademy.io/info";
     private static final int HOLY_GRAIL_ID = 7999;
     private static final Map<String, String> BASIC_EVENT_URL = Map.of(

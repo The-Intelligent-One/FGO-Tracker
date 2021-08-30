@@ -62,7 +62,7 @@ public class DataRequestService {
 
     public List<BasicServant> getBasicServantData(String gameRegion) {
         return getDataListFromEitherRegion(gameRegion, BASIC_SERVANT_URL, Comparator.comparing(BasicServant::getCollectionNo),
-                new TypeReference<>() {});
+                new TypeReference<>() {}).stream().filter(this::isBasicServant).collect(Collectors.toList());
     }
 
     public List<UpgradeMaterial> getAllMaterialData(String gameRegion) {
@@ -135,6 +135,10 @@ public class DataRequestService {
     }
 
     private boolean isServant(Servant svt) {
+        return Arrays.asList(SERVANT_TYPES).contains(svt.getType());
+    }
+
+    private boolean isBasicServant(BasicServant svt) {
         return Arrays.asList(SERVANT_TYPES).contains(svt.getType());
     }
 

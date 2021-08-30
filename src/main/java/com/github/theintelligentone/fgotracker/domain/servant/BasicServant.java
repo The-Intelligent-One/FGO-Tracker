@@ -11,4 +11,5 @@ public class BasicServant {
     private String name;
     private int rarity;
     private String className;
+    private String type;
 }

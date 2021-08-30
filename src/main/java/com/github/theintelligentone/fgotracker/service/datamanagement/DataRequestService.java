@@ -66,7 +66,8 @@ public class DataRequestService {
     }
 
     public List<UpgradeMaterial> getAllMaterialData(String gameRegion) {
-        List<UpgradeMaterial> dataList = getDataFromUrl(MAT_URL.get(gameRegion), new TypeReference<>() {});
+        List<UpgradeMaterial> dataList = getDataListFromEitherRegion(gameRegion, MAT_URL,
+                Comparator.comparing(UpgradeMaterial::getId), new TypeReference<>() {});
         return dataList.stream().filter(this::isMat).collect(Collectors.toList());
     }
 

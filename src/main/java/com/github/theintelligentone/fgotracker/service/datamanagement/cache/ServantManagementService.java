@@ -36,12 +36,7 @@ public class ServantManagementService {
         this.requestService = requestService;
     }
 
-    public boolean isDataLoaded() {
-        return servantDataList != null && !servantDataList.isEmpty();
-    }
-
     public void downloadNewServantData(String gameRegion) {
-//        servantDataList = requestService.getAllServantData(gameRegion);
         basicServantDataList = requestService.getBasicServantData(gameRegion);
         servantDataList = fileServiceFacade.loadFullServantData(gameRegion);
         CLASS_ATTACK_MULTIPLIER = requestService.getClassAttackRate();

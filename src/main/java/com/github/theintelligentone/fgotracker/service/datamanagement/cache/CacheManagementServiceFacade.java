@@ -6,18 +6,22 @@ import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataRequestService;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
 import javafx.collections.ObservableList;
+import lombok.Getter;
 
 import java.util.List;
 
 public class CacheManagementServiceFacade {
-
     private final VersionManagementService versionManagementService;
     private final ServantManagementService servantManagementService;
     private final MaterialManagementService materialManagementService;
     private final EventManagementService eventManagementService;
 
+    @Getter
+    private boolean dataLoaded;
+
     public CacheManagementServiceFacade(FileManagementServiceFacade fileServiceFacade,
                                         DataRequestService requestService) {
+        dataLoaded = false;
         versionManagementService = new VersionManagementService(fileServiceFacade, requestService);
         servantManagementService = new ServantManagementService(fileServiceFacade, requestService);
         materialManagementService = new MaterialManagementService(fileServiceFacade, requestService);
@@ -32,6 +36,7 @@ public class CacheManagementServiceFacade {
             loadFromCache();
         }
         servantManagementService.createServantNameList();
+        dataLoaded = true;
     }
 
     public List<Servant> getServantList() {
@@ -56,10 +61,6 @@ public class CacheManagementServiceFacade {
 
     public List<BasicEvent> getBasicEvents() {
         return eventManagementService.getBasicEvents();
-    }
-
-    public boolean isDataLoaded() {
-        return servantManagementService.isDataLoaded();
     }
 
     private void loadFromCache() {

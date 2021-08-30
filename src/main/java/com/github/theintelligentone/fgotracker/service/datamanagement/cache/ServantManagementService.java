@@ -55,7 +55,11 @@ public class ServantManagementService {
                 .filter(svt -> name.equalsIgnoreCase(
                         String.format(NAME_FORMAT, svt.getName(), svt.getRarity(), svt.getClassName())))
                 .findFirst();
-        return searchResult.orElseGet(() -> requestService.getServantDataById(gameRegion, findServantIdByFormattedName(name)));
+        return searchResult.orElseGet(() -> {
+            Servant downloadedServant = requestService.getServantDataById(gameRegion, findServantIdByFormattedName(name));
+            servantDataList.add(downloadedServant);
+            return downloadedServant;
+        });
     }
 
     private long findServantIdByFormattedName(String name) {
@@ -74,12 +78,13 @@ public class ServantManagementService {
     }
 
     public void saveServantDataToCache(String gameRegion) {
-        fileServiceFacade.saveFullServantData(servantDataList, gameRegion);
+        saveCachedFullServantData(gameRegion);
+        fileServiceFacade.saveBasicServantData(basicServantDataList, gameRegion);
         fileServiceFacade.saveClassAttackRate(CLASS_ATTACK_MULTIPLIER);
         fileServiceFacade.saveCardData(CARD_DATA);
     }
 
-    public void saveBasicServantDataToCache(String gameRegion) {
-        fileServiceFacade.saveBasicServantData(basicServantDataList, gameRegion);
+    public void saveCachedFullServantData(String gameRegion) {
+        fileServiceFacade.saveFullServantData(servantDataList, gameRegion);
     }
 }

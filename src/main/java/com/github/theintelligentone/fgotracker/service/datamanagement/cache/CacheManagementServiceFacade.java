@@ -84,9 +84,12 @@ public class CacheManagementServiceFacade {
 
     private void saveNewDataToCache() {
         servantManagementService.saveServantDataToCache(versionManagementService.getGameRegion());
-        servantManagementService.saveBasicServantDataToCache(versionManagementService.getGameRegion());
         eventManagementService.saveBasicEventData(versionManagementService.getGameRegion());
         versionManagementService.saveVersion();
+    }
+
+    public void saveCachedFullServantData() {
+        servantManagementService.saveCachedFullServantData(versionManagementService.getGameRegion());
     }
 
     public void saveMaterialData() {

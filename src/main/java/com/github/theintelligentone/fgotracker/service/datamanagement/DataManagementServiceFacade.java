@@ -128,6 +128,7 @@ public class DataManagementServiceFacade {
     }
 
     public void saveUserState() {
+        cacheManagementService.saveCachedFullServantData();
         userDataManagementServiceFacade.saveUserState(cacheManagementService.getGameRegion());
     }
 

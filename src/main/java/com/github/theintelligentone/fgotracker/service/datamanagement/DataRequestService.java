@@ -122,7 +122,7 @@ public class DataRequestService {
         if (NA_REGION.equals(gameRegion)) {
             allResults.addAll(getDataFromUrl(urlRegionMap.get(NA_REGION), typeRef));
             allResults.sort(comparator);
-            jpResults.removeIf(basicEvent -> comparator.compare(allResults.get(allResults.size() - 1), basicEvent) <= 0);
+            jpResults.removeIf(basicEvent -> comparator.compare(allResults.get(allResults.size() - 1), basicEvent) >= 0);
         }
         allResults.addAll(jpResults);
         allResults.sort(comparator);

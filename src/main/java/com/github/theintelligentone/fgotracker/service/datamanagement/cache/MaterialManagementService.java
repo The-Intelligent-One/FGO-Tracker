@@ -29,7 +29,10 @@ public class MaterialManagementService {
     public void downloadNewMaterialData(String gameRegion) {
         iconsResized = false;
         materials = requestService.getAllMaterialData(gameRegion);
-        materials.forEach(material -> material.setIconImage(requestService.getImageForMaterial(material)));
+        materials.forEach(fileServiceFacade::loadImageForMaterial);
+        materials.stream()
+                .filter(material -> material.getIconImage() == null)
+                .forEach(material -> material.setIconImage(requestService.getImageForMaterial(material)));
     }
 
     public void saveMaterialData(String gameRegion) {

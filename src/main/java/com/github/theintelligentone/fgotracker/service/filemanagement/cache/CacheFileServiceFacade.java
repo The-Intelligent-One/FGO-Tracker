@@ -49,6 +49,10 @@ public class CacheFileServiceFacade {
         return materialFileService.loadMaterialData(gameRegion);
     }
 
+    public void loadImageForMaterial(UpgradeMaterial material) {
+        materialFileService.loadImageForMaterial(material);
+    }
+
     public List<Servant> loadFullServantData(String gameRegion) {
         return servantFileService.loadFullServantData(gameRegion);
     }

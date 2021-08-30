@@ -16,6 +16,7 @@ public class MaterialFileService {
     public MaterialFileService(FileService fileService) {
         this.fileService = fileService;
         fileService.createCacheStructureForDirectory(IMAGE_FOLDER_PATH);
+        fileService.copyImagesFromOfflineBackupToCache(IMAGE_FOLDER_PATH);
     }
 
     public void saveMaterialData(List<UpgradeMaterial> materials, String gameRegion) {
@@ -36,7 +37,7 @@ public class MaterialFileService {
         fileService.copyImagesFromOfflineBackupToCache(IMAGE_FOLDER_PATH);
     }
 
-    private void loadImageForMaterial(UpgradeMaterial material) {
+    public void loadImageForMaterial(UpgradeMaterial material) {
         material.setIconImage(fileService.getImageFromFolder(IMAGE_FOLDER_PATH, material.getId() + "." + PNG_FORMAT));
     }
 }

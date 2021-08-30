@@ -95,6 +95,10 @@ public class FileManagementServiceFacade {
         userFileServiceFacade.saveGameRegion(gameRegion);
     }
 
+    public void saveBasicEventData(List<BasicEvent> basicEvents, String gameRegion) {
+        cacheFileServiceFacade.saveBasicEventData(basicEvents, gameRegion);
+    }
+
     public List<UpgradeMaterial> loadMaterialData(String gameRegion) {
         return cacheFileServiceFacade.loadMaterialData(gameRegion);
     }
@@ -143,7 +147,7 @@ public class FileManagementServiceFacade {
         return cacheFileServiceFacade.loadBasicEventData(gameRegion);
     }
 
-    public void saveBasicEventData(List<BasicEvent> basicEvents, String gameRegion) {
-        cacheFileServiceFacade.saveBasicEventData(basicEvents, gameRegion);
+    public void loadImageForMaterial(UpgradeMaterial material) {
+        cacheFileServiceFacade.loadImageForMaterial(material);
     }
 }

@@ -14,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -58,25 +57,12 @@ public class DataRequestService {
     }
 
     public Servant getServantDataById(String gameRegion, long id) {
-        return getDataFromUrl(String.format(SERVANT_ID_SEARCH_URL.get(NA_REGION), id), new TypeReference<>() {});
+        return getDataFromUrl(String.format(SERVANT_ID_SEARCH_URL.get(gameRegion), id), new TypeReference<>() {});
     }
 
     public List<BasicServant> getBasicServantData(String gameRegion) {
-        List<BasicServant> allBasicServants = new ArrayList<>();
-        List<BasicServant> basicServantsJp = getDataFromUrl(BASIC_SERVANT_URL.get(JP_REGION), new TypeReference<>() {});
-        if (NA_REGION.equals(gameRegion)) {
-            useNaServantsWhereApplicable(allBasicServants, basicServantsJp);
-        }
-        allBasicServants.addAll(basicServantsJp);
-        allBasicServants.sort(Comparator.comparing(BasicServant::getCollectionNo));
-        return allBasicServants;
-    }
-
-    private void useNaServantsWhereApplicable(List<BasicServant> allBasicServants, List<BasicServant> basicServantsJp) {
-        allBasicServants.addAll(getDataFromUrl(BASIC_SERVANT_URL.get(NA_REGION), new TypeReference<>() {}));
-        allBasicServants.sort(Comparator.comparing(BasicServant::getCollectionNo));
-        int lastCollectionNo = allBasicServants.get(allBasicServants.size() - 1).getCollectionNo();
-        basicServantsJp.removeIf(basicEvent -> lastCollectionNo >= basicEvent.getCollectionNo());
+        return getDataListFromEitherRegion(gameRegion, BASIC_SERVANT_URL, Comparator.comparing(BasicServant::getCollectionNo),
+                new TypeReference<>() {});
     }
 
     public List<UpgradeMaterial> getAllMaterialData(String gameRegion) {
@@ -85,22 +71,10 @@ public class DataRequestService {
     }
 
     public List<BasicEvent> getBasicEventData(String gameRegion) {
-        List<BasicEvent> allBasicEvents = new ArrayList<>();
-        List<BasicEvent> basicEventsJp = getDataFromUrl(BASIC_EVENT_URL.get(JP_REGION), new TypeReference<>() {});
-        if (NA_REGION.equals(gameRegion)) {
-            useNaEventsWhereApplicable(allBasicEvents, basicEventsJp);
-        }
-        allBasicEvents.addAll(basicEventsJp);
+        List<BasicEvent> allBasicEvents = getDataListFromEitherRegion(gameRegion, BASIC_EVENT_URL,
+                Comparator.comparing(BasicEvent::getStartedAt), new TypeReference<>() {});
         allBasicEvents.removeIf(basicEvent -> !EVENT_QUEST.equals(basicEvent.getType()));
-        allBasicEvents.sort(Comparator.comparing(BasicEvent::getStartedAt));
         return allBasicEvents;
-    }
-
-    private void useNaEventsWhereApplicable(List<BasicEvent> allBasicEvents, List<BasicEvent> basicEventsJp) {
-        allBasicEvents.addAll(getDataFromUrl(BASIC_EVENT_URL.get(NA_REGION), new TypeReference<>() {}));
-        allBasicEvents.sort(Comparator.comparing(BasicEvent::getStartedAt));
-        Instant lastTimeStamp = allBasicEvents.get(allBasicEvents.size() - 1).getStartedAt();
-        basicEventsJp.removeIf(basicEvent -> lastTimeStamp.isAfter(basicEvent.getStartedAt()));
     }
 
     public Map<String, Integer> getClassAttackRate() {
@@ -138,6 +112,20 @@ public class DataRequestService {
             log.error(e.getLocalizedMessage(), e);
         }
         return returnedData;
+    }
+
+    private <T> List<T> getDataListFromEitherRegion(String gameRegion, Map<String, String> urlRegionMap,
+                                                    Comparator<T> comparator, TypeReference<List<T>> typeRef) {
+        List<T> allResults = new ArrayList<>();
+        List<T> jpResults = getDataFromUrl(urlRegionMap.get(JP_REGION), typeRef);
+        if (NA_REGION.equals(gameRegion)) {
+            allResults.addAll(getDataFromUrl(urlRegionMap.get(NA_REGION), typeRef));
+            allResults.sort(comparator);
+            jpResults.removeIf(basicEvent -> comparator.compare(allResults.get(allResults.size() - 1), basicEvent) <= 0);
+        }
+        allResults.addAll(jpResults);
+        allResults.sort(comparator);
+        return allResults;
     }
 
     private boolean isServant(Servant svt) {

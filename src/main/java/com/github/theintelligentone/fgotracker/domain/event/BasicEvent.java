@@ -14,6 +14,7 @@ public class BasicEvent {
     private Instant startedAt;
     private Instant endedAt;
     private List<Long> warIds;
+    private String type;
 
     @Override
     public String toString() {

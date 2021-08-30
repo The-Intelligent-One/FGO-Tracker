@@ -43,6 +43,13 @@ public class DataManagementServiceFacade {
         userDataManagementServiceFacade = new UserDataManagementServiceFacade(fileServiceFacade, userServantToViewTransformer);
     }
 
+    public void initApp(String selectedRegion) {
+        cacheManagementService.initApp(selectedRegion);
+        userDataManagementServiceFacade.initDataLists();
+        userDataManagementServiceFacade.refreshAllData(cacheManagementService.getServantList(),
+                cacheManagementService.getMaterials());
+    }
+
     public BooleanProperty darkModeProperty() {
         return userDataManagementServiceFacade.getDarkMode();
     }
@@ -85,13 +92,6 @@ public class DataManagementServiceFacade {
 
     public boolean isDataLoaded() {
         return cacheManagementService.isDataLoaded();
-    }
-
-    public void initApp(String selectedRegion) {
-        cacheManagementService.initApp(selectedRegion);
-        userDataManagementServiceFacade.initDataLists();
-        userDataManagementServiceFacade.refreshAllData(cacheManagementService.getServantList(),
-                cacheManagementService.getMaterials());
     }
 
     public List<String> importInventoryFromCsv(File sourceFile) {

@@ -6,6 +6,7 @@ import com.github.theintelligentone.fgotracker.domain.event.BasicEvent;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.other.VersionDTO;
+import com.github.theintelligentone.fgotracker.domain.servant.BasicServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import javafx.scene.image.Image;
 import lombok.extern.slf4j.Slf4j;
@@ -23,17 +24,28 @@ public class DataRequestService {
     private static final String[] SERVANT_TYPES = {"normal", "heroine"};
     private static final String[] MATERIAL_USES = {"skill", "ascension"};
     private static final String[] EXCLUDED_MATERIAL_TYPES = {"eventItem"};
-    private static final Map<String, String> ALL_SERVANT_URL = Map.of("NA",
-            "https://api.atlasacademy.io/export/NA/nice_servant.json",
-            "JP", "https://api.atlasacademy.io/export/JP/nice_servant_lang_en.json");
-    private static final Map<String, String> MAT_URL = Map.of("NA", "https://api.atlasacademy.io/export/NA/nice_item.json",
-            "JP", "https://api.atlasacademy.io/export/JP/nice_item_lang_en.json");
+    private static final String EVENT_QUEST = "eventQuest";
+    private static final String NA_REGION = "NA";
+    private static final String JP_REGION = "JP";
+    private static final Map<String, String> ALL_SERVANT_URL = Map.of(
+            NA_REGION, "https://api.atlasacademy.io/export/NA/nice_servant.json",
+            JP_REGION, "https://api.atlasacademy.io/export/JP/nice_servant_lang_en.json");
+    private static final Map<String, String> MAT_URL = Map.of(
+            NA_REGION, "https://api.atlasacademy.io/export/NA/nice_item.json",
+            JP_REGION, "https://api.atlasacademy.io/export/JP/nice_item_lang_en.json");
     private static final String CLASS_ATTACK_RATE_URL = "https://api.atlasacademy.io/export/NA/NiceClassAttackRate.json";
     private static final String CARD_DETAILS_URL = "https://api.atlasacademy.io/export/NA/NiceCard.json";
     private static final String VERSION_URL = "https://api.atlasacademy.io/info";
     private static final int HOLY_GRAIL_ID = 7999;
-    private static final String NA_BASIC_EVENT_URL = "https://api.atlasacademy.io/export/NA/basic_event.json";
-    private static final String JP_BASIC_EVENT_URL = "https://api.atlasacademy.io/export/JP/basic_event_lang_en.json";
+    private static final Map<String, String> BASIC_EVENT_URL = Map.of(
+            NA_REGION, "https://api.atlasacademy.io/export/NA/basic_event.json",
+            JP_REGION, "https://api.atlasacademy.io/export/JP/basic_event_lang_en.json");
+    private static final Map<String, String> BASIC_SERVANT_URL = Map.of(
+            NA_REGION, "https://api.atlasacademy.io/export/NA/basic_servant.json",
+            JP_REGION, "https://api.atlasacademy.io/export/JP/basic_servant_lang_en.json");
+    private static final Map<String, String> SERVANT_ID_SEARCH_URL = Map.of(
+            NA_REGION, "https://api.atlasacademy.io/nice/NA/servant/%d",
+            JP_REGION, "https://api.atlasacademy.io/nice/JP/servant/%d?lang=en");
     private final ObjectMapper objectMapper;
 
     public DataRequestService(ObjectMapper objectMapper) {
@@ -45,6 +57,28 @@ public class DataRequestService {
         return dataList.stream().filter(this::isServant).collect(Collectors.toList());
     }
 
+    public Servant getServantDataById(String gameRegion, long id) {
+        return getDataFromUrl(String.format(SERVANT_ID_SEARCH_URL.get(NA_REGION), id), new TypeReference<>() {});
+    }
+
+    public List<BasicServant> getBasicServantData(String gameRegion) {
+        List<BasicServant> allBasicServants = new ArrayList<>();
+        List<BasicServant> basicServantsJp = getDataFromUrl(BASIC_SERVANT_URL.get(JP_REGION), new TypeReference<>() {});
+        if (NA_REGION.equals(gameRegion)) {
+            useNaServantsWhereApplicable(allBasicServants, basicServantsJp);
+        }
+        allBasicServants.addAll(basicServantsJp);
+        allBasicServants.sort(Comparator.comparing(BasicServant::getCollectionNo));
+        return allBasicServants;
+    }
+
+    private void useNaServantsWhereApplicable(List<BasicServant> allBasicServants, List<BasicServant> basicServantsJp) {
+        allBasicServants.addAll(getDataFromUrl(BASIC_SERVANT_URL.get(NA_REGION), new TypeReference<>() {}));
+        allBasicServants.sort(Comparator.comparing(BasicServant::getCollectionNo));
+        int lastCollectionNo = allBasicServants.get(allBasicServants.size() - 1).getCollectionNo();
+        basicServantsJp.removeIf(basicEvent -> lastCollectionNo >= basicEvent.getCollectionNo());
+    }
+
     public List<UpgradeMaterial> getAllMaterialData(String gameRegion) {
         List<UpgradeMaterial> dataList = getDataFromUrl(MAT_URL.get(gameRegion), new TypeReference<>() {});
         return dataList.stream().filter(this::isMat).collect(Collectors.toList());
@@ -52,14 +86,21 @@ public class DataRequestService {
 
     public List<BasicEvent> getBasicEventData(String gameRegion) {
         List<BasicEvent> allBasicEvents = new ArrayList<>();
-        List<BasicEvent> basicEventsJp = getDataFromUrl(JP_BASIC_EVENT_URL, new TypeReference<>() {});
-        if ("NA".equals(gameRegion)) {
-            allBasicEvents.addAll(getDataFromUrl(NA_BASIC_EVENT_URL, new TypeReference<>() {}));
-            Instant lastTimeStamp = allBasicEvents.get(allBasicEvents.size() - 1).getStartedAt();
-            basicEventsJp.removeIf(basicEvent -> lastTimeStamp.isAfter(basicEvent.getStartedAt()));
+        List<BasicEvent> basicEventsJp = getDataFromUrl(BASIC_EVENT_URL.get(JP_REGION), new TypeReference<>() {});
+        if (NA_REGION.equals(gameRegion)) {
+            useNaEventsWhereApplicable(allBasicEvents, basicEventsJp);
         }
         allBasicEvents.addAll(basicEventsJp);
+        allBasicEvents.removeIf(basicEvent -> !EVENT_QUEST.equals(basicEvent.getType()));
+        allBasicEvents.sort(Comparator.comparing(BasicEvent::getStartedAt));
         return allBasicEvents;
+    }
+
+    private void useNaEventsWhereApplicable(List<BasicEvent> allBasicEvents, List<BasicEvent> basicEventsJp) {
+        allBasicEvents.addAll(getDataFromUrl(BASIC_EVENT_URL.get(NA_REGION), new TypeReference<>() {}));
+        allBasicEvents.sort(Comparator.comparing(BasicEvent::getStartedAt));
+        Instant lastTimeStamp = allBasicEvents.get(allBasicEvents.size() - 1).getStartedAt();
+        basicEventsJp.removeIf(basicEvent -> lastTimeStamp.isAfter(basicEvent.getStartedAt()));
     }
 
     public Map<String, Integer> getClassAttackRate() {

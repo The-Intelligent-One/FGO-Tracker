@@ -15,7 +15,6 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
 import java.util.*;
 
 @Slf4j
@@ -70,10 +69,11 @@ public class FileService {
     }
 
     public void copyOfflineBackupToCache(String filePath) {
-        try (InputStream servantStream = Objects.requireNonNull(getClass().getResource(OFFLINE_BASE_PATH + filePath)).openStream()) {
+        try (InputStream servantStream = Objects.requireNonNull(
+                getClass().getResource(OFFLINE_BASE_PATH + filePath)).openStream()) {
             File file = new File(BASE_DATA_PATH + CACHE_PATH, filePath);
             createFileIfDoesNotExist(file);
-            Files.copy(servantStream, file.toPath(), StandardCopyOption.ATOMIC_MOVE);
+            Files.copy(servantStream, file.toPath());
         } catch (IOException e) {
             log.error(e.getLocalizedMessage(), e);
         }
@@ -81,11 +81,12 @@ public class FileService {
 
     public void copyImagesFromOfflineBackupToCache(String imageFolderPath) {
         try {
-            File imageFolder = new File(Objects.requireNonNull(getClass().getResource(OFFLINE_BASE_PATH + imageFolderPath)).toURI());
+            File imageFolder = new File(
+                    Objects.requireNonNull(getClass().getResource(OFFLINE_BASE_PATH + imageFolderPath)).toURI());
             for (File file : Objects.requireNonNull(imageFolder.listFiles())) {
                 File target = new File(BASE_DATA_PATH + CACHE_PATH + imageFolderPath, file.getName());
                 if (!target.exists()) {
-                    Files.copy(file.toPath(), target.toPath(), StandardCopyOption.ATOMIC_MOVE);
+                    Files.copy(file.toPath(), target.toPath());
                 }
             }
         } catch (URISyntaxException | IOException e) {

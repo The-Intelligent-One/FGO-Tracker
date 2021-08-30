@@ -57,7 +57,7 @@ public class DataRequestService {
     }
 
     public Servant getServantDataById(String gameRegion, long id) {
-        return getDataFromUrl(String.format(SERVANT_ID_SEARCH_URL.get(gameRegion), id), new TypeReference<>() {});
+        return getDataFromEitherRegion(gameRegion, id, SERVANT_ID_SEARCH_URL, new TypeReference<>() {});
     }
 
     public List<BasicServant> getBasicServantData(String gameRegion) {
@@ -101,6 +101,11 @@ public class DataRequestService {
     public Map<String, VersionDTO> getOnlineVersion() {
         Map<String, VersionDTO> dataFromUrl = getDataFromUrl(VERSION_URL, new TypeReference<>() {});
         return dataFromUrl == null ? new HashMap<>() : dataFromUrl;
+    }
+
+    private <T> T getDataFromEitherRegion(String gameRegion, long id, Map<String, String> urlMap, TypeReference<T> typeRef) {
+        T dataFromUrl = getDataFromUrl(String.format(SERVANT_ID_SEARCH_URL.get(gameRegion), id), typeRef);
+        return dataFromUrl != null ? dataFromUrl : getDataFromUrl(String.format(urlMap.get(JP_REGION), id), typeRef);
     }
 
     private <T> T getDataFromUrl(String url, TypeReference<T> typeRef) {

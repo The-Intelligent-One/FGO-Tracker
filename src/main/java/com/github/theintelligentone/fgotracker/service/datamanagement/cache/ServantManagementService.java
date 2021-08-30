@@ -43,7 +43,7 @@ public class ServantManagementService {
     public void downloadNewServantData(String gameRegion) {
 //        servantDataList = requestService.getAllServantData(gameRegion);
         basicServantDataList = requestService.getBasicServantData(gameRegion);
-        loadServantDataFromCache(gameRegion);
+        servantDataList = fileServiceFacade.loadFullServantData(gameRegion);
         CLASS_ATTACK_MULTIPLIER = requestService.getClassAttackRate();
         CARD_DATA = requestService.getCardDetails();
     }
@@ -73,6 +73,7 @@ public class ServantManagementService {
 
     public void loadServantDataFromCache(String gameRegion) {
         servantDataList = fileServiceFacade.loadFullServantData(gameRegion);
+        basicServantDataList = fileServiceFacade.loadBasicServantData(gameRegion);
         CLASS_ATTACK_MULTIPLIER = fileServiceFacade.loadClassAttackRate();
         CARD_DATA = fileServiceFacade.loadCardData();
     }
@@ -81,5 +82,9 @@ public class ServantManagementService {
         fileServiceFacade.saveFullServantData(servantDataList, gameRegion);
         fileServiceFacade.saveClassAttackRate(CLASS_ATTACK_MULTIPLIER);
         fileServiceFacade.saveCardData(CARD_DATA);
+    }
+
+    public void saveBasicServantDataToCache(String gameRegion) {
+        fileServiceFacade.saveBasicServantData(basicServantDataList, gameRegion);
     }
 }

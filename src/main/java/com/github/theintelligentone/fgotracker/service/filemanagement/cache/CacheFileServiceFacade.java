@@ -4,6 +4,7 @@ import com.github.theintelligentone.fgotracker.domain.event.BasicEvent;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.other.VersionDTO;
+import com.github.theintelligentone.fgotracker.domain.servant.BasicServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileService;
 
@@ -45,6 +46,14 @@ public class CacheFileServiceFacade {
         staticDataFileService.saveCardData(cardDataMap);
     }
 
+    public void saveBasicEventData(List<BasicEvent> basicEvents, String gameRegion) {
+        eventFileService.saveBasicEventData(basicEvents, gameRegion);
+    }
+
+    public void saveBasicServantData(List<BasicServant> basicServantDataList, String gameRegion) {
+        servantFileService.saveBasicServantData(basicServantDataList, gameRegion);
+    }
+
     public List<UpgradeMaterial> loadMaterialData(String gameRegion) {
         return materialFileService.loadMaterialData(gameRegion);
     }
@@ -77,7 +86,7 @@ public class CacheFileServiceFacade {
         return eventFileService.loadBasicEventData(gameRegion);
     }
 
-    public void saveBasicEventData(List<BasicEvent> basicEvents, String gameRegion) {
-        eventFileService.saveBasicEventData(basicEvents, gameRegion);
+    public List<BasicServant> loadBasicServantData(String gameRegion) {
+        return servantFileService.loadBasicServantData(gameRegion);
     }
 }

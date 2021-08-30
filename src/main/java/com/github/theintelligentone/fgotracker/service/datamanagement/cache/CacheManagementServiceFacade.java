@@ -2,7 +2,6 @@ package com.github.theintelligentone.fgotracker.service.datamanagement.cache;
 
 import com.github.theintelligentone.fgotracker.domain.event.BasicEvent;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
-import com.github.theintelligentone.fgotracker.domain.servant.BasicServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataRequestService;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
@@ -37,10 +36,6 @@ public class CacheManagementServiceFacade {
 
     public List<Servant> getServantList() {
         return servantManagementService.getServantDataList();
-    }
-
-    public List<BasicServant> getBasicServantList() {
-        return servantManagementService.getBasicServantDataList();
     }
 
     public String getGameRegion() {
@@ -88,6 +83,7 @@ public class CacheManagementServiceFacade {
 
     private void saveNewDataToCache() {
         servantManagementService.saveServantDataToCache(versionManagementService.getGameRegion());
+        servantManagementService.saveBasicServantDataToCache(versionManagementService.getGameRegion());
         eventManagementService.saveBasicEventData(versionManagementService.getGameRegion());
         versionManagementService.saveVersion();
     }

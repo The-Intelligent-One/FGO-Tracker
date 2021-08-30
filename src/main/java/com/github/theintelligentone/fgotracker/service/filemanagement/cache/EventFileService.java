@@ -8,7 +8,7 @@ import java.util.List;
 
 public class EventFileService {
     private static final String PNG_FORMAT = "png";
-    private static final String BASIC_EVENT_DATA_FILE = "basicEvents.json";
+    private static final String BASIC_EVENT_DATA_FILE = "basic_events.json";
     private static final String IMAGE_FOLDER_PATH = "images/";
     private final FileService fileService;
 

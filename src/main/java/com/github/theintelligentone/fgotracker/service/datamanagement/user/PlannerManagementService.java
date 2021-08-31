@@ -73,7 +73,7 @@ public class PlannerManagementService {
 
     public void refreshPlannerServants(PlannerType plannerType, List<PlannerServant> plannerServants,
                                        ObservableList<UserServantView> userServants) {
-        getPlannerServantList(plannerType).addAll(createAssociatedPlannerServantList(plannerServants, userServants));
+        getPlannerServantList(plannerType).setAll(createAssociatedPlannerServantList(plannerServants, userServants));
     }
 
     public void erasePlannerServant(PlannerServantView servant, PlannerType plannerType) {

@@ -62,8 +62,8 @@ public class ImportManagementService {
         MAT_NAME_TRANSLATE_MAP.put("Thread", "虹の糸玉");
     }
 
-    public List<String> createInventoryFromCsvLines(Map<String, Integer> importedData, List<UpgradeMaterial> materials,
-                                                    InventoryView inventory) {
+    public List<String> createInventoryFromCsvLines(File sourceFile, List<UpgradeMaterial> materials, InventoryView inventory) {
+        Map<String, Integer> importedData = fileServiceFacade.importInventoryCsv(sourceFile);
         List<String> notFoundNames = convertMaterialNamesToOnesFromDb(importedData, materials);
         setCurrentAmountForMaterialsInInventory(importedData, inventory);
         return notFoundNames;

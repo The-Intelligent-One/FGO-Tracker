@@ -1,14 +1,12 @@
 package com.github.theintelligentone.fgotracker.service.filemanagement;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.theintelligentone.fgotracker.domain.event.BasicEvent;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.other.VersionDTO;
-import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
-import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
-import com.github.theintelligentone.fgotracker.domain.servant.Servant;
-import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
+import com.github.theintelligentone.fgotracker.domain.servant.*;
 import com.github.theintelligentone.fgotracker.service.filemanagement.cache.CacheFileServiceFacade;
 import com.github.theintelligentone.fgotracker.service.filemanagement.user.UserFileServiceFacade;
 import lombok.extern.slf4j.Slf4j;
@@ -94,6 +92,14 @@ public class FileManagementServiceFacade {
         userFileServiceFacade.saveGameRegion(gameRegion);
     }
 
+    public void saveBasicEventData(List<BasicEvent> basicEvents, String gameRegion) {
+        cacheFileServiceFacade.saveBasicEventData(basicEvents, gameRegion);
+    }
+
+    public void saveBasicServantData(List<BasicServant> basicServantDataList, String gameRegion) {
+        cacheFileServiceFacade.saveBasicServantData(basicServantDataList, gameRegion);
+    }
+
     public List<UpgradeMaterial> loadMaterialData(String gameRegion) {
         return cacheFileServiceFacade.loadMaterialData(gameRegion);
     }
@@ -136,5 +142,17 @@ public class FileManagementServiceFacade {
 
     public String loadGameRegion() {
         return userFileServiceFacade.loadGameRegion();
+    }
+
+    public List<BasicEvent> loadBasicEventData(String gameRegion) {
+        return cacheFileServiceFacade.loadBasicEventData(gameRegion);
+    }
+
+    public void loadImageForMaterial(UpgradeMaterial material) {
+        cacheFileServiceFacade.loadImageForMaterial(material);
+    }
+
+    public List<BasicServant> loadBasicServantData(String gameRegion) {
+        return cacheFileServiceFacade.loadBasicServantData(gameRegion);
     }
 }

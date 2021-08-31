@@ -2,9 +2,11 @@ package com.github.theintelligentone.fgotracker.service.datamanagement;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.theintelligentone.fgotracker.domain.event.BasicEvent;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.other.VersionDTO;
+import com.github.theintelligentone.fgotracker.domain.servant.BasicServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import javafx.scene.image.Image;
 import lombok.extern.slf4j.Slf4j;
@@ -12,10 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -24,15 +23,28 @@ public class DataRequestService {
     private static final String[] SERVANT_TYPES = {"normal", "heroine"};
     private static final String[] MATERIAL_USES = {"skill", "ascension"};
     private static final String[] EXCLUDED_MATERIAL_TYPES = {"eventItem"};
-    private static final Map<String, String> ALL_SERVANT_URL = Map.of("NA",
-            "https://api.atlasacademy.io/export/NA/nice_servant.json",
-            "JP", "https://api.atlasacademy.io/export/JP/nice_servant_lang_en.json");
-    private static final Map<String, String> MAT_URL = Map.of("NA", "https://api.atlasacademy.io/export/NA/nice_item.json",
-            "JP", "https://api.atlasacademy.io/export/JP/nice_item_lang_en.json");
-    private static final String CLASS_ATTACK_RATE_URL = "https://api.atlasacademy.io/export/NA/NiceClassAttackRate.json";
-    private static final String CARD_DETAILS_URL = "https://api.atlasacademy.io/export/NA/NiceCard.json";
+    private static final String EVENT_QUEST = "eventQuest";
+    private static final String NA_REGION = "NA";
+    private static final String JP_REGION = "JP";
+    private static final Map<String, String> ALL_SERVANT_URL = Map.of(
+            NA_REGION, "https://api.atlasacademy.io/export/NA/nice_servant.json",
+            JP_REGION, "https://api.atlasacademy.io/export/JP/nice_servant_lang_en.json");
+    private static final Map<String, String> MAT_URL = Map.of(
+            NA_REGION, "https://api.atlasacademy.io/export/NA/nice_item.json",
+            JP_REGION, "https://api.atlasacademy.io/export/JP/nice_item_lang_en.json");
+    private static final String CLASS_ATTACK_RATE_URL = "https://api.atlasacademy.io/export/JP/NiceClassAttackRate.json";
+    private static final String CARD_DETAILS_URL = "https://api.atlasacademy.io/export/JP/NiceCard.json";
     private static final String VERSION_URL = "https://api.atlasacademy.io/info";
     private static final int HOLY_GRAIL_ID = 7999;
+    private static final Map<String, String> BASIC_EVENT_URL = Map.of(
+            NA_REGION, "https://api.atlasacademy.io/export/NA/basic_event.json",
+            JP_REGION, "https://api.atlasacademy.io/export/JP/basic_event_lang_en.json");
+    private static final Map<String, String> BASIC_SERVANT_URL = Map.of(
+            NA_REGION, "https://api.atlasacademy.io/export/NA/basic_servant.json",
+            JP_REGION, "https://api.atlasacademy.io/export/JP/basic_servant_lang_en.json");
+    private static final Map<String, String> SERVANT_ID_SEARCH_URL = Map.of(
+            NA_REGION, "https://api.atlasacademy.io/nice/NA/servant/%d",
+            JP_REGION, "https://api.atlasacademy.io/nice/JP/servant/%d?lang=en");
     private final ObjectMapper objectMapper;
 
     public DataRequestService(ObjectMapper objectMapper) {
@@ -44,9 +56,26 @@ public class DataRequestService {
         return dataList.stream().filter(this::isServant).collect(Collectors.toList());
     }
 
+    public Servant getServantDataById(String gameRegion, long id) {
+        return getDataFromEitherRegion(gameRegion, id, SERVANT_ID_SEARCH_URL, new TypeReference<>() {});
+    }
+
+    public List<BasicServant> getBasicServantData(String gameRegion) {
+        return getDataListFromEitherRegion(gameRegion, BASIC_SERVANT_URL, Comparator.comparing(BasicServant::getCollectionNo),
+                new TypeReference<>() {}).stream().filter(this::isBasicServant).collect(Collectors.toList());
+    }
+
     public List<UpgradeMaterial> getAllMaterialData(String gameRegion) {
-        List<UpgradeMaterial> dataList = getDataFromUrl(MAT_URL.get(gameRegion), new TypeReference<>() {});
+        List<UpgradeMaterial> dataList = getDataListFromEitherRegion(gameRegion, MAT_URL,
+                Comparator.comparing(UpgradeMaterial::getId), new TypeReference<>() {});
         return dataList.stream().filter(this::isMat).collect(Collectors.toList());
+    }
+
+    public List<BasicEvent> getBasicEventData(String gameRegion) {
+        List<BasicEvent> allBasicEvents = getDataListFromEitherRegion(gameRegion, BASIC_EVENT_URL,
+                Comparator.comparing(BasicEvent::getStartedAt), new TypeReference<>() {});
+        allBasicEvents.removeIf(basicEvent -> !EVENT_QUEST.equals(basicEvent.getType()));
+        return allBasicEvents;
     }
 
     public Map<String, Integer> getClassAttackRate() {
@@ -74,6 +103,11 @@ public class DataRequestService {
         return dataFromUrl == null ? new HashMap<>() : dataFromUrl;
     }
 
+    private <T> T getDataFromEitherRegion(String gameRegion, long id, Map<String, String> urlMap, TypeReference<T> typeRef) {
+        T dataFromUrl = getDataFromUrl(String.format(SERVANT_ID_SEARCH_URL.get(gameRegion), id), typeRef);
+        return dataFromUrl != null ? dataFromUrl : getDataFromUrl(String.format(urlMap.get(JP_REGION), id), typeRef);
+    }
+
     private <T> T getDataFromUrl(String url, TypeReference<T> typeRef) {
         T returnedData = null;
         try {
@@ -86,7 +120,25 @@ public class DataRequestService {
         return returnedData;
     }
 
+    private <T> List<T> getDataListFromEitherRegion(String gameRegion, Map<String, String> urlRegionMap,
+                                                    Comparator<T> comparator, TypeReference<List<T>> typeRef) {
+        List<T> allResults = new ArrayList<>();
+        List<T> jpResults = getDataFromUrl(urlRegionMap.get(JP_REGION), typeRef);
+        if (NA_REGION.equals(gameRegion)) {
+            allResults.addAll(getDataFromUrl(urlRegionMap.get(NA_REGION), typeRef));
+            allResults.sort(comparator);
+            jpResults.removeIf(basicEvent -> comparator.compare(allResults.get(allResults.size() - 1), basicEvent) >= 0);
+        }
+        allResults.addAll(jpResults);
+        allResults.sort(comparator);
+        return allResults;
+    }
+
     private boolean isServant(Servant svt) {
+        return Arrays.asList(SERVANT_TYPES).contains(svt.getType());
+    }
+
+    private boolean isBasicServant(BasicServant svt) {
         return Arrays.asList(SERVANT_TYPES).contains(svt.getType());
     }
 

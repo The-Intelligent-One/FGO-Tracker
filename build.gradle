@@ -8,7 +8,7 @@ plugins {
 }
 
 group "com.github.theintelligentone"
-version "v0.2.4"
+version "v0.3.0-beta"
 
 def MAINPATH = "com.github.theintelligentone.fgotracker.Main"
 mainClassName = MAINPATH
@@ -21,6 +21,7 @@ dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
     implementation "com.fasterxml.jackson.core:jackson-databind:2.12.4"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.4"
     runtimeOnly "org.openjfx:javafx-graphics:16:win"
     runtimeOnly "org.openjfx:javafx-graphics:16:linux"
     runtimeOnly "org.openjfx:javafx-graphics:16:mac"

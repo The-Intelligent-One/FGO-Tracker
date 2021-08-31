@@ -1,8 +1,10 @@
 package com.github.theintelligentone.fgotracker.service.filemanagement.cache;
 
+import com.github.theintelligentone.fgotracker.domain.event.BasicEvent;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.other.VersionDTO;
+import com.github.theintelligentone.fgotracker.domain.servant.BasicServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileService;
 
@@ -12,12 +14,14 @@ import java.util.Map;
 public class CacheFileServiceFacade {
     private final MaterialFileService materialFileService;
     private final ServantFileService servantFileService;
+    private final EventFileService eventFileService;
     private final StaticDataFileService staticDataFileService;
 
     public CacheFileServiceFacade(FileService fileService) {
         materialFileService = new MaterialFileService(fileService);
         servantFileService = new ServantFileService(fileService);
         staticDataFileService = new StaticDataFileService(fileService);
+        eventFileService = new EventFileService(fileService);
     }
 
     public void loadOfflineData() {
@@ -42,8 +46,20 @@ public class CacheFileServiceFacade {
         staticDataFileService.saveCardData(cardDataMap);
     }
 
+    public void saveBasicEventData(List<BasicEvent> basicEvents, String gameRegion) {
+        eventFileService.saveBasicEventData(basicEvents, gameRegion);
+    }
+
+    public void saveBasicServantData(List<BasicServant> basicServantDataList, String gameRegion) {
+        servantFileService.saveBasicServantData(basicServantDataList, gameRegion);
+    }
+
     public List<UpgradeMaterial> loadMaterialData(String gameRegion) {
         return materialFileService.loadMaterialData(gameRegion);
+    }
+
+    public void loadImageForMaterial(UpgradeMaterial material) {
+        materialFileService.loadImageForMaterial(material);
     }
 
     public List<Servant> loadFullServantData(String gameRegion) {
@@ -64,5 +80,13 @@ public class CacheFileServiceFacade {
 
     public void saveCurrentVersion(Map<String, VersionDTO> versionMap) {
         staticDataFileService.saveCurrentVersion(versionMap);
+    }
+
+    public List<BasicEvent> loadBasicEventData(String gameRegion) {
+        return eventFileService.loadBasicEventData(gameRegion);
+    }
+
+    public List<BasicServant> loadBasicServantData(String gameRegion) {
+        return servantFileService.loadBasicServantData(gameRegion);
     }
 }

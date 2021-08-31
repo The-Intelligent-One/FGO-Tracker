@@ -15,11 +15,7 @@ import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 public class FileService {
@@ -29,7 +25,7 @@ public class FileService {
     private static final String OFFLINE_BASE_PATH = "/offline/";
     private static final String MANAGER_DB_PATH = "/managerDB-v1.3.3.csv";
 
-    private ObjectMapper objectMapper;
+    private final ObjectMapper objectMapper;
 
     public FileService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
@@ -63,7 +59,7 @@ public class FileService {
         return getDataMapFromFile(new File(BASE_DATA_PATH + CACHE_PATH, relativePath), expectedType);
     }
 
-    public <T extends Object> T loadUserData(String relativePath, TypeReference<T> expectedType) {
+    public <T> T loadUserData(String relativePath, TypeReference<T> expectedType) {
         return loadData(new File(BASE_DATA_PATH + USER_DATA_PATH, relativePath), expectedType);
     }
 
@@ -73,10 +69,11 @@ public class FileService {
     }
 
     public void copyOfflineBackupToCache(String filePath) {
-        try (InputStream servantStream = getClass().getResource(OFFLINE_BASE_PATH + filePath).openStream()) {
+        try (InputStream servantStream = Objects.requireNonNull(
+                getClass().getResource(OFFLINE_BASE_PATH + filePath)).openStream()) {
             File file = new File(BASE_DATA_PATH + CACHE_PATH, filePath);
             createFileIfDoesNotExist(file);
-            Files.copy(servantStream, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            Files.copy(servantStream, file.toPath());
         } catch (IOException e) {
             log.error(e.getLocalizedMessage(), e);
         }
@@ -84,10 +81,13 @@ public class FileService {
 
     public void copyImagesFromOfflineBackupToCache(String imageFolderPath) {
         try {
-            File imageFolder = new File(getClass().getResource(OFFLINE_BASE_PATH + imageFolderPath).toURI());
-            for (File file : imageFolder.listFiles()) {
-                Files.copy(file.toPath(), new File(BASE_DATA_PATH + CACHE_PATH + imageFolderPath, file.getName()).toPath(),
-                        StandardCopyOption.REPLACE_EXISTING);
+            File imageFolder = new File(
+                    Objects.requireNonNull(getClass().getResource(OFFLINE_BASE_PATH + imageFolderPath)).toURI());
+            for (File file : Objects.requireNonNull(imageFolder.listFiles())) {
+                File target = new File(BASE_DATA_PATH + CACHE_PATH + imageFolderPath, file.getName());
+                if (!target.exists()) {
+                    Files.copy(file.toPath(), target.toPath());
+                }
             }
         } catch (URISyntaxException | IOException e) {
             log.error(e.getLocalizedMessage(), e);
@@ -155,7 +155,8 @@ public class FileService {
         return dataMap;
     }
 
-    private <T extends Object> T loadData(File file, TypeReference<T> expectedType) {
+    @SuppressWarnings("unchecked")
+    private <T> T loadData(File file, TypeReference<T> expectedType) {
         T data = null;
         if (file.length() != 0) {
             try {

@@ -118,7 +118,7 @@ public class MainApp extends Application {
             }
         };
         loadingTask.setOnSucceeded(event -> {
-            mainController.tableSetup();
+            mainController.setup();
             loadingAlert.setResult(ButtonType.CANCEL);
             loadingAlert.close();
         });

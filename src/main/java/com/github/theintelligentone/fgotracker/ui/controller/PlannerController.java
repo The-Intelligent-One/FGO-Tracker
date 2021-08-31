@@ -8,8 +8,8 @@ import com.github.theintelligentone.fgotracker.domain.servant.factory.PlannerSer
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import com.github.theintelligentone.fgotracker.domain.view.UpgradeMaterialCostView;
-import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
+import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.transformer.InventoryToViewTransformer;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.InventoryValueFactory;
@@ -266,6 +266,7 @@ public class PlannerController {
         return result;
     }
 
+    @SuppressWarnings("unchecked")
     private ObservableList<UpgradeMaterialCostView> getSumOfNeededMats() {
         ObservableList<UpgradeMaterialCostView> result = FXCollections.observableArrayList(
                 param -> new Observable[]{param.amountProperty()});
@@ -412,6 +413,7 @@ public class PlannerController {
         initCurrentInfoColumns();
     }
 
+    @SuppressWarnings("unchecked")
     private void initDesiredInfoColumns() {
         initDesiredInfoColumn(0, event -> event.getRowValue().desLevelProperty(), 1, 100);
         initDesiredInfoColumn(1, event -> event.getRowValue().desSkill1Property(), 1, 10);
@@ -424,6 +426,7 @@ public class PlannerController {
         });
     }
 
+    @SuppressWarnings("unchecked")
     private void initDesiredInfoColumn(int columnIndex,
                                        Function<TableColumn.CellEditEvent<PlannerServantView, ?>, IntegerProperty> getProperty,
                                        int min, int max) {
@@ -451,15 +454,26 @@ public class PlannerController {
                 event.getTableView().refresh();
             }
         });
-        initCurrentInfoColumn(level, param -> param.getValue().baseServantProperty().getValue().levelProperty());
-        initCurrentInfoColumn(skill1, param -> param.getValue().baseServantProperty().getValue().skillLevel1Property());
-        initCurrentInfoColumn(skill2, param -> param.getValue().baseServantProperty().getValue().skillLevel2Property());
-        initCurrentInfoColumn(skill3, param -> param.getValue().baseServantProperty().getValue().skillLevel3Property());
+        setCurrentInfoColumnValueFactory(level, param -> param.getValue().baseServantProperty().getValue().levelProperty());
+        setEditEventForCurrentInfoColumn(level, param -> param.getRowValue().baseServantProperty().getValue().levelProperty(), 1,
+                100);
+        setCurrentInfoColumnValueFactory(skill1,
+                param -> param.getValue().baseServantProperty().getValue().skillLevel1Property());
+        setEditEventForCurrentInfoColumn(skill1,
+                param -> param.getRowValue().baseServantProperty().getValue().skillLevel1Property(), 1, 10);
+        setCurrentInfoColumnValueFactory(skill2,
+                param -> param.getValue().baseServantProperty().getValue().skillLevel2Property());
+        setEditEventForCurrentInfoColumn(skill2,
+                param -> param.getRowValue().baseServantProperty().getValue().skillLevel2Property(), 1, 10);
+        setCurrentInfoColumnValueFactory(skill3,
+                param -> param.getValue().baseServantProperty().getValue().skillLevel3Property());
+        setEditEventForCurrentInfoColumn(skill3,
+                param -> param.getRowValue().baseServantProperty().getValue().skillLevel3Property(), 1, 10);
         current.getColumns().forEach(col -> col.setPrefWidth(MainController.SHORT_CELL_WIDTH));
     }
 
-    private void initCurrentInfoColumn(TableColumn<PlannerServantView, Integer> column,
-                                       Function<TableColumn.CellDataFeatures<PlannerServantView, Integer>, IntegerProperty> getProperty) {
+    private void setCurrentInfoColumnValueFactory(TableColumn<PlannerServantView, Integer> column,
+                                                  Function<TableColumn.CellDataFeatures<PlannerServantView, Integer>, IntegerProperty> getProperty) {
         column.setCellValueFactory(param -> {
             IntegerProperty level = null;
             if (validServant(param)) {
@@ -468,6 +482,19 @@ public class PlannerController {
             }
             return level == null ? null : level.asObject();
         });
+    }
+
+    private void setEditEventForCurrentInfoColumn(TableColumn<PlannerServantView, Integer> column,
+                                                  Function<TableColumn.CellEditEvent<PlannerServantView, ?>, IntegerProperty> getProperty,
+                                                  int min, int max) {
+        column.setOnEditCommit(event -> {
+            if (event.getRowValue().svtIdProperty().longValue() != 0) {
+                getProperty.apply(event).set(
+                        servantUtils.getNewValueIfValid(event, min, max));
+                plannerTable.refresh();
+            }
+        });
+        column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
     }
 
     private void importInventoryFromCsv() {

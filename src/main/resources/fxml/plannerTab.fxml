@@ -29,7 +29,11 @@
                 </TableColumn>
                 <TableColumn text="Current" fx:id="current">
                     <columns>
-                        <TableColumn fx:id="level" text="LvL"/>
+                        <TableColumn fx:id="level" text="LvL">
+                            <cellValueFactory>
+                                <PlannerServantValueFactory property="desLevel"/>
+                            </cellValueFactory>
+                        </TableColumn>
                         <TableColumn fx:id="skill1" text="S1"/>
                         <TableColumn fx:id="skill2" text="S2"/>
                         <TableColumn fx:id="skill3" text="S3"/>
@@ -37,22 +41,22 @@
                 </TableColumn>
                 <TableColumn text="Desired" fx:id="desired">
                     <columns>
-                        <TableColumn editable="true" fx:id="desLevel" text="LvL">
+                        <TableColumn text="LvL">
                             <cellValueFactory>
                                 <PlannerServantValueFactory property="desLevel"/>
                             </cellValueFactory>
                         </TableColumn>
-                        <TableColumn editable="true" fx:id="desSkill1" text="S1">
+                        <TableColumn text="S1">
                             <cellValueFactory>
                                 <PlannerServantValueFactory property="desSkill1"/>
                             </cellValueFactory>
                         </TableColumn>
-                        <TableColumn editable="true" fx:id="desSkill2" text="S2">
+                        <TableColumn text="S2">
                             <cellValueFactory>
                                 <PlannerServantValueFactory property="desSkill2"/>
                             </cellValueFactory>
                         </TableColumn>
-                        <TableColumn editable="true" fx:id="desSkill3" text="S3">
+                        <TableColumn text="S3">
                             <cellValueFactory>
                                 <PlannerServantValueFactory property="desSkill3"/>
                             </cellValueFactory>

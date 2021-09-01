@@ -93,13 +93,11 @@ public class PlannerController {
     private TableColumn<PlannerServantView, Integer> skill3;
 
     private DataManagementServiceFacade dataManagementServiceFacade;
-    private ServantUtils servantUtils;
     @Setter
     private PlannerType plannerType;
 
     public void initialize() {
         dataManagementServiceFacade = MainApp.getDataManagementServiceFacade();
-        servantUtils = new ServantUtils();
         tableInit();
     }
 
@@ -240,7 +238,7 @@ public class PlannerController {
                 event.getRowValue().getInventory().stream()
                         .filter(material -> matId == material.idProperty().longValue())
                         .findFirst().get()
-                        .amountProperty().set(servantUtils.getNewValueIfValid(event, 0, 99_999));
+                        .amountProperty().set(getNewValueIfValid(event, 0, 99_999));
                 event.getTableView().refresh();
             }
         });
@@ -285,10 +283,9 @@ public class PlannerController {
     }
 
     private int getPlannedMatUseSum(List<PlannerServantView> servants, UpgradeMaterialCostView mat) {
-        ServantUtils servantUtils = new ServantUtils();
         return servants.stream()
                 .filter(servant -> servant.baseServantProperty().getValue() != null && servant.baseServantProperty().getValue().baseServantProperty().getValue() != null)
-                .map(servant -> servantUtils.getPlannedMatUse(servant, mat.idProperty().longValue()))
+                .map(servant -> ServantUtils.getPlannedMatUse(servant, mat.idProperty().longValue()))
                 .mapToInt(ObservableNumberValue::intValue)
                 .reduce(Integer::sum).orElse(0);
     }
@@ -432,10 +429,21 @@ public class PlannerController {
                                        int min, int max) {
         desired.getColumns().get(columnIndex).setOnEditCommit(event -> {
             if (event.getRowValue().svtIdProperty().longValue() != 0) {
-                getProperty.apply(event).set(
-                        servantUtils.getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, min, max));
+                getProperty.apply(event).set(getNewValueIfValid((TableColumn.CellEditEvent<?, Integer>) event, min, max));
                 plannerTable.refresh();
             }
+        });
+    }
+
+    private void setCurrentInfoColumnValueFactory(TableColumn<PlannerServantView, Integer> column,
+                                                  Function<TableColumn.CellDataFeatures<PlannerServantView, Integer>, IntegerProperty> getProperty) {
+        column.setCellValueFactory(param -> {
+            IntegerProperty level = null;
+            if (param.getValue().svtIdProperty().longValue() != 0) {
+                level = new SimpleIntegerProperty(1);
+                level.bind(getProperty.apply(param));
+            }
+            return level == null ? null : level.asObject();
         });
     }
 
@@ -472,25 +480,12 @@ public class PlannerController {
         current.getColumns().forEach(col -> col.setPrefWidth(MainController.SHORT_CELL_WIDTH));
     }
 
-    private void setCurrentInfoColumnValueFactory(TableColumn<PlannerServantView, Integer> column,
-                                                  Function<TableColumn.CellDataFeatures<PlannerServantView, Integer>, IntegerProperty> getProperty) {
-        column.setCellValueFactory(param -> {
-            IntegerProperty level = null;
-            if (validServant(param)) {
-                level = new SimpleIntegerProperty(1);
-                level.bind(getProperty.apply(param));
-            }
-            return level == null ? null : level.asObject();
-        });
-    }
-
     private void setEditEventForCurrentInfoColumn(TableColumn<PlannerServantView, Integer> column,
                                                   Function<TableColumn.CellEditEvent<PlannerServantView, ?>, IntegerProperty> getProperty,
                                                   int min, int max) {
         column.setOnEditCommit(event -> {
             if (event.getRowValue().svtIdProperty().longValue() != 0) {
-                getProperty.apply(event).set(
-                        servantUtils.getNewValueIfValid(event, min, max));
+                getProperty.apply(event).set(getNewValueIfValid(event, min, max));
                 plannerTable.refresh();
             }
         });
@@ -558,11 +553,16 @@ public class PlannerController {
         loadingAlert.show();
     }
 
-    private boolean validServant(TableColumn.CellDataFeatures<PlannerServantView, Integer> param) {
-        return param.getValue().baseServantProperty() != null && param.getValue().baseServantProperty().getValue() != null && param.getValue().baseServantProperty().getValue().baseServantProperty() != null;
-    }
-
     private ObservableList<PlannerServantView> createLTPlannerServantList() {
         return new PlannerServantViewFactory().createForLTPlanner(dataManagementServiceFacade.getUserServantList());
+    }
+
+    public int getNewValueIfValid(TableColumn.CellEditEvent<?, Integer> event, int min, int max) {
+        int result = event.getOldValue();
+        int input = event.getNewValue();
+        if (input <= max && input >= min) {
+            result = input;
+        }
+        return result;
     }
 }

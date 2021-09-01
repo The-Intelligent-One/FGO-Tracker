@@ -14,7 +14,7 @@ public class PlannerServantGrailValueFactory implements Callback<TableColumn.Cel
     public ObservableValue<Number> call(TableColumn.CellDataFeatures<PlannerServantView, Number> param) {
         ObservableIntegerValue result = new SimpleIntegerProperty();
         if (param.getValue().baseServantProperty().getValue() != null && param.getValue().baseServantProperty().getValue().baseServantProperty().getValue() != null) {
-            result = new ServantUtils().sumNeededAscensionGrails(param.getValue());
+            result = ServantUtils.sumNeededAscensionGrails(param.getValue());
         }
         return result;
     }

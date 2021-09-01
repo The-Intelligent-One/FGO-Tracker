@@ -2,8 +2,8 @@ package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.app.MainApp;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
-import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
+import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AscensionCheckBoxTableCell;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
 import javafx.beans.binding.Bindings;
@@ -28,7 +28,6 @@ import java.util.stream.IntStream;
 public class RosterController {
     private static final String[] ONE_TO_FIVE = {"1", "2", "3", "4", "5"};
     private DataManagementServiceFacade dataManagementServiceFacade;
-    private ServantUtils servantUtils;
 
     @FXML
     private TableView<UserServantView> rosterTable;
@@ -93,7 +92,6 @@ public class RosterController {
 
     public void initialize() {
         dataManagementServiceFacade = MainApp.getDataManagementServiceFacade();
-        servantUtils = new ServantUtils();
         tableSetup();
     }
 
@@ -211,15 +209,15 @@ public class RosterController {
         npColumn.getColumns().forEach(column -> column.setPrefWidth(MainController.MID_CELL_WIDTH));
         npTypeColumn.setCellValueFactory(param -> {
             SimpleStringProperty result = new SimpleStringProperty();
-            if (param.getValue().baseServantProperty().getValue() != null) {
-                result.set(servantUtils.determineNpCard(param.getValue().baseServantProperty().getValue()));
+            if (param.getValue().svtIdProperty().longValue() != 0) {
+                result.set(ServantUtils.determineNpCard(param.getValue().baseServantProperty().getValue()));
             }
             return result;
         });
         npTargetColumn.setCellValueFactory(param -> {
             SimpleStringProperty result = new SimpleStringProperty();
-            if (param.getValue().baseServantProperty().getValue() != null) {
-                result.set(servantUtils.determineNpTarget(param.getValue().baseServantProperty().getValue()));
+            if (param.getValue().svtIdProperty().longValue() != 0) {
+                result.set(ServantUtils.determineNpTarget(param.getValue().baseServantProperty().getValue()));
             }
             return result;
         });
@@ -241,7 +239,7 @@ public class RosterController {
         attributeColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
         attributeColumn.setCellValueFactory(param -> {
             SimpleStringProperty name = new SimpleStringProperty();
-            if (param.getValue().baseServantProperty().getValue() != null) {
+            if (param.getValue().svtIdProperty().longValue() != 0) {
                 String attribute = param.getValue().baseServantProperty().getValue().getAttribute();
                 name.set(attribute.substring(0, 1).toUpperCase() + attribute.substring(1));
             }
@@ -253,7 +251,7 @@ public class RosterController {
         classColumn.setPrefWidth(MainController.LONG_CELL_WIDTH);
         classColumn.setCellValueFactory(param -> {
             SimpleStringProperty name = new SimpleStringProperty();
-            if (param.getValue().baseServantProperty() != null && param.getValue().baseServantProperty().getValue() != null) {
+            if (param.getValue().svtIdProperty().longValue() != 0) {
                 String className = param.getValue().baseServantProperty().getValue().getClassName();
                 name.set(className.substring(0, 1).toUpperCase() + className.substring(1));
             }
@@ -339,7 +337,7 @@ public class RosterController {
         });
         nameColumn.setCellValueFactory(param -> {
             SimpleStringProperty name = new SimpleStringProperty();
-            if (param.getValue().baseServantProperty() != null && param.getValue().baseServantProperty().getValue() != null) {
+            if (param.getValue().svtIdProperty().longValue() != 0) {
                 name.set(param.getValue().baseServantProperty().getValue().getName());
             }
             return name;
@@ -351,14 +349,20 @@ public class RosterController {
         if (rosterTable.getItems().size() == 0) {
             IntStream.range(0, 10).forEach(i -> dataManagementServiceFacade.saveUserServant(new UserServantView()));
         }
-        nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementServiceFacade.getServantNameList()));
+        nameColumn.setCellFactory(
+                AutoCompleteTextFieldTableCell.forTableColumn(dataManagementServiceFacade.getServantNameList()));
     }
 
     private EventHandler<TableColumn.CellEditEvent<UserServantView, Integer>> propertyCommitWithLimits(int min, int max,
                                                                                                        Function<TableColumn.CellEditEvent<UserServantView, Integer>, IntegerProperty> getProperty) {
         return event -> {
             if (event.getRowValue().svtIdProperty().longValue() != 0) {
-                getProperty.apply(event).set(servantUtils.getNewValueIfValid(event, min, max));
+                int result = event.getOldValue();
+                int input = event.getNewValue();
+                if (input <= max && input >= min) {
+                    result = input;
+                }
+                getProperty.apply(event).set(result);
                 rosterTable.refresh();
             }
         };

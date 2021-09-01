@@ -12,7 +12,6 @@ import javafx.beans.value.ObservableIntegerValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.scene.control.TableColumn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,9 @@ import java.util.stream.IntStream;
 public class ServantUtils {
     private static final int[] MAX_LEVELS = {65, 60, 65, 70, 80, 90};
 
-    public List<Integer> createListOfAscensionLevels(int rarity) {
+    private ServantUtils() {    }
+
+    public static List<Integer> createListOfAscensionLevels(int rarity) {
         int maxLevel = MAX_LEVELS[rarity];
         List<Integer> levelsWithAscension = new ArrayList<>();
         IntStream.range(1, 5).forEach(index -> levelsWithAscension.add(maxLevel - index * 10));
@@ -35,7 +36,7 @@ public class ServantUtils {
         return levelsWithAscension.stream().distinct().sorted().collect(Collectors.toList());
     }
 
-    public ObservableIntegerValue getAscensionFromRarityAndLevel(ObservableIntegerValue level, int rarity) {
+    public static ObservableIntegerValue getAscensionFromRarityAndLevel(ObservableIntegerValue level, int rarity) {
         List<Integer> listOfAscensionLevels = createListOfAscensionLevels(rarity);
         int nextAscLvl = listOfAscensionLevels.stream().dropWhile(lvl -> lvl < level.intValue()).findFirst().get();
         IntegerProperty ascLevel = new SimpleIntegerProperty(listOfAscensionLevels.indexOf(nextAscLvl));
@@ -46,7 +47,7 @@ public class ServantUtils {
         return ascLevel;
     }
 
-    public ObservableIntegerValue getPlannedMatUse(PlannerServantView servant, long matId) {
+    public static ObservableIntegerValue getPlannedMatUse(PlannerServantView servant, long matId) {
         ObservableIntegerValue ascMats = sumNeededAscensionMats(servant, matId);
         ObservableIntegerValue skillMats = sumAllNeededSkillMats(servant, matId);
         IntegerProperty matSum = new SimpleIntegerProperty(ascMats.intValue() + skillMats.intValue());
@@ -58,7 +59,7 @@ public class ServantUtils {
         return matSum;
     }
 
-    private ObservableIntegerValue sumAllNeededSkillMats(PlannerServantView servant, long matId) {
+    private static ObservableIntegerValue sumAllNeededSkillMats(PlannerServantView servant, long matId) {
         IntegerProperty result = new SimpleIntegerProperty(0);
         return (ObservableIntegerValue) result.add(
                 sumNeededSkillMats(servant, servant.baseServantProperty().getValue().skillLevel1Property(),
@@ -71,7 +72,7 @@ public class ServantUtils {
                         matId));
     }
 
-    private ObservableIntegerValue sumNeededSkillMats(PlannerServantView servant, ObservableIntegerValue currentLevel,
+    private static ObservableIntegerValue sumNeededSkillMats(PlannerServantView servant, ObservableIntegerValue currentLevel,
                                                       ObservableIntegerValue desiredLevel, long matId) {
         ObservableList<ObservableIntegerValue> neededValues = FXCollections.observableArrayList(param -> new Observable[]{param});
         neededValues.add(currentLevel);
@@ -83,7 +84,7 @@ public class ServantUtils {
         return skillMatSum;
     }
 
-    private int calculateSkillMat(PlannerServantView servant, long matId, int currentLevel, int desiredLevel) {
+    private static int calculateSkillMat(PlannerServantView servant, long matId, int currentLevel, int desiredLevel) {
         return servant.getSkillMaterials().stream()
                 .skip(Math.max(currentLevel - 1, 0)).limit(Math.max(desiredLevel - currentLevel, 0))
                 .flatMap(mat -> mat.getItems().stream())
@@ -92,7 +93,7 @@ public class ServantUtils {
                 .reduce(Integer::sum).orElse(0);
     }
 
-    private ObservableIntegerValue sumNeededAscensionMats(PlannerServantView servant, long matId) {
+    private static ObservableIntegerValue sumNeededAscensionMats(PlannerServantView servant, long matId) {
         ObservableIntegerValue currentAscensionLevel = getAscensionFromRarityAndLevel(
                 servant.baseServantProperty().getValue().levelProperty(),
                 servant.baseServantProperty().getValue().baseServantProperty().getValue().getRarity());
@@ -108,7 +109,7 @@ public class ServantUtils {
         return ascMatSum;
     }
 
-    private int calculateAscMats(PlannerServantView servant, long matId, int currentAscLevel, int desiredAscLevel) {
+    private static int calculateAscMats(PlannerServantView servant, long matId, int currentAscLevel, int desiredAscLevel) {
         return servant.getAscensionMaterials().stream()
                 .skip(currentAscLevel).limit(Math.max(desiredAscLevel - currentAscLevel, 0))
                 .flatMap(mat -> mat.getItems().stream())
@@ -117,33 +118,24 @@ public class ServantUtils {
                 .reduce(Integer::sum).orElse(0);
     }
 
-    public ObservableIntegerValue sumNeededAscensionGrails(PlannerServantView servant) {
+    public static ObservableIntegerValue sumNeededAscensionGrails(PlannerServantView servant) {
         IntegerProperty currentLevel = servant.baseServantProperty().getValue().levelProperty();
         IntegerProperty desiredLevel = servant.desLevelProperty();
         IntegerProperty neededGrails = new SimpleIntegerProperty(
                 calculateNeededGrails(servant, servant.baseServantProperty().getValue().levelProperty(),
                         servant.desLevelProperty()));
-        ObservableList<Property> neededValues = FXCollections.observableArrayList(param -> new Observable[]{param});
+        ObservableList<Property<?>> neededValues = FXCollections.observableArrayList(param -> new Observable[]{param});
         neededValues.add(currentLevel);
         neededValues.add(desiredLevel);
         neededValues.add(servant.baseServantProperty().getValue().ascensionProperty());
-        neededValues.addListener((ListChangeListener<? super Property>) observable -> {
+        neededValues.addListener((ListChangeListener<? super Property<?>>) observable -> {
             int plannedGrails = calculateNeededGrails(servant, currentLevel, desiredLevel);
             neededGrails.set(plannedGrails);
         });
         return neededGrails;
     }
 
-    public int getNewValueIfValid(TableColumn.CellEditEvent<?, Integer> event, int min, int max) {
-        int result = event.getOldValue();
-        int input = event.getNewValue();
-        if (input <= max && input >= min) {
-            result = input;
-        }
-        return result;
-    }
-
-    private int calculateNeededGrails(PlannerServantView servant, ObservableIntegerValue currentLevel,
+    private static int calculateNeededGrails(PlannerServantView servant, ObservableIntegerValue currentLevel,
                                       ObservableIntegerValue desiredLevel) {
         int currentAscLevel = Math.max(getAscensionFromRarityAndLevel(currentLevel,
                 servant.baseServantProperty().getValue().baseServantProperty().getValue().getRarity()).intValue() - 4, 0);
@@ -155,12 +147,12 @@ public class ServantUtils {
         return Math.max(desiredAscLevel - currentAscLevel, 0);
     }
 
-    public String determineNpCard(Servant baseServant) {
+    public static String determineNpCard(Servant baseServant) {
         String card = baseServant.getNoblePhantasms().get(baseServant.getNoblePhantasms().size() - 1).getCard();
         return card.substring(0, 1).toUpperCase() + card.substring(1);
     }
 
-    public String determineNpTarget(Servant baseServant) {
+    public static String determineNpTarget(Servant baseServant) {
         String target = "Support";
         FgoFunction damageNp = findDamagingNpFunction(baseServant);
         if (damageNp != null) {
@@ -169,11 +161,11 @@ public class ServantUtils {
         return target;
     }
 
-    private boolean damageIsAoE(FgoFunction damageNp) {
+    private static boolean damageIsAoE(FgoFunction damageNp) {
         return "enemyAll".equalsIgnoreCase(damageNp.getFuncTargetType());
     }
 
-    private FgoFunction findDamagingNpFunction(Servant baseServant) {
+    private static FgoFunction findDamagingNpFunction(Servant baseServant) {
         return baseServant.getNoblePhantasms().get(baseServant.getNoblePhantasms().size() - 1).getFunctions().stream()
                 .filter(fnc -> fnc.getFuncType().startsWith("damageNp")).findFirst().orElse(null);
     }

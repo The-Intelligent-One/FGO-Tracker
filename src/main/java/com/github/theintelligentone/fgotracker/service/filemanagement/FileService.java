@@ -8,14 +8,12 @@ import javafx.scene.image.Image;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
+import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 public class FileService {
@@ -70,7 +68,7 @@ public class FileService {
 
     public void copyOfflineBackupToCache(String filePath) {
         try (InputStream servantStream = Objects.requireNonNull(
-                getClass().getResource(OFFLINE_BASE_PATH + filePath)).openStream()) {
+                getClass().getResourceAsStream(OFFLINE_BASE_PATH + filePath))) {
             File file = new File(BASE_DATA_PATH + CACHE_PATH, filePath);
             createFileIfDoesNotExist(file);
             Files.copy(servantStream, file.toPath());
@@ -80,18 +78,24 @@ public class FileService {
     }
 
     public void copyImagesFromOfflineBackupToCache(String imageFolderPath) {
-        try {
-            File imageFolder = new File(
-                    Objects.requireNonNull(getClass().getResource(OFFLINE_BASE_PATH + imageFolderPath)).toURI());
-            for (File file : Objects.requireNonNull(imageFolder.listFiles())) {
-                File target = new File(BASE_DATA_PATH + CACHE_PATH + imageFolderPath, file.getName());
-                if (!target.exists()) {
-                    Files.copy(file.toPath(), target.toPath());
+        InputStream imageFolder =
+                Objects.requireNonNull(getClass().getResourceAsStream(OFFLINE_BASE_PATH + imageFolderPath));
+        BufferedReader reader = new BufferedReader(new InputStreamReader(imageFolder));
+        List<URL> urls = reader.lines()
+                .map(s -> OFFLINE_BASE_PATH + imageFolderPath + "/" + s)
+                .map(s -> getClass().getResource(s)).collect(
+                        Collectors.toList());
+        urls.forEach(url -> {
+            File target = new File(BASE_DATA_PATH + CACHE_PATH + imageFolderPath,
+                    url.toString().split("/")[url.toString().split("/").length - 1]);
+            if (!target.exists()) {
+                try {
+                    Files.copy(url.openStream(), target.toPath());
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
-        } catch (URISyntaxException | IOException e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
+        });
     }
 
     private void createFileIfDoesNotExist(File file) {

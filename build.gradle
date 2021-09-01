@@ -20,11 +20,11 @@ repositories {
 dependencies {
     testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
     testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
-    implementation "com.fasterxml.jackson.core:jackson-databind:2.12.4"
-    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.4"
-    runtimeOnly "org.openjfx:javafx-graphics:16:win"
-    runtimeOnly "org.openjfx:javafx-graphics:16:linux"
-    runtimeOnly "org.openjfx:javafx-graphics:16:mac"
+    implementation "com.fasterxml.jackson.core:jackson-databind:2.12.5"
+    implementation "com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.5"
+    runtimeOnly "org.openjfx:javafx-graphics:15:win"
+    runtimeOnly "org.openjfx:javafx-graphics:15:linux"
+    runtimeOnly "org.openjfx:javafx-graphics:15:mac"
     compile 'org.kohsuke:github-api:1.132'
     compile "com.opencsv:opencsv:5.5"
     compile 'ch.qos.logback:logback-classic:1.2.5'

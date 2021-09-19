@@ -5,6 +5,7 @@ import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import javafx.fxml.FXML;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import lombok.extern.slf4j.Slf4j;
@@ -14,8 +15,9 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-@FxmlView("/fxml/plannerTab.fxml")
-public class PlannerController {
+@FxmlView("/fxml/ltPlannerTab.fxml")
+public class LTPlannerController {
+
     private PlannerHandler plannerHandler;
 
     @FXML
@@ -57,6 +59,9 @@ public class PlannerController {
     @Autowired
     private DataManagementServiceFacade dataManagementServiceFacade;
 
+    public LTPlannerController() {
+    }
+
     public void setup() {
         plannerHandler.setup();
     }
@@ -76,7 +81,7 @@ public class PlannerController {
         elements.setSkill1(skill1);
         elements.setSkill2(skill2);
         elements.setSkill3(skill3);
-        elements.setPlannerType(PlannerType.REGULAR);
+        elements.setPlannerType(PlannerType.LT);
         plannerHandler = new PlannerHandler(elements, dataManagementServiceFacade);
         plannerHandler.tableInit();
     }

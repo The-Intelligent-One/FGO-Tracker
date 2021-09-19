@@ -10,14 +10,19 @@ import com.github.theintelligentone.fgotracker.domain.servant.BasicServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import javafx.scene.image.Image;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Component
 public class DataRequestService {
 
     private static final String[] SERVANT_TYPES = {"normal", "heroine"};
@@ -45,11 +50,9 @@ public class DataRequestService {
     private static final Map<String, String> SERVANT_ID_SEARCH_URL = Map.of(
             NA_REGION, "https://api.atlasacademy.io/nice/NA/servant/%d",
             JP_REGION, "https://api.atlasacademy.io/nice/JP/servant/%d?lang=en");
-    private final ObjectMapper objectMapper;
 
-    public DataRequestService(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
+    @Autowired
+    private ObjectMapper objectMapper;
 
     public List<Servant> getAllServantData(String gameRegion) {
         List<Servant> dataList = getDataFromUrl(ALL_SERVANT_URL.get(gameRegion), new TypeReference<>() {});
@@ -72,10 +75,24 @@ public class DataRequestService {
     }
 
     public List<BasicEvent> getBasicEventData(String gameRegion) {
-        List<BasicEvent> allBasicEvents = getDataListFromEitherRegion(gameRegion, BASIC_EVENT_URL,
-                Comparator.comparing(BasicEvent::getStartedAt), new TypeReference<>() {});
-        allBasicEvents.removeIf(basicEvent -> !EVENT_QUEST.equals(basicEvent.getType()));
+        List<BasicEvent> allBasicEvents = getBasicEventDataListFromEitherRegion(gameRegion);
+        allBasicEvents.removeIf(basicEvent -> !EVENT_QUEST.equals(basicEvent.getType()) || basicEvent.getWarIds().isEmpty());
         return allBasicEvents;
+    }
+
+    private List<BasicEvent> getBasicEventDataListFromEitherRegion(String gameRegion) {
+        List<BasicEvent> allResults = new ArrayList<>();
+        List<BasicEvent> jpResults = getDataFromUrl(BASIC_EVENT_URL.get(JP_REGION), new TypeReference<>() {});
+        if (NA_REGION.equals(gameRegion)) {
+            allResults.addAll(getDataFromUrl(BASIC_EVENT_URL.get(NA_REGION), new TypeReference<>() {}));
+            allResults.sort(Comparator.comparing(BasicEvent::getStartedAt));
+            jpResults.removeIf(basicEvent -> LocalDateTime.ofInstant(basicEvent.getStartedAt(), ZoneId.systemDefault()).plusYears(
+                    2).isBefore(
+                    LocalDateTime.ofInstant(allResults.get(allResults.size() - 1).getStartedAt(), ZoneId.systemDefault())));
+            jpResults.sort(Comparator.comparing(BasicEvent::getStartedAt));
+        }
+        allResults.addAll(jpResults);
+        return allResults;
     }
 
     public Map<String, Integer> getClassAttackRate() {
@@ -127,7 +144,7 @@ public class DataRequestService {
         if (NA_REGION.equals(gameRegion)) {
             allResults.addAll(getDataFromUrl(urlRegionMap.get(NA_REGION), typeRef));
             allResults.sort(comparator);
-            jpResults.removeIf(basicEvent -> comparator.compare(allResults.get(allResults.size() - 1), basicEvent) >= 0);
+            jpResults.removeIf(jpData -> comparator.compare(allResults.get(allResults.size() - 1), jpData) >= 0);
         }
         allResults.addAll(jpResults);
         allResults.sort(comparator);

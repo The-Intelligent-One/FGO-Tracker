@@ -5,16 +5,16 @@ import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import javafx.beans.property.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class PlannerServantToViewTransformer {
-    private final UserServantToViewTransformer userServantToViewTransformer;
-
-    public PlannerServantToViewTransformer() {
-        this.userServantToViewTransformer = new UserServantToViewTransformer();
-    }
+    @Autowired
+    private UserServantToViewTransformer userServantToViewTransformer;
 
     public PlannerServantView transform(PlannerServant servant) {
         ObjectProperty<UserServantView> baseProperty = new SimpleObjectProperty<>();

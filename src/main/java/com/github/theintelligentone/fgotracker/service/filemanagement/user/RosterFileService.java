@@ -3,17 +3,17 @@ package com.github.theintelligentone.fgotracker.service.filemanagement.user;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class RosterFileService {
     private static final String USER_SERVANT_FILE = "servants.json";
 
-    private final FileService fileService;
-
-    public RosterFileService(FileService fileService) {
-        this.fileService = fileService;
-    }
+    @Autowired
+    private FileService fileService;
 
     public void saveRoster(List<UserServant> servants) {
         fileService.saveUserData(servants, USER_SERVANT_FILE);

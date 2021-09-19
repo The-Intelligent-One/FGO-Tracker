@@ -3,9 +3,12 @@ package com.github.theintelligentone.fgotracker.service.filemanagement.cache;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class MaterialFileService {
     private static final String PNG_FORMAT = "png";
     private static final String MATERIAL_DATA_FILE = "mats.json";
@@ -13,6 +16,7 @@ public class MaterialFileService {
 
     private final FileService fileService;
 
+    @Autowired
     public MaterialFileService(FileService fileService) {
         this.fileService = fileService;
         fileService.createCacheStructureForDirectory(IMAGE_FOLDER_PATH);

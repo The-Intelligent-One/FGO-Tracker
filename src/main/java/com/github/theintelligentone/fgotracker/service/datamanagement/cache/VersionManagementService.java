@@ -4,10 +4,12 @@ import com.github.theintelligentone.fgotracker.domain.other.VersionDTO;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataRequestService;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
 import lombok.Getter;
-import lombok.Setter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+@Component
 public class VersionManagementService {
     private final FileManagementServiceFacade fileServiceFacade;
     private final DataRequestService requestService;
@@ -16,13 +18,14 @@ public class VersionManagementService {
     private String gameRegion;
     private Map<String, VersionDTO> currentVersion;
 
+    @Autowired
     public VersionManagementService(FileManagementServiceFacade fileServiceFacade, DataRequestService requestService) {
         this.fileServiceFacade = fileServiceFacade;
         this.requestService = requestService;
         gameRegion = fileServiceFacade.loadGameRegion();
     }
 
-    public void loadGameRegion(String selectedRegion){
+    public void loadGameRegion(String selectedRegion) {
         if (gameRegion.isEmpty()) {
             gameRegion = selectedRegion;
             fileServiceFacade.saveGameRegion(gameRegion);

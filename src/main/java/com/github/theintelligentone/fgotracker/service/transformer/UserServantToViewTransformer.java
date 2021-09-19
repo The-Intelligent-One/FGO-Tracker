@@ -3,10 +3,12 @@ package com.github.theintelligentone.fgotracker.service.transformer;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import javafx.beans.property.*;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Component
 public class UserServantToViewTransformer {
     public UserServantView transform(UserServant servant) {
         UserServantView result = new UserServantView();

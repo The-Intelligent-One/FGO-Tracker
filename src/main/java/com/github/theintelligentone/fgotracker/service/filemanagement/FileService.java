@@ -6,6 +6,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
 import java.io.*;
@@ -16,6 +18,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Component
 public class FileService {
     private static final String BASE_DATA_PATH = "data/";
     private static final String CACHE_PATH = "cache/";
@@ -25,6 +28,7 @@ public class FileService {
 
     private final ObjectMapper objectMapper;
 
+    @Autowired
     public FileService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }

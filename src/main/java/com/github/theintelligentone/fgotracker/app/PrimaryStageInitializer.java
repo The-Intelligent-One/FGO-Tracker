@@ -2,10 +2,9 @@ package com.github.theintelligentone.fgotracker.app;
 
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.ui.controller.MainController;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
@@ -14,49 +13,52 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import net.rgielen.fxweaver.core.FxControllerAndView;
+import net.rgielen.fxweaver.core.FxWeaver;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationListener;
+import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+@Component
 @Slf4j
-public class MainApp extends Application {
-    private static final String MAIN_WINDOW_FXML = "/fxml/mainWindow.fxml";
-    @Getter
-    private static DataManagementServiceFacade dataManagementServiceFacade;
-    private FXMLLoader loader;
+public class PrimaryStageInitializer implements ApplicationListener<StageReadyEvent> {
+    private final FxWeaver fxWeaver;
+
+    @Autowired
+    private DataManagementServiceFacade dataManagementServiceFacade;
+
     private MainController mainController;
 
-    public static void main(String[] args) {
-        launch();
+    @Autowired
+    public PrimaryStageInitializer(FxWeaver fxWeaver) {
+        this.fxWeaver = fxWeaver;
     }
 
+    @SneakyThrows
     @Override
-    public void init() {
-        dataManagementServiceFacade = new DataManagementServiceFacade();
-        loader = new FXMLLoader(getClass().getResource(MAIN_WINDOW_FXML));
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
+    public void onApplicationEvent(StageReadyEvent event) {
+        Stage primaryStage = event.stage;
         Scene scene = createMainScene();
         Alert loadingAlert = createServantLoadingAlert();
-        mainController.initTables();
         setupAndShowPrimaryStage(primaryStage, scene);
         loadingAlert.show();
     }
 
-    private Scene createMainScene() throws java.io.IOException {
-        Parent root = loader.load();
-        mainController = loader.getController();
-        Scene scene = new Scene(root);
-        scene.getStylesheets().add("styles/tableStyle.css");
-        scene.getStylesheets().add("styles/dark-mode.css");
+    private Scene createMainScene() {
+        FxControllerAndView<MainController, Node> controllerAndView = fxWeaver.load(MainController.class);
+        mainController = controllerAndView.getController();
+        Scene scene = new Scene((Parent) controllerAndView.getView().get());
+        scene.getStylesheets().add("/styles/tableStyle.css");
+        scene.getStylesheets().add("/styles/dark-mode.css");
         dataManagementServiceFacade.darkModeProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                scene.getStylesheets().add("styles/dark-mode.css");
+                scene.getStylesheets().add("/styles/dark-mode.css");
             } else {
-                scene.getStylesheets().remove("styles/dark-mode.css");
+                scene.getStylesheets().remove("/styles/dark-mode.css");
             }
         });
         return scene;

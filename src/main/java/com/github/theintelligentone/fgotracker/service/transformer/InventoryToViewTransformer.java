@@ -3,9 +3,11 @@ package com.github.theintelligentone.fgotracker.service.transformer;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import javafx.collections.FXCollections;
+import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
+@Component
 public class InventoryToViewTransformer {
     private final UpgradeMaterialCostToViewTransformer matToViewTransformer;
 

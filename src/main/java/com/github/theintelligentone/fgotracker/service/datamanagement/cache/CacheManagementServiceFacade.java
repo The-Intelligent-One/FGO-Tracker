@@ -3,30 +3,26 @@ package com.github.theintelligentone.fgotracker.service.datamanagement.cache;
 import com.github.theintelligentone.fgotracker.domain.event.BasicEvent;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
-import com.github.theintelligentone.fgotracker.service.datamanagement.DataRequestService;
-import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
 import javafx.collections.ObservableList;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class CacheManagementServiceFacade {
-    private final VersionManagementService versionManagementService;
-    private final ServantManagementService servantManagementService;
-    private final MaterialManagementService materialManagementService;
-    private final EventManagementService eventManagementService;
+    @Autowired
+    private VersionManagementService versionManagementService;
+    @Autowired
+    private ServantManagementService servantManagementService;
+    @Autowired
+    private MaterialManagementService materialManagementService;
+    @Autowired
+    private EventManagementService eventManagementService;
 
     @Getter
     private boolean dataLoaded;
-
-    public CacheManagementServiceFacade(FileManagementServiceFacade fileServiceFacade,
-                                        DataRequestService requestService) {
-        dataLoaded = false;
-        versionManagementService = new VersionManagementService(fileServiceFacade, requestService);
-        servantManagementService = new ServantManagementService(fileServiceFacade, requestService);
-        materialManagementService = new MaterialManagementService(fileServiceFacade, requestService);
-        eventManagementService = new EventManagementService(fileServiceFacade, requestService);
-    }
 
     public void initApp(String selectedRegion) {
         versionManagementService.loadGameRegion(selectedRegion);

@@ -12,6 +12,8 @@ import com.github.theintelligentone.fgotracker.domain.view.UpgradeMaterialCostVi
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.transformer.UserServantToViewTransformer;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 
 import static com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade.NAME_FORMAT;
 
+@Component
 public class ImportManagementService {
     private static final Map<String, Integer> ROSTER_IMPORT_INDEX_MAP = Map.of(
             "name", 0,
@@ -39,6 +42,7 @@ public class ImportManagementService {
     private final UserServantToViewTransformer userServantToViewTransformer;
     private final FileManagementServiceFacade fileServiceFacade;
 
+    @Autowired
     public ImportManagementService(
             FileManagementServiceFacade fileServiceFacade,
             UserServantToViewTransformer userServantToViewTransformer) {

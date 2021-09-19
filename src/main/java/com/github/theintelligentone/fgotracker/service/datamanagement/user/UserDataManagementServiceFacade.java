@@ -8,31 +8,31 @@ import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
-import com.github.theintelligentone.fgotracker.service.transformer.UserServantToViewTransformer;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.ObservableList;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class UserDataManagementServiceFacade {
     @Getter
     private final BooleanProperty darkMode;
 
-    private final FileManagementServiceFacade fileServiceFacade;
-    private final UserServantManagementService userServantManagementService;
-    private final InventoryManagementService inventoryManagementService;
-    private final PlannerManagementService plannerManagementService;
+    @Autowired
+    private FileManagementServiceFacade fileServiceFacade;
+    @Autowired
+    private UserServantManagementService userServantManagementService;
+    @Autowired
+    private InventoryManagementService inventoryManagementService;
+    @Autowired
+    private PlannerManagementService plannerManagementService;
 
-    public UserDataManagementServiceFacade(
-            FileManagementServiceFacade fileServiceFacade,
-            UserServantToViewTransformer userServantToViewTransformer) {
-        this.fileServiceFacade = fileServiceFacade;
+    public UserDataManagementServiceFacade() {
         darkMode = new SimpleBooleanProperty(true);
-        userServantManagementService = new UserServantManagementService(userServantToViewTransformer);
-        inventoryManagementService = new InventoryManagementService();
-        plannerManagementService = new PlannerManagementService();
     }
 
     public ObservableList<PlannerServantView> getPaddedPlannerServantList(PlannerType plannerType) {

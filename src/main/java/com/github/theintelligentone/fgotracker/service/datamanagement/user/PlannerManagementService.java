@@ -9,6 +9,8 @@ import com.github.theintelligentone.fgotracker.service.transformer.PlannerServan
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,12 +18,12 @@ import java.util.stream.IntStream;
 
 import static com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade.MIN_TABLE_SIZE;
 
+@Component
 public class PlannerManagementService {
-    private final PlannerServantToViewTransformer plannerServantToViewTransformer;
+    @Autowired
+    private PlannerServantToViewTransformer plannerServantToViewTransformer;
     private ObservableList<PlannerServantView> plannerServantList;
     private ObservableList<PlannerServantView> priorityPlannerServantList;
-
-    public PlannerManagementService() {plannerServantToViewTransformer = new PlannerServantToViewTransformer();}
 
     public ObservableList<PlannerServantView> getPaddedPlannerServantList(PlannerType plannerType) {
         ObservableList<PlannerServantView> sourceList = getPlannerServantList(plannerType);

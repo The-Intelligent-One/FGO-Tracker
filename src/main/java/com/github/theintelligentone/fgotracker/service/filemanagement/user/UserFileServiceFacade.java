@@ -3,22 +3,21 @@ package com.github.theintelligentone.fgotracker.service.filemanagement.user;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
-import com.github.theintelligentone.fgotracker.service.filemanagement.FileService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class UserFileServiceFacade {
-    private final RosterFileService rosterFileService;
-    private final PlannerFileService plannerFileService;
-    private final InventoryFileService inventoryFileService;
-    private final OptionsFileService optionsFileService;
-
-    public UserFileServiceFacade(FileService fileService) {
-        rosterFileService = new RosterFileService(fileService);
-        plannerFileService = new PlannerFileService(fileService);
-        inventoryFileService = new InventoryFileService(fileService);
-        optionsFileService = new OptionsFileService(fileService);
-    }
+    @Autowired
+    private RosterFileService rosterFileService;
+    @Autowired
+    private PlannerFileService plannerFileService;
+    @Autowired
+    private InventoryFileService inventoryFileService;
+    @Autowired
+    private OptionsFileService optionsFileService;
 
     public void saveRoster(List<UserServant> servants) {
         rosterFileService.saveRoster(servants);

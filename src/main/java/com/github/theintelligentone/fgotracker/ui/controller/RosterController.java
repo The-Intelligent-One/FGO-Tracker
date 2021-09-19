@@ -1,6 +1,5 @@
 package com.github.theintelligentone.fgotracker.ui.controller;
 
-import com.github.theintelligentone.fgotracker.app.MainApp;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
@@ -19,14 +18,21 @@ import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.util.converter.IntegerStringConverter;
+import net.rgielen.fxweaver.core.FxmlView;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.IntStream;
 
+@Component
+@FxmlView("/fxml/rosterTab.fxml")
 public class RosterController {
     private static final String[] ONE_TO_FIVE = {"1", "2", "3", "4", "5"};
+
+    @Autowired
     private DataManagementServiceFacade dataManagementServiceFacade;
 
     @FXML
@@ -91,7 +97,6 @@ public class RosterController {
     private TableColumn<UserServantView, String> notesColumn;
 
     public void initialize() {
-        dataManagementServiceFacade = MainApp.getDataManagementServiceFacade();
         tableSetup();
     }
 

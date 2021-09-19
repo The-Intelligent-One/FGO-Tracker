@@ -1,7 +1,5 @@
 package com.github.theintelligentone.fgotracker.service.datamanagement;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.theintelligentone.fgotracker.domain.event.BasicEvent;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
@@ -12,15 +10,16 @@ import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import com.github.theintelligentone.fgotracker.service.datamanagement.cache.CacheManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.datamanagement.user.UserDataManagementServiceFacade;
-import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
-import com.github.theintelligentone.fgotracker.service.transformer.UserServantToViewTransformer;
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.ObservableList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class DataManagementServiceFacade {
     public static final String VERSION = "v0.3.0-beta";
     public static final int[] MAX_LEVELS = {65, 60, 65, 70, 80, 90};
@@ -28,20 +27,12 @@ public class DataManagementServiceFacade {
     public static final int MIN_TABLE_SIZE = 25;
     public static final String NAME_FORMAT = "%s [%d* %s]";
 
-    private final ImportManagementService importManagementService;
-    private final CacheManagementServiceFacade cacheManagementService;
-    private final UserDataManagementServiceFacade userDataManagementServiceFacade;
-
-    public DataManagementServiceFacade() {
-        ObjectMapper objectMapper = new ObjectMapper();
-        objectMapper.registerModule(new JavaTimeModule());
-        DataRequestService requestService = new DataRequestService(objectMapper);
-        FileManagementServiceFacade fileServiceFacade = new FileManagementServiceFacade(objectMapper);
-        cacheManagementService = new CacheManagementServiceFacade(fileServiceFacade, requestService);
-        UserServantToViewTransformer userServantToViewTransformer = new UserServantToViewTransformer();
-        importManagementService = new ImportManagementService(fileServiceFacade, userServantToViewTransformer);
-        userDataManagementServiceFacade = new UserDataManagementServiceFacade(fileServiceFacade, userServantToViewTransformer);
-    }
+    @Autowired
+    private ImportManagementService importManagementService;
+    @Autowired
+    private CacheManagementServiceFacade cacheManagementService;
+    @Autowired
+    private UserDataManagementServiceFacade userDataManagementServiceFacade;
 
     public void initApp(String selectedRegion) {
         cacheManagementService.initApp(selectedRegion);

@@ -11,6 +11,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,14 +22,14 @@ import java.util.stream.IntStream;
 import static com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade.MIN_TABLE_SIZE;
 import static com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade.NAME_FORMAT;
 
+@Component
 public class UserServantManagementService {
-    private final UserServantToViewTransformer userServantToViewTransformer;
+    @Autowired
+    private UserServantToViewTransformer userServantToViewTransformer;
     private ObservableList<UserServantView> userServantList;
     @Getter
     private ObservableList<String> userServantNameList;
 
-    public UserServantManagementService(
-            UserServantToViewTransformer userServantToViewTransformer) {this.userServantToViewTransformer = userServantToViewTransformer;}
 
     public void initDataLists(List<PlannerServantView> plannerServantList,
                               List<PlannerServantView> priorityPlannerServantList) {

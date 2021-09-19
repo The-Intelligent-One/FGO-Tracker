@@ -8,6 +8,8 @@ import com.github.theintelligentone.fgotracker.service.filemanagement.FileManage
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
@@ -17,12 +19,15 @@ import java.util.stream.Collectors;
 
 import static com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade.NAME_FORMAT;
 
+@Component
 public class ServantManagementService {
     public static Map<String, Integer> CLASS_ATTACK_MULTIPLIER;
     public static Map<String, Map<Integer, CardPlacementData>> CARD_DATA;
 
-    private final FileManagementServiceFacade fileServiceFacade;
-    private final DataRequestService requestService;
+    @Autowired
+    private FileManagementServiceFacade fileServiceFacade;
+    @Autowired
+    private DataRequestService requestService;
 
     @Getter
     private List<Servant> servantDataList;
@@ -30,11 +35,6 @@ public class ServantManagementService {
     private List<BasicServant> basicServantDataList;
     @Getter
     private ObservableList<String> servantNameList;
-
-    public ServantManagementService(FileManagementServiceFacade fileServiceFacade, DataRequestService requestService) {
-        this.fileServiceFacade = fileServiceFacade;
-        this.requestService = requestService;
-    }
 
     public void downloadNewServantData(String gameRegion) {
         basicServantDataList = requestService.getBasicServantData(gameRegion);

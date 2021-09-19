@@ -1,6 +1,5 @@
 package com.github.theintelligentone.fgotracker.service.filemanagement;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.theintelligentone.fgotracker.domain.event.BasicEvent;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
@@ -10,23 +9,22 @@ import com.github.theintelligentone.fgotracker.domain.servant.*;
 import com.github.theintelligentone.fgotracker.service.filemanagement.cache.CacheFileServiceFacade;
 import com.github.theintelligentone.fgotracker.service.filemanagement.user.UserFileServiceFacade;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 
 @Slf4j
+@Component
 public class FileManagementServiceFacade {
-    private final CacheFileServiceFacade cacheFileServiceFacade;
-    private final UserFileServiceFacade userFileServiceFacade;
-    private final ImportFileService importFileService;
-
-    public FileManagementServiceFacade(ObjectMapper objectMapper) {
-        FileService fileService = new FileService(objectMapper);
-        cacheFileServiceFacade = new CacheFileServiceFacade(fileService);
-        userFileServiceFacade = new UserFileServiceFacade(fileService);
-        importFileService = new ImportFileService();
-    }
+    @Autowired
+    private CacheFileServiceFacade cacheFileServiceFacade;
+    @Autowired
+    private UserFileServiceFacade userFileServiceFacade;
+    @Autowired
+    private ImportFileService importFileService;
 
     public void loadOfflineData() {
         cacheFileServiceFacade.loadOfflineData();

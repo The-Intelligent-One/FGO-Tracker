@@ -1,11 +1,8 @@
 package com.github.theintelligentone.fgotracker.ui.controller;
 
-import com.github.theintelligentone.fgotracker.app.MainApp;
-import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.input.MouseEvent;
@@ -14,9 +11,13 @@ import javafx.scene.layout.VBox;
 import javafx.scene.web.WebView;
 import javafx.stage.Stage;
 import lombok.extern.slf4j.Slf4j;
+import net.rgielen.fxweaver.core.FxWeaver;
+import net.rgielen.fxweaver.core.FxmlView;
 import org.kohsuke.github.GHRelease;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.awt.*;
 import java.io.IOException;
@@ -25,6 +26,8 @@ import java.net.URISyntaxException;
 import java.util.Objects;
 
 @Slf4j
+@Component
+@FxmlView("/fxml/mainWindow.fxml")
 public class MainController {
     public static final double NAME_CELL_WIDTH = 200;
     public static final double LONG_CELL_WIDTH = 100;
@@ -33,24 +36,31 @@ public class MainController {
     public static final double CHAR_CELL_WIDTH = 20;
     public static final int CELL_HEIGHT = 30;
 
-    @FXML
+    private final FxWeaver fxWeaver;
+
+    @Autowired
     private RosterController rosterTabController;
-    @FXML
+    @Autowired
     private PlannerController plannerController;
-    @FXML
-    private PlannerController priorityPlannerController;
-    @FXML
-    private PlannerController ltPlannerController;
-    @FXML
+    @Autowired
+    private PriorityPlannerController priorityPlannerController;
+    @Autowired
+    private LTPlannerController ltPlannerController;
+
+    @Autowired
     private EventsController eventsTabController;
 
+    @Autowired
     private DataManagementServiceFacade dataManagementServiceFacade;
 
-    public void initialize() {
-        dataManagementServiceFacade = MainApp.getDataManagementServiceFacade();
-        checkForUpdates(null);
+    @Autowired
+    public MainController(FxWeaver fxWeaver) {
+        this.fxWeaver = fxWeaver;
     }
 
+    public void initialize() {
+        checkForUpdates(null);
+    }
 
     public void setup() {
         rosterTabController.setup();
@@ -72,15 +82,6 @@ public class MainController {
             saveConfirmAlert.setHeaderText("User data saved");
             saveConfirmAlert.show();
         }
-    }
-
-    public void initTables() {
-        plannerController.setPlannerType(PlannerType.REGULAR);
-        plannerController.init();
-        priorityPlannerController.setPlannerType(PlannerType.PRIORITY);
-        priorityPlannerController.init();
-        ltPlannerController.setPlannerType(PlannerType.LT);
-        ltPlannerController.init();
     }
 
     public void showAboutInfo() {

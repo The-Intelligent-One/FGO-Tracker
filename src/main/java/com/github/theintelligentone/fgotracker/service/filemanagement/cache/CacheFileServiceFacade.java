@@ -23,12 +23,6 @@ public class CacheFileServiceFacade {
     @Autowired
     private StaticDataFileService staticDataFileService;
 
-    public void loadOfflineData() {
-        servantFileService.prepareOfflineServantData();
-        materialFileService.prepareOfflineMaterialData();
-        staticDataFileService.prepareOfflineStaticData();
-    }
-
     public void saveMaterialData(List<UpgradeMaterial> materials, String gameRegion) {
         materialFileService.saveMaterialData(materials, gameRegion);
     }

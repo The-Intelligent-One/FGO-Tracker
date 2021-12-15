@@ -20,7 +20,6 @@ public class MaterialFileService {
     public MaterialFileService(FileService fileService) {
         this.fileService = fileService;
         fileService.createCacheStructureForDirectory(IMAGE_FOLDER_PATH);
-        fileService.copyImagesFromOfflineBackupToCache(IMAGE_FOLDER_PATH);
     }
 
     public void saveMaterialData(List<UpgradeMaterial> materials, String gameRegion) {
@@ -30,15 +29,10 @@ public class MaterialFileService {
 
     public List<UpgradeMaterial> loadMaterialData(String gameRegion) {
         List<UpgradeMaterial> itemList = fileService.loadDataListFromCache(gameRegion + "_" + MATERIAL_DATA_FILE,
-                new TypeReference<>() {});
+                new TypeReference<>() {
+                });
         itemList.forEach(this::loadImageForMaterial);
         return itemList;
-    }
-
-    public void prepareOfflineMaterialData() {
-        fileService.copyOfflineBackupToCache("NA_" + MATERIAL_DATA_FILE);
-        fileService.copyOfflineBackupToCache("JP_" + MATERIAL_DATA_FILE);
-        fileService.copyImagesFromOfflineBackupToCache(IMAGE_FOLDER_PATH);
     }
 
     public void loadImageForMaterial(UpgradeMaterial material) {

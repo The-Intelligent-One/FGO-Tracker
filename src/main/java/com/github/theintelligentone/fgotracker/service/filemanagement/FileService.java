@@ -23,7 +23,6 @@ public class FileService {
     private static final String BASE_DATA_PATH = "data/";
     private static final String CACHE_PATH = "cache/";
     private static final String USER_DATA_PATH = "userdata/";
-    private static final String OFFLINE_BASE_PATH = "/offline/";
     private static final String MANAGER_DB_PATH = "/managerDB-v1.3.3.csv";
 
     private final ObjectMapper objectMapper;
@@ -68,38 +67,6 @@ public class FileService {
     public Image getImageFromFolder(String imageFolder, String fileName) {
         File file = new File(BASE_DATA_PATH + CACHE_PATH + imageFolder, fileName);
         return new Image(file.toURI().toString());
-    }
-
-    public void copyOfflineBackupToCache(String filePath) {
-        try (InputStream servantStream = Objects.requireNonNull(
-                getClass().getResourceAsStream(OFFLINE_BASE_PATH + filePath))) {
-            File file = new File(BASE_DATA_PATH + CACHE_PATH, filePath);
-            createFileIfDoesNotExist(file);
-            Files.copy(servantStream, file.toPath());
-        } catch (IOException e) {
-            log.error(e.getLocalizedMessage(), e);
-        }
-    }
-
-    public void copyImagesFromOfflineBackupToCache(String imageFolderPath) {
-        InputStream imageFolder =
-                Objects.requireNonNull(getClass().getResourceAsStream(OFFLINE_BASE_PATH + imageFolderPath));
-        BufferedReader reader = new BufferedReader(new InputStreamReader(imageFolder));
-        List<URL> urls = reader.lines()
-                .map(s -> OFFLINE_BASE_PATH + imageFolderPath + "/" + s)
-                .map(s -> getClass().getResource(s)).collect(
-                        Collectors.toList());
-        urls.forEach(url -> {
-            File target = new File(BASE_DATA_PATH + CACHE_PATH + imageFolderPath,
-                    url.toString().split("/")[url.toString().split("/").length - 1]);
-            if (!target.exists()) {
-                try {
-                    Files.copy(url.openStream(), target.toPath());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
     }
 
     private void createFileIfDoesNotExist(File file) {

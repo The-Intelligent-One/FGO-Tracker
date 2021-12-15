@@ -17,11 +17,6 @@ public class ServantFileService {
     @Autowired
     private FileService fileService;
 
-    public void prepareOfflineServantData() {
-        fileService.copyOfflineBackupToCache("NA_" + SERVANT_DATA_FILE);
-        fileService.copyOfflineBackupToCache("JP_" + SERVANT_DATA_FILE);
-    }
-
     public void saveFullServantData(List<Servant> servants, String gameRegion) {
         fileService.saveDataToCache(servants, gameRegion + "_" + SERVANT_DATA_FILE);
     }

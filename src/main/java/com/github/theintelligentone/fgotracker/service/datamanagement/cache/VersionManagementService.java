@@ -41,7 +41,6 @@ public class VersionManagementService {
             needUpdate = true;
             currentVersion.put(gameRegion, onlineVersion.get(gameRegion));
         } else if (currentVersion.get(gameRegion).getTimestamp() == 0) {
-            fileServiceFacade.loadOfflineData();
             currentVersion = fileServiceFacade.loadCurrentVersion();
         }
         return needUpdate;

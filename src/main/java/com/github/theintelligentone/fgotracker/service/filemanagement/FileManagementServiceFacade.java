@@ -26,10 +26,6 @@ public class FileManagementServiceFacade {
     @Autowired
     private ImportFileService importFileService;
 
-    public void loadOfflineData() {
-        cacheFileServiceFacade.loadOfflineData();
-    }
-
     public List<String[]> importRosterCsv(File sourceFile) {
         return importFileService.importRosterCsv(sourceFile);
     }

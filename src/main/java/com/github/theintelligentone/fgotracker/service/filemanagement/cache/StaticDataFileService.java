@@ -48,10 +48,4 @@ public class StaticDataFileService {
         }
         return versionDTOMap;
     }
-
-    public void prepareOfflineStaticData() {
-        fileService.copyOfflineBackupToCache(VERSION_FILE);
-        fileService.copyOfflineBackupToCache(CARD_DATA_FILE);
-        fileService.copyOfflineBackupToCache(CLASS_ATTACKRATE_FILE);
-    }
 }

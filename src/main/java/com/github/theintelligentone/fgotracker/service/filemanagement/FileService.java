@@ -10,12 +10,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
-import java.io.*;
-import java.net.URL;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -66,7 +69,7 @@ public class FileService {
 
     public Image getImageFromFolder(String imageFolder, String fileName) {
         File file = new File(BASE_DATA_PATH + CACHE_PATH + imageFolder, fileName);
-        return new Image(file.toURI().toString());
+        return file.exists() ? new Image(file.toURI().toString()) : null;
     }
 
     private void createFileIfDoesNotExist(File file) {

@@ -72,6 +72,11 @@ public class ServantManagementService {
 
     public void loadServantDataFromCache(String gameRegion) {
         servantDataList = fileServiceFacade.loadFullServantData(gameRegion);
+        fileServiceFacade.loadRoster().forEach(userServant -> {
+            if (servantDataList.stream().mapToLong(Servant::getId).noneMatch(value -> value == userServant.getSvtId())) {
+                servantDataList.add(requestService.getServantDataById(gameRegion, userServant.getSvtId()));
+            }
+        });
         basicServantDataList = fileServiceFacade.loadBasicServantData(gameRegion);
         CLASS_ATTACK_MULTIPLIER = fileServiceFacade.loadClassAttackRate();
         CARD_DATA = fileServiceFacade.loadCardData();

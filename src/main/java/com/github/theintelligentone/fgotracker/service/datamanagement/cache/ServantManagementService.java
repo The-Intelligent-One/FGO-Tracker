@@ -72,7 +72,7 @@ public class ServantManagementService {
 
     public void loadServantDataFromCache(String gameRegion) {
         servantDataList = fileServiceFacade.loadFullServantData(gameRegion);
-        fileServiceFacade.loadRoster().forEach(userServant -> {
+        fileServiceFacade.loadRoster().stream().filter(userServant -> userServant.getSvtId() != 0).forEach(userServant -> {
             if (servantDataList.stream().mapToLong(Servant::getId).noneMatch(value -> value == userServant.getSvtId())) {
                 servantDataList.add(requestService.getServantDataById(gameRegion, userServant.getSvtId()));
             }

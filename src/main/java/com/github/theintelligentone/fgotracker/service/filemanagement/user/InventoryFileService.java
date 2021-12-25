@@ -22,7 +22,7 @@ public class InventoryFileService {
     }
 
     public Inventory loadInventory() {
-        List<UpgradeMaterialCost> matList = fileService.loadUserDataList(INVENTORY_FILE, new TypeReference<>() {});
+        List<UpgradeMaterialCost> matList = fileService.loadUserDataList(INVENTORY_FILE, new TypeReference<>() {}, null);
         Inventory inventory = new Inventory();
         inventory.setLabel("Inventory");
         inventory.setInventory(matList);

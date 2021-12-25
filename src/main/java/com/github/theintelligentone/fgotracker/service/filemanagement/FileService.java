@@ -52,12 +52,12 @@ public class FileService {
         saveDataToFile(data, new File(BASE_DATA_PATH + USER_DATA_PATH, relativePath), jsonView);
     }
 
-    public <T> List<T> loadUserDataList(String relativePath, TypeReference<List<T>> expectedType) {
-        return getDataListFromFile(new File(BASE_DATA_PATH + USER_DATA_PATH, relativePath), expectedType);
+    public <T> List<T> loadUserDataList(String relativePath, TypeReference<List<T>> expectedType, Class<? extends JsonViews.Base> jsonView) {
+        return getDataListFromFile(new File(BASE_DATA_PATH + USER_DATA_PATH, relativePath), expectedType, jsonView);
     }
 
     public <T> List<T> loadDataListFromCache(String relativePath, TypeReference<List<T>> expectedType) {
-        return getDataListFromFile(new File(BASE_DATA_PATH + CACHE_PATH, relativePath), expectedType);
+        return getDataListFromFile(new File(BASE_DATA_PATH + CACHE_PATH, relativePath), expectedType, null);
     }
 
     public <T> Map<String, T> loadDataMapFromCache(String relativePath, TypeReference<Map<String, T>> expectedType) {
@@ -110,11 +110,15 @@ public class FileService {
         }
     }
 
-    private <T> List<T> getDataListFromFile(File file, TypeReference<List<T>> expectedType) {
+    private <T> List<T> getDataListFromFile(File file, TypeReference<List<T>> expectedType, Class<? extends JsonViews.Base> jsonView) {
         List<T> dataList = new ArrayList<>();
         if (file.length() != 0) {
             try {
-                dataList = objectMapper.readValue(file, expectedType);
+                if (jsonView == null) {
+                    dataList = objectMapper.readValue(file, expectedType);
+                } else {
+                    dataList = objectMapper.readerWithView(jsonView).forType(expectedType).readValue(file);
+                }
             } catch (FileNotFoundException e) {
                 log.debug("Didn't find file: " + file + ", data list loaded as empty.");
             } catch (IOException e) {

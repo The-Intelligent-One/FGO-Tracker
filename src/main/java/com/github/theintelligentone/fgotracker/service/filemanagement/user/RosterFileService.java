@@ -21,6 +21,6 @@ public class RosterFileService {
     }
 
     public List<UserServant> loadRoster() {
-        return fileService.loadUserDataList(USER_SERVANT_FILE, new TypeReference<>() {});
+        return fileService.loadUserDataList(USER_SERVANT_FILE, new TypeReference<>() {}, JsonViews.Roster.class);
     }
 }

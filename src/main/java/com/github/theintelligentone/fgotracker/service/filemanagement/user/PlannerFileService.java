@@ -26,10 +26,10 @@ public class PlannerFileService {
     }
 
     public List<UserServant> loadPlanner() {
-        return fileService.loadUserDataList(PLANNER_SERVANT_FILE, new TypeReference<>() {});
+        return fileService.loadUserDataList(PLANNER_SERVANT_FILE, new TypeReference<>() {}, JsonViews.Planner.class);
     }
 
     public List<UserServant> loadPriorityPlanner() {
-        return fileService.loadUserDataList(PRIORITY_SERVANT_FILE, new TypeReference<>() {});
+        return fileService.loadUserDataList(PRIORITY_SERVANT_FILE, new TypeReference<>() {}, JsonViews.Planner.class);
     }
 }

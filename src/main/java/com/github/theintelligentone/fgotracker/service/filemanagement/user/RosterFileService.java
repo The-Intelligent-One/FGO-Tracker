@@ -7,6 +7,7 @@ import com.github.theintelligentone.fgotracker.service.filemanagement.FileServic
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -17,10 +18,14 @@ public class RosterFileService {
     private FileService fileService;
 
     public void saveRoster(List<UserServant> servants) {
-        fileService.saveUserData(servants, USER_SERVANT_FILE, JsonViews.Roster.class);
+        List<UserServant> servantsToSave = new ArrayList<>(servants);
+        servantsToSave.replaceAll(userServant -> userServant.getSvtId() == 0 ? null : userServant);
+        fileService.saveUserData(servantsToSave, USER_SERVANT_FILE, JsonViews.Roster.class);
     }
 
     public List<UserServant> loadRoster() {
-        return fileService.loadUserDataList(USER_SERVANT_FILE, new TypeReference<>() {}, JsonViews.Roster.class);
+        List<UserServant> loadedServants = fileService.loadUserDataList(USER_SERVANT_FILE, new TypeReference<>() {}, JsonViews.Roster.class);
+        loadedServants.replaceAll(userServant -> userServant == null ? new UserServant() : userServant);
+        return loadedServants;
     }
 }

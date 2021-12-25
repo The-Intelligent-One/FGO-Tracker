@@ -112,7 +112,7 @@ public class UserServantManagementService {
             List<UserServant> userServants,
             List<Servant> servantList) {
         userServants.forEach(svt -> {
-            if (svt.getSvtId() != 0L) {
+            if (svt.getSvtId() != 0) {
                 svt.setBaseServant(findServantById(svt.getSvtId(), servantList));
             }
         });

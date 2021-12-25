@@ -1,6 +1,7 @@
 package com.github.theintelligentone.fgotracker.service.filemanagement.user;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.github.theintelligentone.fgotracker.domain.view.JsonViews;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -14,11 +15,11 @@ public class OptionsFileService {
     private FileService fileService;
 
     public void saveDarkMode(boolean darkMode) {
-        fileService.saveUserData(darkMode, DARKMODE_FILE);
+        fileService.saveUserData(darkMode, DARKMODE_FILE, null);
     }
 
     public void saveGameRegion(String gameRegion) {
-        fileService.saveUserData(gameRegion, GAME_REGION_FILE);
+        fileService.saveUserData(gameRegion, GAME_REGION_FILE, null);
     }
 
     public boolean loadDarkMode() {

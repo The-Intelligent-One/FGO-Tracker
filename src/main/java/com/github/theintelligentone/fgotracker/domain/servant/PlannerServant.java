@@ -1,5 +1,6 @@
 package com.github.theintelligentone.fgotracker.domain.servant;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,6 +13,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(value = "baseServant", ignoreUnknown = true)
 public class PlannerServant {
     private long svtId;
     private UserServant baseServant;

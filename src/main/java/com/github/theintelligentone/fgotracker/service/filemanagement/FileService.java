@@ -3,6 +3,7 @@ package com.github.theintelligentone.fgotracker.service.filemanagement;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.theintelligentone.fgotracker.domain.view.JsonViews;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import lombok.extern.slf4j.Slf4j;
@@ -44,11 +45,11 @@ public class FileService {
     }
 
     public void saveDataToCache(Object data, String relativePath) {
-        saveDataToFile(data, new File(BASE_DATA_PATH + CACHE_PATH, relativePath));
+        saveDataToFile(data, new File(BASE_DATA_PATH + CACHE_PATH, relativePath), null);
     }
 
-    public void saveUserData(Object data, String relativePath) {
-        saveDataToFile(data, new File(BASE_DATA_PATH + USER_DATA_PATH, relativePath));
+    public void saveUserData(Object data, String relativePath, Class<? extends JsonViews.Base> jsonView) {
+        saveDataToFile(data, new File(BASE_DATA_PATH + USER_DATA_PATH, relativePath), jsonView);
     }
 
     public <T> List<T> loadUserDataList(String relativePath, TypeReference<List<T>> expectedType) {
@@ -96,10 +97,14 @@ public class FileService {
         }
     }
 
-    private void saveDataToFile(Object data, File file) {
+    private void saveDataToFile(Object data, File file, Class<? extends JsonViews.Base> jsonView) {
         createFileIfDoesNotExist(file);
         try {
-            objectMapper.writeValue(file, data);
+            if (jsonView == null) {
+                objectMapper.writeValue(file, data);
+            } else {
+                objectMapper.writerWithView(jsonView).writeValue(file, data);
+            }
         } catch (IOException e) {
             log.error(e.getLocalizedMessage(), e);
         }

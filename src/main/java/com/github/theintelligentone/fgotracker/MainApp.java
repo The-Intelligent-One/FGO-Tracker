@@ -1,6 +1,7 @@
 package com.github.theintelligentone.fgotracker;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.github.theintelligentone.fgotracker.app.JavaFxApp;
 import javafx.application.Application;
@@ -18,6 +19,7 @@ public class MainApp {
     public ObjectMapper objectMapper() {
         ObjectMapper objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);
         return objectMapper;
     }
 }

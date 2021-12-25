@@ -4,13 +4,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.NoblePhantasm;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 import java.util.Map;
 
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Servant {
+    @EqualsAndHashCode.Include
     private long id;
     private int collectionNo;
     private String name;

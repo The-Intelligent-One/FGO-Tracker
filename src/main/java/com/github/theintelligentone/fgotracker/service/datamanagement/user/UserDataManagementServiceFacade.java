@@ -3,8 +3,8 @@ package com.github.theintelligentone.fgotracker.service.datamanagement.user;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
+import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
-import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -37,16 +37,12 @@ public class UserDataManagementServiceFacade {
 //        return plannerManagementService.getPaddedPlannerServantList(plannerType);
 //    }
 
-    public ObservableList<UserServantView> getPaddedUserServantList() {
+    public ObservableList<UserServant> getPaddedUserServantList() {
         return userServantManagementService.getPaddedUserServantList();
     }
 
     public InventoryView getInventory() {
         return inventoryManagementService.getInventory();
-    }
-
-    public ObservableList<String> getUserServantNameList() {
-        return userServantManagementService.getUserServantNameList();
     }
 
     public void initDataLists() {
@@ -76,7 +72,7 @@ public class UserDataManagementServiceFacade {
         return inventoryManagementService.createEmptyInventory(materials);
     }
 
-    public void saveImportedUserServants(List<UserServantView> importedServants) {
+    public void saveImportedUserServants(List<UserServant> importedServants) {
         userServantManagementService.saveImportedUserServants(importedServants);
     }
 
@@ -92,15 +88,15 @@ public class UserDataManagementServiceFacade {
 //        plannerManagementService.savePlannerServant(index, servant, plannerType);
 //    }
 
-    public void saveUserServant(UserServantView servant) {
+    public void saveUserServant(UserServant servant) {
         userServantManagementService.saveUserServant(servant);
     }
 
-    public void saveUserServant(int index, UserServantView servant) {
+    public void saveUserServant(int index, UserServant servant) {
         userServantManagementService.saveUserServant(index, servant);
     }
 
-    public void eraseUserServant(UserServantView servant) {
+    public void eraseUserServant(UserServant servant) {
         userServantManagementService.eraseUserServant(servant);
     }
 
@@ -108,7 +104,7 @@ public class UserDataManagementServiceFacade {
 //        plannerManagementService.erasePlannerServant(servant, plannerType);
 //    }
 
-    public void removeUserServant(UserServantView servant) {
+    public void removeUserServant(UserServant servant) {
         userServantManagementService.removeUserServant(servant);
     }
 
@@ -116,7 +112,7 @@ public class UserDataManagementServiceFacade {
 //        plannerManagementService.removePlannerServant(servant, plannerType);
 //    }
 
-    public void replaceBaseServantInRow(int index, UserServantView servant, Servant newBaseServant) {
+    public void replaceBaseServantInRow(int index, UserServant servant, Servant newBaseServant) {
         userServantManagementService.replaceBaseServantInRow(index, servant, newBaseServant);
     }
 

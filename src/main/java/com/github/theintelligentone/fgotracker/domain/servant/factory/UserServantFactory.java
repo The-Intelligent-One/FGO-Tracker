@@ -9,6 +9,7 @@ public class UserServantFactory {
                 .svtId(baseServant.getId())
                 .baseServant(baseServant)
                 .rarity(baseServant.getRarity())
+                .svtClass(baseServant.getClassName())
                 .fouAtk(0)
                 .fouHp(0)
                 .ascension(false)

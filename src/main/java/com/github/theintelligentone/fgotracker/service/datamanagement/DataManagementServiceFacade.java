@@ -5,6 +5,7 @@ import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
+import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 //import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
@@ -57,10 +58,6 @@ public class DataManagementServiceFacade {
         return cacheManagementService.getMaterials();
     }
 
-    public ObservableList<String> getUserServantNameList() {
-        return userDataManagementServiceFacade.getUserServantNameList();
-    }
-
     public String getGameRegion() {
         return cacheManagementService.getGameRegion();
     }
@@ -77,7 +74,7 @@ public class DataManagementServiceFacade {
 //        return userDataManagementServiceFacade.getPaddedPlannerServantList(plannerType);
 //    }
 
-    public ObservableList<UserServantView> getUserServantList() {
+    public ObservableList<UserServant> getUserServantList() {
         return userDataManagementServiceFacade.getPaddedUserServantList();
     }
 
@@ -130,7 +127,7 @@ public class DataManagementServiceFacade {
         cacheManagementService.invalidateCache();
     }
 
-    public void eraseUserServant(UserServantView servant) {
+    public void eraseUserServant(UserServant servant) {
         userDataManagementServiceFacade.eraseUserServant(servant);
     }
 
@@ -138,7 +135,7 @@ public class DataManagementServiceFacade {
 //        userDataManagementServiceFacade.erasePlannerServant(servant, plannerType);
 //    }
 
-    public void removeUserServant(UserServantView servant) {
+    public void removeUserServant(UserServant servant) {
         userDataManagementServiceFacade.removeUserServant(servant);
     }
 
@@ -154,15 +151,15 @@ public class DataManagementServiceFacade {
 //        userDataManagementServiceFacade.savePlannerServant(index, servant, plannerType);
 //    }
 
-    public void saveUserServant(UserServantView servant) {
+    public void saveUserServant(UserServant servant) {
         userDataManagementServiceFacade.saveUserServant(servant);
     }
 
-    public void saveUserServant(int index, UserServantView servant) {
+    public void saveUserServant(int index, UserServant servant) {
         userDataManagementServiceFacade.saveUserServant(index, servant);
     }
 
-    public void replaceBaseServantInRow(int index, UserServantView servant, String newServantName) {
+    public void replaceBaseServantInRow(int index, UserServant servant, String newServantName) {
         Servant newBaseServant = cacheManagementService.findServantByFormattedName(newServantName);
         userDataManagementServiceFacade.replaceBaseServantInRow(index, servant, newBaseServant);
     }

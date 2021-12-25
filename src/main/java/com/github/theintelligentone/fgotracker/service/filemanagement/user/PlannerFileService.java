@@ -1,7 +1,7 @@
 package com.github.theintelligentone.fgotracker.service.filemanagement.user;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
+import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.view.JsonViews;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,19 +17,19 @@ public class PlannerFileService {
     @Autowired
     private FileService fileService;
 
-    public void savePlannerServants(List<PlannerServant> servants) {
+    public void savePlannerServants(List<UserServant> servants) {
         fileService.saveUserData(servants, PLANNER_SERVANT_FILE, JsonViews.Planner.class);
     }
 
-    public void savePriorityPlannerServants(List<PlannerServant> servants) {
+    public void savePriorityPlannerServants(List<UserServant> servants) {
         fileService.saveUserData(servants, PRIORITY_SERVANT_FILE, JsonViews.Planner.class);
     }
 
-    public List<PlannerServant> loadPlanner() {
+    public List<UserServant> loadPlanner() {
         return fileService.loadUserDataList(PLANNER_SERVANT_FILE, new TypeReference<>() {});
     }
 
-    public List<PlannerServant> loadPriorityPlanner() {
+    public List<UserServant> loadPriorityPlanner() {
         return fileService.loadUserDataList(PRIORITY_SERVANT_FILE, new TypeReference<>() {});
     }
 }

@@ -1,12 +1,12 @@
 package com.github.theintelligentone.fgotracker.ui.valuefactory.planner;
 
-import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
+import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import javafx.beans.NamedArg;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-public class PlannerServantValueFactory<T extends ObservableValue> extends PropertyValueFactory<PlannerServantView, T> {
+public class PlannerServantValueFactory<T extends ObservableValue> extends PropertyValueFactory<UserServantView, T> {
 
     /**
      * Creates a default PropertyValueFactory to extract the value from a given
@@ -20,9 +20,9 @@ public class PlannerServantValueFactory<T extends ObservableValue> extends Prope
     }
 
     @Override
-    public ObservableValue<T> call(TableColumn.CellDataFeatures<PlannerServantView, T> param) {
+    public ObservableValue<T> call(TableColumn.CellDataFeatures<UserServantView, T> param) {
         ObservableValue<T> call;
-        if (!(param.getValue().baseServantProperty().getValue() == null || param.getValue().baseServantProperty().getValue().baseServantProperty() == null)) {
+        if (param.getValue().baseServantProperty().getValue() != null) {
             call = super.call(param);
         } else {
             call = super.call(new TableColumn.CellDataFeatures<>(param.getTableView(), param.getTableColumn(), null));

@@ -20,6 +20,7 @@ public class UserServant {
     @JsonView(JsonViews.Base.class)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "name")
     @JsonIdentityReference(alwaysAsId = true)
+    @JsonIgnoreProperties(allowGetters = true)
     private Servant baseServant;
     @JsonView(JsonViews.Roster.class)
     private int rarity;

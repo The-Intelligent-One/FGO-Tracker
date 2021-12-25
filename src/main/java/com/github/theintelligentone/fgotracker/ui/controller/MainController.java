@@ -40,12 +40,12 @@ public class MainController {
 
     @Autowired
     private RosterController rosterTabController;
-    @Autowired
-    private PlannerController plannerController;
-    @Autowired
-    private PriorityPlannerController priorityPlannerController;
-    @Autowired
-    private LTPlannerController ltPlannerController;
+//    @Autowired
+//    private PlannerController plannerController;
+//    @Autowired
+//    private PriorityPlannerController priorityPlannerController;
+//    @Autowired
+//    private LTPlannerController ltPlannerController;
 
     @Autowired
     private EventsController eventsTabController;
@@ -64,9 +64,9 @@ public class MainController {
 
     public void setup() {
         rosterTabController.setup();
-        plannerController.setup();
-        priorityPlannerController.setup();
-        ltPlannerController.setup();
+//        plannerController.setup();
+//        priorityPlannerController.setup();
+//        ltPlannerController.setup();
         eventsTabController.setup();
     }
 

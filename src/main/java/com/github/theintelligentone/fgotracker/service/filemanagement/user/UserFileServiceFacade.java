@@ -1,7 +1,6 @@
 package com.github.theintelligentone.fgotracker.service.filemanagement.user;
 
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
-import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -27,11 +26,11 @@ public class UserFileServiceFacade {
         return rosterFileService.loadRoster();
     }
 
-    public void savePlannerServants(List<PlannerServant> servants) {
+    public void savePlannerServants(List<UserServant> servants) {
         plannerFileService.savePlannerServants(servants);
     }
 
-    public void savePriorityPlannerServants(List<PlannerServant> servants) {
+    public void savePriorityPlannerServants(List<UserServant> servants) {
         plannerFileService.savePriorityPlannerServants(servants);
     }
 
@@ -47,11 +46,11 @@ public class UserFileServiceFacade {
         optionsFileService.saveGameRegion(gameRegion);
     }
 
-    public List<PlannerServant> loadPlanner() {
+    public List<UserServant> loadPlanner() {
         return plannerFileService.loadPlanner();
     }
 
-    public List<PlannerServant> loadPriorityPlanner() {
+    public List<UserServant> loadPriorityPlanner() {
         return plannerFileService.loadPriorityPlanner();
     }
 

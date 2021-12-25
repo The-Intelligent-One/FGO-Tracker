@@ -25,6 +25,12 @@ public class UserServantToViewTransformer {
         result.setRarity(new SimpleIntegerProperty(servant.getRarity()));
         result.setSvtId(new SimpleLongProperty(servant.getSvtId()));
         result.setNotes(new SimpleStringProperty(servant.getNotes()));
+        result.setDesLevel(new SimpleIntegerProperty(servant.getDesLevel()));
+        result.setDesSkill1(new SimpleIntegerProperty(servant.getDesSkill1()));
+        result.setDesSkill2(new SimpleIntegerProperty(servant.getDesSkill2()));
+        result.setDesSkill3(new SimpleIntegerProperty(servant.getDesSkill3()));
+        result.setSkillMaterials(servant.getSkillMaterials());
+        result.setAscensionMaterials(servant.getAscensionMaterials());
         return result;
     }
 
@@ -43,6 +49,12 @@ public class UserServantToViewTransformer {
                 .skillLevel2(servant.skillLevel2Property().getValue())
                 .skillLevel3(servant.skillLevel3Property().getValue())
                 .notes(servant.notesProperty().getValue())
+                .desLevel(servant.desLevelProperty().intValue())
+                .desSkill1(servant.desSkill1Property().intValue())
+                .desSkill2(servant.desSkill2Property().intValue())
+                .desSkill3(servant.desSkill3Property().intValue())
+                .skillMaterials(servant.getSkillMaterials())
+                .ascensionMaterials(servant.getAscensionMaterials())
                 .build();
     }
 

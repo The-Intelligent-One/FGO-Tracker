@@ -3,7 +3,7 @@ package com.github.theintelligentone.fgotracker.service;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.FgoFunction;
-import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
+import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import javafx.beans.Observable;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.Property;
@@ -21,7 +21,7 @@ import java.util.stream.IntStream;
 public class ServantUtils {
     private static final int[] MAX_LEVELS = {65, 60, 65, 70, 80, 90};
 
-    private ServantUtils() {    }
+    private ServantUtils() {}
 
     public static List<Integer> createListOfAscensionLevels(int rarity) {
         int maxLevel = MAX_LEVELS[rarity];
@@ -47,7 +47,7 @@ public class ServantUtils {
         return ascLevel;
     }
 
-    public static ObservableIntegerValue getPlannedMatUse(PlannerServantView servant, long matId) {
+    public static ObservableIntegerValue getPlannedMatUse(UserServantView servant, long matId) {
         ObservableIntegerValue ascMats = sumNeededAscensionMats(servant, matId);
         ObservableIntegerValue skillMats = sumAllNeededSkillMats(servant, matId);
         IntegerProperty matSum = new SimpleIntegerProperty(ascMats.intValue() + skillMats.intValue());
@@ -59,21 +59,21 @@ public class ServantUtils {
         return matSum;
     }
 
-    private static ObservableIntegerValue sumAllNeededSkillMats(PlannerServantView servant, long matId) {
+    private static ObservableIntegerValue sumAllNeededSkillMats(UserServantView servant, long matId) {
         IntegerProperty result = new SimpleIntegerProperty(0);
         return (ObservableIntegerValue) result.add(
-                sumNeededSkillMats(servant, servant.baseServantProperty().getValue().skillLevel1Property(),
-                        servant.desSkill1Property(), matId))
-                .add(sumNeededSkillMats(servant, servant.baseServantProperty().getValue().skillLevel2Property(),
+                        sumNeededSkillMats(servant, servant.skillLevel1Property(),
+                                servant.desSkill1Property(), matId))
+                .add(sumNeededSkillMats(servant, servant.skillLevel2Property(),
                         servant.desSkill2Property(),
                         matId))
-                .add(sumNeededSkillMats(servant, servant.baseServantProperty().getValue().skillLevel3Property(),
+                .add(sumNeededSkillMats(servant, servant.skillLevel3Property(),
                         servant.desSkill3Property(),
                         matId));
     }
 
-    private static ObservableIntegerValue sumNeededSkillMats(PlannerServantView servant, ObservableIntegerValue currentLevel,
-                                                      ObservableIntegerValue desiredLevel, long matId) {
+    private static ObservableIntegerValue sumNeededSkillMats(UserServantView servant, ObservableIntegerValue currentLevel,
+                                                             ObservableIntegerValue desiredLevel, long matId) {
         ObservableList<ObservableIntegerValue> neededValues = FXCollections.observableArrayList(param -> new Observable[]{param});
         neededValues.add(currentLevel);
         neededValues.add(desiredLevel);
@@ -84,7 +84,7 @@ public class ServantUtils {
         return skillMatSum;
     }
 
-    private static int calculateSkillMat(PlannerServantView servant, long matId, int currentLevel, int desiredLevel) {
+    private static int calculateSkillMat(UserServantView servant, long matId, int currentLevel, int desiredLevel) {
         return servant.getSkillMaterials().stream()
                 .skip(Math.max(currentLevel - 1, 0)).limit(Math.max(desiredLevel - currentLevel, 0))
                 .flatMap(mat -> mat.getItems().stream())
@@ -93,12 +93,12 @@ public class ServantUtils {
                 .reduce(Integer::sum).orElse(0);
     }
 
-    private static ObservableIntegerValue sumNeededAscensionMats(PlannerServantView servant, long matId) {
+    private static ObservableIntegerValue sumNeededAscensionMats(UserServantView servant, long matId) {
         ObservableIntegerValue currentAscensionLevel = getAscensionFromRarityAndLevel(
-                servant.baseServantProperty().getValue().levelProperty(),
-                servant.baseServantProperty().getValue().baseServantProperty().getValue().getRarity());
+                servant.levelProperty(),
+                servant.baseServantProperty().getValue().getRarity());
         ObservableIntegerValue desiredAscensionLevel = getAscensionFromRarityAndLevel(servant.desLevelProperty(),
-                servant.baseServantProperty().getValue().baseServantProperty().getValue().getRarity());
+                servant.baseServantProperty().getValue().getRarity());
         ObservableList<ObservableIntegerValue> neededValues = FXCollections.observableArrayList(param -> new Observable[]{param});
         neededValues.add(currentAscensionLevel);
         neededValues.add(desiredAscensionLevel);
@@ -109,7 +109,7 @@ public class ServantUtils {
         return ascMatSum;
     }
 
-    private static int calculateAscMats(PlannerServantView servant, long matId, int currentAscLevel, int desiredAscLevel) {
+    private static int calculateAscMats(UserServantView servant, long matId, int currentAscLevel, int desiredAscLevel) {
         return servant.getAscensionMaterials().stream()
                 .skip(currentAscLevel).limit(Math.max(desiredAscLevel - currentAscLevel, 0))
                 .flatMap(mat -> mat.getItems().stream())
@@ -118,16 +118,16 @@ public class ServantUtils {
                 .reduce(Integer::sum).orElse(0);
     }
 
-    public static ObservableIntegerValue sumNeededAscensionGrails(PlannerServantView servant) {
-        IntegerProperty currentLevel = servant.baseServantProperty().getValue().levelProperty();
+    public static ObservableIntegerValue sumNeededAscensionGrails(UserServantView servant) {
+        IntegerProperty currentLevel = servant.levelProperty();
         IntegerProperty desiredLevel = servant.desLevelProperty();
         IntegerProperty neededGrails = new SimpleIntegerProperty(
-                calculateNeededGrails(servant, servant.baseServantProperty().getValue().levelProperty(),
+                calculateNeededGrails(servant, servant.levelProperty(),
                         servant.desLevelProperty()));
         ObservableList<Property<?>> neededValues = FXCollections.observableArrayList(param -> new Observable[]{param});
         neededValues.add(currentLevel);
         neededValues.add(desiredLevel);
-        neededValues.add(servant.baseServantProperty().getValue().ascensionProperty());
+        neededValues.add(servant.ascensionProperty());
         neededValues.addListener((ListChangeListener<? super Property<?>>) observable -> {
             int plannedGrails = calculateNeededGrails(servant, currentLevel, desiredLevel);
             neededGrails.set(plannedGrails);
@@ -135,15 +135,15 @@ public class ServantUtils {
         return neededGrails;
     }
 
-    private static int calculateNeededGrails(PlannerServantView servant, ObservableIntegerValue currentLevel,
-                                      ObservableIntegerValue desiredLevel) {
+    private static int calculateNeededGrails(UserServantView servant, ObservableIntegerValue currentLevel,
+                                             ObservableIntegerValue desiredLevel) {
         int currentAscLevel = Math.max(getAscensionFromRarityAndLevel(currentLevel,
-                servant.baseServantProperty().getValue().baseServantProperty().getValue().getRarity()).intValue() - 4, 0);
-        if (servant.baseServantProperty().getValue().ascensionProperty().getValue()) {
+                servant.baseServantProperty().getValue().getRarity()).intValue() - 4, 0);
+        if (servant.ascensionProperty().getValue()) {
             currentAscLevel++;
         }
         int desiredAscLevel = Math.max(getAscensionFromRarityAndLevel(desiredLevel,
-                servant.baseServantProperty().getValue().baseServantProperty().getValue().getRarity()).intValue() - 4, 0);
+                servant.baseServantProperty().getValue().getRarity()).intValue() - 4, 0);
         return Math.max(desiredAscLevel - currentAscLevel, 0);
     }
 

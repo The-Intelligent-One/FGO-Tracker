@@ -5,7 +5,10 @@ import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.other.VersionDTO;
-import com.github.theintelligentone.fgotracker.domain.servant.*;
+import com.github.theintelligentone.fgotracker.domain.servant.BasicServant;
+import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
+import com.github.theintelligentone.fgotracker.domain.servant.Servant;
+import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.service.filemanagement.cache.CacheFileServiceFacade;
 import com.github.theintelligentone.fgotracker.service.filemanagement.user.UserFileServiceFacade;
 import lombok.extern.slf4j.Slf4j;
@@ -66,11 +69,11 @@ public class FileManagementServiceFacade {
         userFileServiceFacade.saveRoster(servants);
     }
 
-    public void savePlannerServants(List<PlannerServant> servants) {
+    public void savePlannerServants(List<UserServant> servants) {
         userFileServiceFacade.savePlannerServants(servants);
     }
 
-    public void savePriorityServants(List<PlannerServant> servants) {
+    public void savePriorityServants(List<UserServant> servants) {
         userFileServiceFacade.savePriorityPlannerServants(servants);
     }
 
@@ -118,11 +121,11 @@ public class FileManagementServiceFacade {
         return userFileServiceFacade.loadRoster();
     }
 
-    public List<PlannerServant> loadPlannedServantData() {
+    public List<UserServant> loadPlannedServantData() {
         return userFileServiceFacade.loadPlanner();
     }
 
-    public List<PlannerServant> loadPriorityServantData() {
+    public List<UserServant> loadPriorityServantData() {
         return userFileServiceFacade.loadPriorityPlanner();
     }
 

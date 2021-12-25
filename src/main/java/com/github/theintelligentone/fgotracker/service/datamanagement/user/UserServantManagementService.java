@@ -3,7 +3,6 @@ package com.github.theintelligentone.fgotracker.service.datamanagement.user;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
-import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import com.github.theintelligentone.fgotracker.service.transformer.UserServantToViewTransformer;
 import javafx.beans.Observable;
@@ -31,11 +30,9 @@ public class UserServantManagementService {
     private ObservableList<String> userServantNameList;
 
 
-    public void initDataLists(List<PlannerServantView> plannerServantList,
-                              List<PlannerServantView> priorityPlannerServantList) {
+    public void initDataLists() {
         userServantList = FXCollections.observableArrayList(
                 param -> new Observable[]{param.svtIdProperty(), param.levelProperty(), param.skillLevel1Property(), param.skillLevel2Property(), param.skillLevel3Property(), param.ascensionProperty()});
-        addListenersForRemovingFromPlanners(plannerServantList, priorityPlannerServantList);
         addListenersForUpdatingNameList();
         userServantNameList = FXCollections.observableArrayList();
     }
@@ -50,25 +47,6 @@ public class UserServantManagementService {
                             svt.baseServantProperty().getValue().getClassName()))
                     .collect(Collectors.toList()));
         });
-    }
-
-    private void addListenersForRemovingFromPlanners(List<PlannerServantView> plannerServantList,
-                                                     List<PlannerServantView> priorityPlannerServantList) {
-        userServantList.addListener((ListChangeListener.Change<? extends UserServantView> c) -> {
-            List<Long> ids = c.getList().stream().map(svt -> svt.svtIdProperty().get()).collect(Collectors.toList());
-            plannerServantList.removeIf(
-                    svt -> svt.baseServantProperty().getValue() != null && !ids.contains(svt.svtIdProperty().longValue()));
-            forcePlannerListUpdates(plannerServantList, priorityPlannerServantList);
-        });
-    }
-
-    private void forcePlannerListUpdates(List<PlannerServantView> plannerServantList,
-                                         List<PlannerServantView> priorityPlannerServantList) {
-        PlannerServantView dummy = new PlannerServantView();
-        plannerServantList.add(dummy);
-        plannerServantList.remove(dummy);
-        priorityPlannerServantList.add(dummy);
-        priorityPlannerServantList.remove(dummy);
     }
 
     private List<UserServantView> clearUnnecessaryEmptyUserRows(List<UserServantView> servantList) {

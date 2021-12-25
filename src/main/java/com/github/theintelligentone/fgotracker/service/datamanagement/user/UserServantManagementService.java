@@ -3,14 +3,12 @@ package com.github.theintelligentone.fgotracker.service.datamanagement.user;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
-import com.github.theintelligentone.fgotracker.service.transformer.UserServantToViewTransformer;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade.MIN_TABLE_SIZE;
@@ -18,30 +16,14 @@ import static com.github.theintelligentone.fgotracker.service.datamanagement.Dat
 
 @Component
 public class UserServantManagementService {
-    @Autowired
-    private UserServantToViewTransformer userServantToViewTransformer;
-    private ObservableList<UserServant> userServantList;
-//    @Getter
-//    private ObservableList<String> userServantNameList;
+    private Set<UserServant> userServantList;
+    private ObservableList<UserServant> rosterServantList;
 
 
     public void initDataLists() {
-        userServantList = FXCollections.observableArrayList();
-//        addListenersForUpdatingNameList();
-//        userServantNameList = FXCollections.observableArrayList();
+        userServantList = new HashSet<>();
+        rosterServantList = FXCollections.observableArrayList();
     }
-
-//    private void addListenersForUpdatingNameList() {
-//        userServantList.addListener((ListChangeListener.Change<? extends UserServantView> c) -> {
-//            userServantNameList.clear();
-//            userServantNameList.addAll(c.getList().stream()
-//                    .filter(svt -> svt.baseServantProperty().getValue() != null)
-//                    .map(svt -> String.format(NAME_FORMAT, svt.baseServantProperty().getValue().getName(),
-//                            svt.baseServantProperty().getValue().getRarity(),
-//                            svt.baseServantProperty().getValue().getClassName()))
-//                    .collect(Collectors.toList()));
-//        });
-//    }
 
     private List<UserServant> clearUnnecessaryEmptyUserRows(List<UserServant> servantList) {
         List<UserServant> newList = new ArrayList<>(servantList);
@@ -53,64 +35,71 @@ public class UserServantManagementService {
     }
 
     public void saveUserServant(UserServant servant) {
-        userServantList.add(servant);
+        rosterServantList.add(servant);
     }
 
     public void saveUserServant(int index, UserServant servant) {
-        userServantList.add(index, servant);
+        rosterServantList.add(index, servant);
     }
 
     public void replaceBaseServantInRow(int index, UserServant servant, Servant newBaseServant) {
         if (newBaseServant != null) {
+            Optional<UserServant> optionalUserServant = userServantList.stream().filter(userServant -> userServant.getSvtId() == newBaseServant.getId()).findFirst();
             if (servant.getSvtId() == 0) {
-                userServantList.set(index,
-                        new UserServantFactory().createUserServantFromBaseServant(newBaseServant));
+                UserServant newServant = optionalUserServant.orElseGet(() -> {
+                    UserServant userServantFromBaseServant = new UserServantFactory().createUserServantFromBaseServant(newBaseServant);
+                    userServantList.add(userServantFromBaseServant);
+                    return userServantFromBaseServant;
+                });
+                rosterServantList.set(index, newServant);
             } else {
-                servant.setSvtId(newBaseServant.getId());
-                servant.setRarity(newBaseServant.getRarity());
-                servant.setBaseServant(newBaseServant);
-                servant.setSvtClass(newBaseServant.getClassName());
-                userServantList.set(index, servant);
+                UserServant newServant;
+                if (optionalUserServant.isEmpty()) {
+                    newServant = servant.toBuilder()
+                            .svtId(newBaseServant.getId())
+                            .rarity(newBaseServant.getRarity())
+                            .svtClass(newBaseServant.getClassName())
+                            .baseServant(newBaseServant).build();
+                    userServantList.add(newServant);
+                } else {
+                    newServant = optionalUserServant.get();
+                }
+                rosterServantList.set(index, newServant);
             }
         }
     }
 
-    public void eraseUserServant(UserServant servant) {
-        userServantList.set(userServantList.indexOf(servant), new UserServant());
+    public void eraseUserServant(int index) {
+        rosterServantList.set(index, new UserServant());
     }
 
     public UserServant findUserServantByFormattedName(String name) {
-        return userServantList.stream()
-                .filter(svt -> svt.getSvtId() != 0)
-                .filter(svt -> name.equalsIgnoreCase(String.format(NAME_FORMAT, svt.getBaseServant().getName(),
-                        svt.getBaseServant().getRarity(),
-                        svt.getBaseServant().getClassName())))
-                .findFirst().orElse(null);
+        return rosterServantList.stream().filter(svt -> svt.getSvtId() != 0).filter(svt -> name.equalsIgnoreCase(String.format(NAME_FORMAT, svt.getBaseServant().getName(), svt.getBaseServant().getRarity(), svt.getBaseServant().getClassName()))).findFirst().orElse(null);
     }
 
     public ObservableList<UserServant> getPaddedUserServantList() {
-        if (userServantList.size() < MIN_TABLE_SIZE) {
-            IntStream.range(0, MIN_TABLE_SIZE - userServantList.size()).forEach(
-                    i -> saveUserServant(new UserServant()));
+        if (rosterServantList.size() < MIN_TABLE_SIZE) {
+            IntStream.range(0, MIN_TABLE_SIZE - rosterServantList.size()).forEach(i -> saveUserServant(new UserServant()));
         }
-        return userServantList;
+        return rosterServantList;
     }
 
-    public void removeUserServant(UserServant servant) {
-        userServantList.remove(servant);
+    public void removeUserServant(int index) {
+        rosterServantList.remove(index);
     }
 
     public void saveImportedUserServants(List<UserServant> importedServants) {
-        userServantList.setAll(clearUnnecessaryEmptyUserRows(importedServants));
+        rosterServantList.setAll(clearUnnecessaryEmptyUserRows(importedServants));
     }
 
     public void refreshUserServants(List<UserServant> userServants, List<Servant> servantList) {
-        userServantList.addAll(createAssociatedUserServantList(userServants, servantList));
+        initDataLists();
+        List<UserServant> associatedUserServantList = createAssociatedUserServantList(userServants, servantList);
+        userServantList.addAll(associatedUserServantList.stream().filter(userServant -> userServant.getSvtId() != 0).collect(Collectors.toList()));
+        rosterServantList.addAll(associatedUserServantList);
     }
 
-    private List<UserServant> createAssociatedUserServantList(
-            List<UserServant> userServants,
-            List<Servant> servantList) {
+    private List<UserServant> createAssociatedUserServantList(List<UserServant> userServants, List<Servant> servantList) {
         userServants.forEach(svt -> {
             if (svt.getSvtId() != 0) {
                 svt.setBaseServant(findServantById(svt.getSvtId(), servantList));
@@ -124,6 +113,6 @@ public class UserServantManagementService {
     }
 
     public List<UserServant> getClearedUserServantList() {
-        return clearUnnecessaryEmptyUserRows(userServantList);
+        return clearUnnecessaryEmptyUserRows(rosterServantList);
     }
 }

@@ -8,7 +8,6 @@ import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 //import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
-import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import com.github.theintelligentone.fgotracker.service.datamanagement.cache.CacheManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.datamanagement.user.UserDataManagementServiceFacade;
 import javafx.beans.property.BooleanProperty;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -127,16 +125,16 @@ public class DataManagementServiceFacade {
         cacheManagementService.invalidateCache();
     }
 
-    public void eraseUserServant(UserServant servant) {
-        userDataManagementServiceFacade.eraseUserServant(servant);
+    public void eraseUserServant(int index) {
+        userDataManagementServiceFacade.eraseUserServant(index);
     }
 
 //    public void erasePlannerServant(UserServantView servant, PlannerType plannerType) {
 //        userDataManagementServiceFacade.erasePlannerServant(servant, plannerType);
 //    }
 
-    public void removeUserServant(UserServant servant) {
-        userDataManagementServiceFacade.removeUserServant(servant);
+    public void removeUserServant(int index) {
+        userDataManagementServiceFacade.removeUserServant(index);
     }
 
 //    public void removePlannerServant(UserServantView servant, PlannerType plannerType) {

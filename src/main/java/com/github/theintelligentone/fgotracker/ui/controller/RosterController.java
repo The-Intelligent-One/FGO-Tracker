@@ -124,9 +124,9 @@ public class RosterController {
         MenuItem importButton = new MenuItem("Import roster from csv");
         importButton.setOnAction(event -> importUserServantsFromCsv());
         MenuItem removeRowButton = new MenuItem("Delete row");
-        removeRowButton.setOnAction(event -> dataManagementServiceFacade.removeUserServant(row.getItem()));
+        removeRowButton.setOnAction(event -> dataManagementServiceFacade.removeUserServant(row.getIndex()));
         MenuItem clearRowButton = new MenuItem("Clear row");
-        clearRowButton.setOnAction(event -> dataManagementServiceFacade.eraseUserServant(row.getItem()));
+        clearRowButton.setOnAction(event -> dataManagementServiceFacade.eraseUserServant(row.getIndex()));
         MenuItem addRowAboveButton = new MenuItem("Insert row above");
         addRowAboveButton.setOnAction(
                 event -> dataManagementServiceFacade.saveUserServant(row.getTableView().getItems().indexOf(row.getItem()),
@@ -334,7 +334,7 @@ public class RosterController {
         nameColumn.setPrefWidth(MainController.NAME_CELL_WIDTH);
         nameColumn.setOnEditCommit(event -> {
             if (event.getNewValue().isEmpty()) {
-                dataManagementServiceFacade.eraseUserServant(event.getRowValue());
+                dataManagementServiceFacade.eraseUserServant(event.getTablePosition().getRow());
             } else {
                 dataManagementServiceFacade.replaceBaseServantInRow(event.getTablePosition().getRow(), event.getRowValue(),
                         event.getNewValue());

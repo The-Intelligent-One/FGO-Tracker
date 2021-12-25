@@ -96,16 +96,16 @@ public class UserDataManagementServiceFacade {
         userServantManagementService.saveUserServant(index, servant);
     }
 
-    public void eraseUserServant(UserServant servant) {
-        userServantManagementService.eraseUserServant(servant);
+    public void eraseUserServant(int index) {
+        userServantManagementService.eraseUserServant(index);
     }
 
 //    public void erasePlannerServant(PlannerServantView servant, PlannerType plannerType) {
 //        plannerManagementService.erasePlannerServant(servant, plannerType);
 //    }
 
-    public void removeUserServant(UserServant servant) {
-        userServantManagementService.removeUserServant(servant);
+    public void removeUserServant(int index) {
+        userServantManagementService.removeUserServant(index);
     }
 
 //    public void removePlannerServant(PlannerServantView servant, PlannerType plannerType) {

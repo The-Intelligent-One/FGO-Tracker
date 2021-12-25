@@ -9,11 +9,9 @@ import lombok.EqualsAndHashCode;
 import java.util.List;
 import java.util.Map;
 
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Servant {
-    @EqualsAndHashCode.Include
     private long id;
     private int collectionNo;
     private String name;

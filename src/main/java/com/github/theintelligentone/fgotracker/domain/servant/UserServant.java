@@ -3,19 +3,18 @@ package com.github.theintelligentone.fgotracker.domain.servant;
 import com.fasterxml.jackson.annotation.*;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
 import com.github.theintelligentone.fgotracker.domain.view.JsonViews;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
 @Data
-@Builder
+@Builder(toBuilder = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserServant {
     @JsonView(JsonViews.Base.class)
+    @EqualsAndHashCode.Include
     private long svtId;
     @JsonView(JsonViews.Base.class)
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "name")

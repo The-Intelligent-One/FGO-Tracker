@@ -31,7 +31,7 @@ import java.util.stream.IntStream;
 @FxmlView("/fxml/rosterTab.fxml")
 @Slf4j
 public class RosterController {
-    private static final String[] ONE_TO_FIVE = {"1", "2", "3", "4", "5"};
+    private static final Integer[] ONE_TO_FIVE = {1, 2, 3, 4, 5};
 
     @Autowired
     private DataManagementServiceFacade dataManagementServiceFacade;
@@ -75,9 +75,8 @@ public class RosterController {
     @FXML
     private TableColumn<UserServant, Integer> hpColumn;
 
-    // this need to be set to String for some reason. If I set it to Integer it freaks out in the edit commit event handler about casting during runtime
     @FXML
-    private TableColumn<UserServant, String> npLvlColumn;
+    private TableColumn<UserServant, Integer> npLvlColumn;
 
     @FXML
     private TableColumn<UserServant, Boolean> ascColumn;
@@ -110,8 +109,7 @@ public class RosterController {
                 @Override
                 public void updateIndex(int index) {
                     super.updateIndex(index);
-                    pseudoClassStateChanged(lastRow,
-                            index >= 0 && index == rosterTable.getItems().size() - 1);
+                    pseudoClassStateChanged(lastRow, index >= 0 && index == rosterTable.getItems().size() - 1);
                 }
             };
             createContextMenuForTableRow(row);
@@ -128,24 +126,24 @@ public class RosterController {
         MenuItem clearRowButton = new MenuItem("Clear row");
         clearRowButton.setOnAction(event -> dataManagementServiceFacade.eraseUserServant(row.getIndex()));
         MenuItem addRowAboveButton = new MenuItem("Insert row above");
-        addRowAboveButton.setOnAction(
-                event -> dataManagementServiceFacade.saveUserServant(row.getTableView().getItems().indexOf(row.getItem()),
-                        new UserServant()));
+        addRowAboveButton.setOnAction(event -> dataManagementServiceFacade.saveUserServant(row.getTableView()
+                .getItems()
+                .indexOf(row.getItem()), new UserServant()));
         MenuItem addRowBelowButton = new MenuItem("Insert row below");
-        addRowBelowButton.setOnAction(
-                event -> dataManagementServiceFacade.saveUserServant(row.getTableView().getItems().indexOf(row.getItem()) + 1,
-                        new UserServant()));
+        addRowBelowButton.setOnAction(event -> dataManagementServiceFacade.saveUserServant(row.getTableView()
+                .getItems()
+                .indexOf(row.getItem()) + 1, new UserServant()));
         MenuItem addMultipleRowsButton = new MenuItem("Add X new rows");
         addMultipleRowsButton.setOnAction(event -> {
             TextInputDialog prompt = new TextInputDialog("10");
             prompt.setContentText("How many new rows to add?");
             prompt.setTitle("Add X new rows");
             prompt.setHeaderText("");
-            prompt.showAndWait().ifPresent(s -> IntStream.range(0, Integer.parseInt(s)).forEach(
-                    i -> dataManagementServiceFacade.saveUserServant(new UserServant())));
+            prompt.showAndWait()
+                    .ifPresent(s -> IntStream.range(0, Integer.parseInt(s))
+                            .forEach(i -> dataManagementServiceFacade.saveUserServant(new UserServant())));
         });
-        ContextMenu menu = new ContextMenu(importButton, addRowAboveButton, addRowBelowButton, addMultipleRowsButton,
-                clearRowButton, removeRowButton);
+        ContextMenu menu = new ContextMenu(importButton, addRowAboveButton, addRowBelowButton, addMultipleRowsButton, clearRowButton, removeRowButton);
         row.contextMenuProperty().bind(Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(menu));
     }
 
@@ -297,7 +295,7 @@ public class RosterController {
     private void levelColumnSetup() {
         levelColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
         levelColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        levelColumn.setOnEditCommit(propertyCommitWithLimits(1, 100, "setLevel"));
+        levelColumn.setOnEditCommit(propertyCommitWithLimits(1, 120, "setLevel"));
     }
 
     private void atkColumnSetup() {
@@ -314,17 +312,15 @@ public class RosterController {
 
     private void npLvlColumnSetup() {
         npLvlColumn.setCellFactory(list -> {
-            ComboBoxTableCell<UserServant, String> tableCell = new ComboBoxTableCell<>(
-                    FXCollections.observableArrayList(ONE_TO_FIVE));
+            ComboBoxTableCell<UserServant, Integer> tableCell = new ComboBoxTableCell<>(FXCollections.observableArrayList(ONE_TO_FIVE));
             tableCell.setComboBoxEditable(true);
             return tableCell;
         });
         npLvlColumn.setOnEditCommit(event -> {
             if (event.getRowValue().getSvtId() != 0) {
-                int input = Integer.parseInt(event.getNewValue());
-                if (input <= 5 && input >= 1) {
-                    event.getRowValue().setNpLevel(input);
-                }
+                event.getRowValue()
+                        .setNpLevel(ServantUtils.getDefaultValueIfInvalid(event.getNewValue(), 1, 5, event.getOldValue()));
+
                 rosterTable.refresh();
             }
         });
@@ -336,17 +332,10 @@ public class RosterController {
             if (event.getNewValue().isEmpty()) {
                 dataManagementServiceFacade.eraseUserServant(event.getTablePosition().getRow());
             } else {
-                dataManagementServiceFacade.replaceBaseServantInRow(event.getTablePosition().getRow(), event.getRowValue(),
-                        event.getNewValue());
+                dataManagementServiceFacade.replaceBaseServantInRow(event.getTablePosition()
+                        .getRow(), event.getRowValue(), event.getNewValue());
                 event.getTableView().refresh();
             }
-        });
-        nameColumn.setCellValueFactory(param -> {
-            SimpleStringProperty name = new SimpleStringProperty();
-            if (param.getValue().getSvtId() != 0) {
-                name.set(param.getValue().getBaseServant().getName());
-            }
-            return name;
         });
     }
 
@@ -355,21 +344,14 @@ public class RosterController {
         if (rosterTable.getItems().size() == 0) {
             IntStream.range(0, 10).forEach(i -> dataManagementServiceFacade.saveUserServant(new UserServant()));
         }
-        nameColumn.setCellFactory(
-                AutoCompleteTextFieldTableCell.forTableColumn(dataManagementServiceFacade.getServantNameList()));
+        nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementServiceFacade.getServantNameList()));
     }
 
-    private EventHandler<TableColumn.CellEditEvent<UserServant, Integer>> propertyCommitWithLimits(int min, int max,
-                                                                                                   String propertyName) {
+    private EventHandler<TableColumn.CellEditEvent<UserServant, Integer>> propertyCommitWithLimits(int min, int max, String propertyName) {
         return event -> {
             if (event.getRowValue().getSvtId() != 0) {
-                int result = event.getOldValue();
-                int input = event.getNewValue();
-                if (input <= max && input >= min) {
-                    result = input;
-                }
                 try {
-                    new Statement(event.getRowValue(), propertyName, new Object[]{result}).execute();
+                    new Statement(event.getRowValue(), propertyName, new Object[]{ServantUtils.getDefaultValueIfInvalid(event.getNewValue(), min, max, event.getOldValue())}).execute();
                 } catch (Exception e) {
                     log.error("Set property error: ", e);
                 }

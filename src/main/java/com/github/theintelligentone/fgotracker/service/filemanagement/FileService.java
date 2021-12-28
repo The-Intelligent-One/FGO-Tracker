@@ -3,7 +3,6 @@ package com.github.theintelligentone.fgotracker.service.filemanagement;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.theintelligentone.fgotracker.domain.view.JsonViews;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import lombok.extern.slf4j.Slf4j;
@@ -45,19 +44,19 @@ public class FileService {
     }
 
     public void saveDataToCache(Object data, String relativePath) {
-        saveDataToFile(data, new File(BASE_DATA_PATH + CACHE_PATH, relativePath), null);
+        saveDataToFile(data, new File(BASE_DATA_PATH + CACHE_PATH, relativePath));
     }
 
-    public void saveUserData(Object data, String relativePath, Class<? extends JsonViews.Base> jsonView) {
-        saveDataToFile(data, new File(BASE_DATA_PATH + USER_DATA_PATH, relativePath), jsonView);
+    public void saveUserData(Object data, String relativePath) {
+        saveDataToFile(data, new File(BASE_DATA_PATH + USER_DATA_PATH, relativePath));
     }
 
-    public <T> List<T> loadUserDataList(String relativePath, TypeReference<List<T>> expectedType, Class<? extends JsonViews.Base> jsonView) {
-        return getDataListFromFile(new File(BASE_DATA_PATH + USER_DATA_PATH, relativePath), expectedType, jsonView);
+    public <T> List<T> loadUserDataList(String relativePath, TypeReference<List<T>> expectedType) {
+        return getDataListFromFile(new File(BASE_DATA_PATH + USER_DATA_PATH, relativePath), expectedType);
     }
 
     public <T> List<T> loadDataListFromCache(String relativePath, TypeReference<List<T>> expectedType) {
-        return getDataListFromFile(new File(BASE_DATA_PATH + CACHE_PATH, relativePath), expectedType, null);
+        return getDataListFromFile(new File(BASE_DATA_PATH + CACHE_PATH, relativePath), expectedType);
     }
 
     public <T> Map<String, T> loadDataMapFromCache(String relativePath, TypeReference<Map<String, T>> expectedType) {
@@ -97,28 +96,20 @@ public class FileService {
         }
     }
 
-    private void saveDataToFile(Object data, File file, Class<? extends JsonViews.Base> jsonView) {
+    private void saveDataToFile(Object data, File file) {
         createFileIfDoesNotExist(file);
         try {
-            if (jsonView == null) {
-                objectMapper.writeValue(file, data);
-            } else {
-                objectMapper.writerWithView(jsonView).writeValue(file, data);
-            }
+            objectMapper.writeValue(file, data);
         } catch (IOException e) {
             log.error(e.getLocalizedMessage(), e);
         }
     }
 
-    private <T> List<T> getDataListFromFile(File file, TypeReference<List<T>> expectedType, Class<? extends JsonViews.Base> jsonView) {
+    private <T> List<T> getDataListFromFile(File file, TypeReference<List<T>> expectedType) {
         List<T> dataList = new ArrayList<>();
         if (file.length() != 0) {
             try {
-                if (jsonView == null) {
-                    dataList = objectMapper.readValue(file, expectedType);
-                } else {
-                    dataList = objectMapper.readerWithView(jsonView).forType(expectedType).readValue(file);
-                }
+                dataList = objectMapper.readValue(file, expectedType);
             } catch (FileNotFoundException e) {
                 log.debug("Didn't find file: " + file + ", data list loaded as empty.");
             } catch (IOException e) {

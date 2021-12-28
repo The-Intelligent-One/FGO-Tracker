@@ -22,7 +22,7 @@
         <columns>
             <TableColumn fx:id="nameColumn" text="Name">
                 <cellValueFactory>
-                    <PlannerServantNameValueFactory/>
+                    <UserServantNameValueFactory/>
                 </cellValueFactory>
             </TableColumn>
             <TableColumn text="Current" fx:id="current">

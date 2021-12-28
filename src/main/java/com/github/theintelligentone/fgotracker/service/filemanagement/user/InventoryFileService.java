@@ -18,11 +18,11 @@ public class InventoryFileService {
     private FileService fileService;
 
     public void saveInventory(Inventory inventory) {
-        fileService.saveUserData(inventory.getInventory(), INVENTORY_FILE, null);
+        fileService.saveUserData(inventory.getInventory(), INVENTORY_FILE);
     }
 
     public Inventory loadInventory() {
-        List<UpgradeMaterialCost> matList = fileService.loadUserDataList(INVENTORY_FILE, new TypeReference<>() {}, null);
+        List<UpgradeMaterialCost> matList = fileService.loadUserDataList(INVENTORY_FILE, new TypeReference<>() {});
         Inventory inventory = new Inventory();
         inventory.setLabel("Inventory");
         inventory.setInventory(matList);

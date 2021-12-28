@@ -7,7 +7,6 @@ import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
-//import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import com.github.theintelligentone.fgotracker.service.datamanagement.cache.CacheManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.datamanagement.user.UserDataManagementServiceFacade;
 import javafx.beans.property.BooleanProperty;
@@ -26,7 +25,7 @@ public class DataManagementServiceFacade {
     public static final int MIN_TABLE_SIZE = 25;
     public static final String NAME_FORMAT = "%s [%d* %s]";
 
-//    @Autowired
+    //    @Autowired
 //    private ImportManagementService importManagementService;
     @Autowired
     private CacheManagementServiceFacade cacheManagementService;
@@ -36,8 +35,7 @@ public class DataManagementServiceFacade {
     public void initApp(String selectedRegion) {
         cacheManagementService.initApp(selectedRegion);
         userDataManagementServiceFacade.initDataLists();
-        userDataManagementServiceFacade.refreshAllData(cacheManagementService.getServantList(),
-                cacheManagementService.getMaterials());
+        userDataManagementServiceFacade.refreshAllData(cacheManagementService.getServantList(), cacheManagementService.getMaterials());
     }
 
     public BooleanProperty darkModeProperty() {
@@ -68,9 +66,9 @@ public class DataManagementServiceFacade {
         return userDataManagementServiceFacade.getInventory();
     }
 
-//    public ObservableList<UserServantView> getPaddedPlannerServantList(PlannerType plannerType) {
-//        return userDataManagementServiceFacade.getPaddedPlannerServantList(plannerType);
-//    }
+    public ObservableList<UserServant> getPaddedPlannerServantList(PlannerType plannerType) {
+        return userDataManagementServiceFacade.getPaddedPlannerServantList(plannerType);
+    }
 
     public ObservableList<UserServant> getUserServantList() {
         return userDataManagementServiceFacade.getPaddedUserServantList();
@@ -129,25 +127,25 @@ public class DataManagementServiceFacade {
         userDataManagementServiceFacade.eraseUserServant(index);
     }
 
-//    public void erasePlannerServant(UserServantView servant, PlannerType plannerType) {
-//        userDataManagementServiceFacade.erasePlannerServant(servant, plannerType);
-//    }
+    public void erasePlannerServant(UserServant servant, PlannerType plannerType) {
+        userDataManagementServiceFacade.erasePlannerServant(servant, plannerType);
+    }
 
     public void removeUserServant(int index) {
         userDataManagementServiceFacade.removeUserServant(index);
     }
 
-//    public void removePlannerServant(UserServantView servant, PlannerType plannerType) {
-//        userDataManagementServiceFacade.removePlannerServant(servant, plannerType);
-//    }
-//
-//    public void savePlannerServant(UserServantView servant, PlannerType plannerType) {
-//        userDataManagementServiceFacade.savePlannerServant(servant, plannerType);
-//    }
-//
-//    public void savePlannerServant(int index, UserServantView servant, PlannerType plannerType) {
-//        userDataManagementServiceFacade.savePlannerServant(index, servant, plannerType);
-//    }
+    public void removePlannerServant(UserServant servant, PlannerType plannerType) {
+        userDataManagementServiceFacade.removePlannerServant(servant, plannerType);
+    }
+
+    public void savePlannerServant(UserServant servant, PlannerType plannerType) {
+        userDataManagementServiceFacade.savePlannerServant(servant, plannerType);
+    }
+
+    public void savePlannerServant(int index, UserServant servant, PlannerType plannerType) {
+        userDataManagementServiceFacade.savePlannerServant(index, servant, plannerType);
+    }
 
     public void saveUserServant(UserServant servant) {
         userDataManagementServiceFacade.saveUserServant(servant);
@@ -162,8 +160,8 @@ public class DataManagementServiceFacade {
         userDataManagementServiceFacade.replaceBaseServantInRow(index, servant, newBaseServant);
     }
 
-//    public void replaceBaseServantInPlannerRow(int index, UserServantView servant, String newServantName,
-//                                               PlannerType plannerType) {
-//        userDataManagementServiceFacade.replaceBaseServantInPlannerRow(index, servant, newServantName, plannerType);
-//    }
+    public void replaceBaseServantInPlannerRow(int index, UserServant servant, String newServantName, PlannerType plannerType) {
+        Servant newBaseServant = cacheManagementService.findServantByFormattedName(newServantName);
+        userDataManagementServiceFacade.replaceBaseServantInPlannerRow(index, servant, newBaseServant, plannerType);
+    }
 }

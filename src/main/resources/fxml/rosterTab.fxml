@@ -9,7 +9,11 @@
     <columns>
         <TableColumn text="General Info">
             <columns>
-                <TableColumn text="Name" fx:id="nameColumn"/>
+                <TableColumn text="Name" fx:id="nameColumn">
+                    <cellValueFactory>
+                        <UserServantNameValueFactory/>
+                    </cellValueFactory>
+                </TableColumn>
                 <TableColumn fx:id="rarityColumn" text="R">
                     <cellValueFactory>
                         <UserServantValueFactory property="rarity"/>

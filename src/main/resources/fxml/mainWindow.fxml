@@ -35,12 +35,12 @@
 <!--        <Tab text="LT Planner">-->
 <!--            <fx:include fx:id="ltPlanner" source="ltPlannerTab.fxml"/>-->
 <!--        </Tab>-->
-<!--        <Tab text="Planner">-->
-<!--            <fx:include fx:id="planner" source="plannerTab.fxml"/>-->
-<!--        </Tab>-->
-<!--        <Tab text="Prio Planner">-->
-<!--            <fx:include fx:id="priorityPlanner" source="priorityPlannerTab.fxml"/>-->
-<!--        </Tab>-->
+        <Tab text="Planner">
+            <fx:include fx:id="planner" source="plannerTab.fxml"/>
+        </Tab>
+        <Tab text="Prio Planner">
+            <fx:include fx:id="priorityPlanner" source="priorityPlannerTab.fxml"/>
+        </Tab>
         <Tab text="Events">
             <fx:include fx:id="eventsTab" source="eventsTab.fxml"/>
         </Tab>

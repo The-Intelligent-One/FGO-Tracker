@@ -15,11 +15,11 @@ public class OptionsFileService {
     private FileService fileService;
 
     public void saveDarkMode(boolean darkMode) {
-        fileService.saveUserData(darkMode, DARKMODE_FILE, null);
+        fileService.saveUserData(darkMode, DARKMODE_FILE);
     }
 
     public void saveGameRegion(String gameRegion) {
-        fileService.saveUserData(gameRegion, GAME_REGION_FILE, null);
+        fileService.saveUserData(gameRegion, GAME_REGION_FILE);
     }
 
     public boolean loadDarkMode() {

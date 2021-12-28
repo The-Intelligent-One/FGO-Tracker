@@ -2,6 +2,7 @@ package com.github.theintelligentone.fgotracker.service.datamanagement.user;
 
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
+import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
@@ -26,16 +27,14 @@ public class UserDataManagementServiceFacade {
     private UserServantManagementService userServantManagementService;
     @Autowired
     private InventoryManagementService inventoryManagementService;
-//    @Autowired
-//    private PlannerManagementService plannerManagementService;
 
     public UserDataManagementServiceFacade() {
         darkMode = new SimpleBooleanProperty(true);
     }
 
-//    public ObservableList<UserServantView> getPaddedPlannerServantList(PlannerType plannerType) {
-//        return plannerManagementService.getPaddedPlannerServantList(plannerType);
-//    }
+    public ObservableList<UserServant> getPaddedPlannerServantList(PlannerType plannerType) {
+        return userServantManagementService.getPaddedPlannerServantList(plannerType);
+    }
 
     public ObservableList<UserServant> getPaddedUserServantList() {
         return userServantManagementService.getPaddedUserServantList();
@@ -53,17 +52,15 @@ public class UserDataManagementServiceFacade {
         darkMode.set(fileServiceFacade.loadDarkMode());
         userServantManagementService.refreshUserServants(fileServiceFacade.loadRoster(), servantList);
         inventoryManagementService.refreshInventory(fileServiceFacade.loadInventory(), materials);
-//        plannerManagementService.refreshPlannerServants(PlannerType.REGULAR, fileServiceFacade.loadPlannedServantData(),
-//                userServantManagementService.getPaddedUserServantList());
-//        plannerManagementService.refreshPlannerServants(PlannerType.PRIORITY, fileServiceFacade.loadPriorityServantData(),
-//                userServantManagementService.getPaddedUserServantList());
+        userServantManagementService.refreshPlannerServants(PlannerType.REGULAR, fileServiceFacade.loadPlannedServantData(), servantList);
+        userServantManagementService.refreshPlannerServants(PlannerType.PRIORITY, fileServiceFacade.loadPriorityServantData(), servantList);
     }
 
     public void saveUserState(String gameRegion) {
         fileServiceFacade.saveRoster(userServantManagementService.getClearedUserServantList());
         fileServiceFacade.saveInventory(inventoryManagementService.getExportInventory());
-//        fileServiceFacade.savePlannerServants(plannerManagementService.getClearedPlannerServantList(PlannerType.REGULAR));
-//        fileServiceFacade.savePriorityServants(plannerManagementService.getClearedPlannerServantList(PlannerType.PRIORITY));
+        fileServiceFacade.savePlannerServants(userServantManagementService.getClearedPlannerServantList(PlannerType.REGULAR));
+        fileServiceFacade.savePriorityServants(userServantManagementService.getClearedPlannerServantList(PlannerType.PRIORITY));
         fileServiceFacade.saveDarkMode(darkMode.getValue());
         fileServiceFacade.saveGameRegion(gameRegion);
     }
@@ -80,13 +77,13 @@ public class UserDataManagementServiceFacade {
 //        plannerManagementService.saveImportedPlannerServants(plannerType, importedServants);
 //    }
 
-//    public void savePlannerServant(PlannerServantView servant, PlannerType plannerType) {
-//        plannerManagementService.savePlannerServant(servant, plannerType);
-//    }
+    public void savePlannerServant(UserServant servant, PlannerType plannerType) {
+        userServantManagementService.savePlannerServant(servant, plannerType);
+    }
 
-//    public void savePlannerServant(int index, PlannerServantView servant, PlannerType plannerType) {
-//        plannerManagementService.savePlannerServant(index, servant, plannerType);
-//    }
+    public void savePlannerServant(int index, UserServant servant, PlannerType plannerType) {
+        userServantManagementService.savePlannerServant(index, servant, plannerType);
+    }
 
     public void saveUserServant(UserServant servant) {
         userServantManagementService.saveUserServant(servant);
@@ -100,25 +97,24 @@ public class UserDataManagementServiceFacade {
         userServantManagementService.eraseUserServant(index);
     }
 
-//    public void erasePlannerServant(PlannerServantView servant, PlannerType plannerType) {
-//        plannerManagementService.erasePlannerServant(servant, plannerType);
-//    }
+    public void erasePlannerServant(UserServant servant, PlannerType plannerType) {
+        userServantManagementService.erasePlannerServant(servant, plannerType);
+    }
 
     public void removeUserServant(int index) {
         userServantManagementService.removeUserServant(index);
     }
 
-//    public void removePlannerServant(PlannerServantView servant, PlannerType plannerType) {
-//        plannerManagementService.removePlannerServant(servant, plannerType);
-//    }
-
-    public void replaceBaseServantInRow(int index, UserServant servant, Servant newBaseServant) {
-        userServantManagementService.replaceBaseServantInRow(index, servant, newBaseServant);
+    public void removePlannerServant(UserServant servant, PlannerType plannerType) {
+        userServantManagementService.removePlannerServant(servant, plannerType);
     }
 
-//    public void replaceBaseServantInPlannerRow(int index, PlannerServantView servant, String newServantName,
-//                                               PlannerType plannerType) {
-//        UserServantView newBaseServant = userServantManagementService.findUserServantByFormattedName(newServantName);
-//        plannerManagementService.replaceBaseServantInPlannerRow(index, servant, newBaseServant, plannerType);
-//    }
+    public void replaceBaseServantInRow(int index, UserServant servant, Servant newBaseServant) {
+        userServantManagementService.replaceBaseServantInRosterRow(index, servant, newBaseServant);
+    }
+
+    public void replaceBaseServantInPlannerRow(int index, UserServant servant, Servant newBaseServant,
+                                               PlannerType plannerType) {
+        userServantManagementService.replaceBaseServantInPlannerRow(index, servant, newBaseServant, plannerType);
+    }
 }

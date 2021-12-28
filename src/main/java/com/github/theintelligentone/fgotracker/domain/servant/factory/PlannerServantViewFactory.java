@@ -1,12 +1,10 @@
 package com.github.theintelligentone.fgotracker.domain.servant.factory;
 
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
-import com.github.theintelligentone.fgotracker.domain.view.PlannerServantView;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import javafx.beans.Observable;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -19,8 +17,8 @@ public class PlannerServantViewFactory {
 
     private static final int MAX_SKILL_LEVEL = 10;
 
-    public ObservableList<PlannerServantView> createForLTPlanner(ObservableList<UserServantView> servants) {
-        ObservableList<PlannerServantView> result = FXCollections.observableArrayList(
+    public ObservableList<UserServantView> createForLTPlanner(ObservableList<UserServantView> servants) {
+        ObservableList<UserServantView> result = FXCollections.observableArrayList(
                 param -> new Observable[]{param.baseServantProperty(), param.desLevelProperty(), param.desSkill1Property(), param.desSkill2Property(), param.desSkill3Property()});
         result.addAll(servants.stream().map(this::createFromUserServantForLTPlanner).collect(Collectors.toList()));
         servants.addListener((ListChangeListener<? super UserServantView>) c -> {
@@ -30,12 +28,11 @@ public class PlannerServantViewFactory {
         return result;
     }
 
-    public PlannerServantView createFromUserServant(UserServantView servant) {
-        PlannerServantView result = new PlannerServantView();
+    public UserServantView createFromUserServant(UserServantView servant) {
+        UserServantView result = new UserServantView();
         if (servant.baseServantProperty() != null && servant.baseServantProperty().getValue() != null) {
-            result = PlannerServantView.builder()
+            result = UserServantView.builder()
                     .svtId(servant.svtIdProperty())
-                    .baseServant(new SimpleObjectProperty<>(servant))
                     .desLevel(new SimpleIntegerProperty(servant.levelProperty().intValue()))
                     .desSkill1(new SimpleIntegerProperty(servant.skillLevel1Property().intValue()))
                     .desSkill2(new SimpleIntegerProperty(servant.skillLevel2Property().intValue()))
@@ -48,12 +45,11 @@ public class PlannerServantViewFactory {
         return result;
     }
 
-    private PlannerServantView createFromUserServantForLTPlanner(UserServantView servant) {
-        PlannerServantView result = new PlannerServantView();
+    private UserServantView createFromUserServantForLTPlanner(UserServantView servant) {
+        UserServantView result = new UserServantView();
         if (servant.baseServantProperty() != null && servant.baseServantProperty().getValue() != null) {
-            result = PlannerServantView.builder()
+            result = UserServantView.builder()
                     .svtId(servant.svtIdProperty())
-                    .baseServant(new SimpleObjectProperty<>(servant))
                     .desLevel(new SimpleIntegerProperty(
                             DataManagementServiceFacade.MAX_LEVELS[servant.baseServantProperty().getValue().getRarity()]))
                     .desSkill1(new SimpleIntegerProperty(MAX_SKILL_LEVEL))
@@ -72,13 +68,12 @@ public class PlannerServantViewFactory {
                 Collectors.toList());
     }
 
-    public PlannerServantView createFromPreviousUserServant(UserServantView servant,
-                                                            PlannerServantView previousServant) {
-        PlannerServantView result = new PlannerServantView();
+    public UserServantView createFromPreviousUserServant(UserServantView servant,
+                                                         UserServantView previousServant) {
+        UserServantView result = new UserServantView();
         if (servant.baseServantProperty() != null && servant.baseServantProperty().getValue() != null) {
-            result = PlannerServantView.builder()
+            result = UserServantView.builder()
                     .svtId(servant.svtIdProperty())
-                    .baseServant(new SimpleObjectProperty<>(servant))
                     .desLevel(new SimpleIntegerProperty(previousServant.desLevelProperty().intValue()))
                     .desSkill1(new SimpleIntegerProperty(previousServant.desSkill1Property().intValue()))
                     .desSkill2(new SimpleIntegerProperty(previousServant.desSkill1Property().intValue()))

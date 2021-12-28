@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns="http://javafx.com/javafx"
-      xmlns:fx="http://javafx.com/fxml"
+      xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="com.github.theintelligentone.fgotracker.ui.controller.MainController"
       fx:id="rootNode">
     <MenuBar>
@@ -29,10 +29,20 @@
         </Menu>
     </MenuBar>
     <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
-        <fx:include fx:id="rosterTab" source="rosterTab.fxml"/>
-        <fx:include fx:id="ltPlanner" source="plannerTab.fxml"/>
-        <fx:include fx:id="planner" source="plannerTab.fxml"/>
-        <fx:include fx:id="priorityPlanner" source="plannerTab.fxml"/>
-        <fx:include fx:id="eventsTab" source="eventsTab.fxml"/>
+        <Tab text="Roster">
+            <fx:include fx:id="rosterTab" source="rosterTab.fxml"/>
+        </Tab>
+        <Tab text="LT Planner">
+            <fx:include fx:id="ltPlanner" source="ltPlannerTab.fxml"/>
+        </Tab>
+        <Tab text="Planner">
+            <fx:include fx:id="planner" source="plannerTab.fxml"/>
+        </Tab>
+        <Tab text="Prio Planner">
+            <fx:include fx:id="priorityPlanner" source="priorityPlannerTab.fxml"/>
+        </Tab>
+        <Tab text="Events">
+            <fx:include fx:id="eventsTab" source="eventsTab.fxml"/>
+        </Tab>
     </TabPane>
 </VBox>

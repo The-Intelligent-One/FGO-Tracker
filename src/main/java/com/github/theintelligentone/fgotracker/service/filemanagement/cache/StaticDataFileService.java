@@ -4,17 +4,19 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.other.VersionDTO;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
+@Component
 public class StaticDataFileService {
     private static final String VERSION_FILE = "dbVersion.json";
     private static final String CLASS_ATTACKRATE_FILE = "classAttack.json";
     private static final String CARD_DATA_FILE = "cardData.json";
-    private final FileService fileService;
 
-
-    public StaticDataFileService(FileService fileService) {this.fileService = fileService;}
+    @Autowired
+    private FileService fileService;
 
     public void saveClassAttackRateData(Map<String, Integer> classAttackRate) {
         fileService.saveDataToCache(classAttackRate, CLASS_ATTACKRATE_FILE);
@@ -45,11 +47,5 @@ public class StaticDataFileService {
             versionDTOMap.put("JP", new VersionDTO());
         }
         return versionDTOMap;
-    }
-
-    public void prepareOfflineStaticData() {
-        fileService.copyOfflineBackupToCache(VERSION_FILE);
-        fileService.copyOfflineBackupToCache(CARD_DATA_FILE);
-        fileService.copyOfflineBackupToCache(CLASS_ATTACKRATE_FILE);
     }
 }

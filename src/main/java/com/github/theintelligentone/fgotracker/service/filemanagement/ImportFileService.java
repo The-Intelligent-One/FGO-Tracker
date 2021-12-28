@@ -5,6 +5,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -12,6 +13,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Component
 public class ImportFileService {
     private static final String MANAGER_DB_PATH = "/managerDB-v1.3.3.csv";
     private static final int LINES_TO_SKIP_IN_ROSTER_CSV = 2;

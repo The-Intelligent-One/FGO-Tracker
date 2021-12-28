@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.NoblePhantasm;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
 import java.util.Map;

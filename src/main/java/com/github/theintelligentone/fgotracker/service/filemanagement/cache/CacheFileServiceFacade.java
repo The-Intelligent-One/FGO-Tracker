@@ -6,29 +6,22 @@ import com.github.theintelligentone.fgotracker.domain.other.CardPlacementData;
 import com.github.theintelligentone.fgotracker.domain.other.VersionDTO;
 import com.github.theintelligentone.fgotracker.domain.servant.BasicServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
-import com.github.theintelligentone.fgotracker.service.filemanagement.FileService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class CacheFileServiceFacade {
-    private final MaterialFileService materialFileService;
-    private final ServantFileService servantFileService;
-    private final EventFileService eventFileService;
-    private final StaticDataFileService staticDataFileService;
-
-    public CacheFileServiceFacade(FileService fileService) {
-        materialFileService = new MaterialFileService(fileService);
-        servantFileService = new ServantFileService(fileService);
-        staticDataFileService = new StaticDataFileService(fileService);
-        eventFileService = new EventFileService(fileService);
-    }
-
-    public void loadOfflineData() {
-        servantFileService.prepareOfflineServantData();
-        materialFileService.prepareOfflineMaterialData();
-        staticDataFileService.prepareOfflineStaticData();
-    }
+    @Autowired
+    private MaterialFileService materialFileService;
+    @Autowired
+    private ServantFileService servantFileService;
+    @Autowired
+    private EventFileService eventFileService;
+    @Autowired
+    private StaticDataFileService staticDataFileService;
 
     public void saveMaterialData(List<UpgradeMaterial> materials, String gameRegion) {
         materialFileService.saveMaterialData(materials, gameRegion);

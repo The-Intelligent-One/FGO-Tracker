@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 @Component
 @FxmlView("/fxml/plannerTab.fxml")
-public class PlannerController {
+public class LTPlannerController {
     private PlannerHandler plannerHandler;
 
     @FXML
@@ -75,7 +75,7 @@ public class PlannerController {
         elements.setSkill1(skill1);
         elements.setSkill2(skill2);
         elements.setSkill3(skill3);
-        elements.setPlannerType(PlannerType.REGULAR);
+        elements.setPlannerType(PlannerType.LT);
         plannerHandler = new PlannerHandler(elements, dataManagementServiceFacade);
         plannerHandler.tableInit();
     }

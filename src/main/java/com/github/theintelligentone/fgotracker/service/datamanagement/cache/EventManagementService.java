@@ -4,22 +4,22 @@ import com.github.theintelligentone.fgotracker.domain.event.BasicEvent;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataRequestService;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class EventManagementService {
-    private final FileManagementServiceFacade fileServiceFacade;
-    private final DataRequestService requestService;
+    @Autowired
+    private FileManagementServiceFacade fileServiceFacade;
+    @Autowired
+    private DataRequestService requestService;
 
     @Getter
     private List<BasicEvent> basicEvents;
     @Getter
     private boolean bannersResized;
-
-    public EventManagementService(FileManagementServiceFacade fileServiceFacade, DataRequestService requestService) {
-        this.fileServiceFacade = fileServiceFacade;
-        this.requestService = requestService;
-    }
 
     public void loadBasicEventDataFromCache(String gameRegion) {
         basicEvents = fileServiceFacade.loadBasicEventData(gameRegion);

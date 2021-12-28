@@ -1,12 +1,13 @@
 package com.github.theintelligentone.fgotracker.ui.valuefactory.roster;
 
+import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import javafx.beans.NamedArg;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.cell.PropertyValueFactory;
 
-public class UserServantValueFactory<T> extends PropertyValueFactory<UserServantView, T> {
+public class UserServantValueFactory<T> extends PropertyValueFactory<UserServant, T> {
 
     /**
      * Creates a default PropertyValueFactory to extract the value from a given
@@ -20,9 +21,9 @@ public class UserServantValueFactory<T> extends PropertyValueFactory<UserServant
     }
 
     @Override
-    public ObservableValue<T> call(TableColumn.CellDataFeatures<UserServantView, T> param) {
+    public ObservableValue<T> call(TableColumn.CellDataFeatures<UserServant, T> param) {
         ObservableValue<T> call;
-        if (param.getValue().baseServantProperty().getValue() == null) {
+        if (param.getValue().getSvtId() == 0) {
             call = super.call(new TableColumn.CellDataFeatures<>(param.getTableView(), param.getTableColumn(), null));
         } else {
             call = super.call(param);

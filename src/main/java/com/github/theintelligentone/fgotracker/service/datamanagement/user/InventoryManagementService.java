@@ -6,17 +6,19 @@ import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import com.github.theintelligentone.fgotracker.service.transformer.InventoryToViewTransformer;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Component
 public class InventoryManagementService {
-    private final InventoryToViewTransformer inventoryToViewTransformer;
+    @Autowired
+    private InventoryToViewTransformer inventoryToViewTransformer;
     @Getter
     private InventoryView inventory;
-
-    public InventoryManagementService() {inventoryToViewTransformer = new InventoryToViewTransformer();}
 
     private InventoryView createInventoryWithAssociatedMatList(Inventory inventory, List<UpgradeMaterial> materials) {
         if (inventory.getInventory().size() == 0) {

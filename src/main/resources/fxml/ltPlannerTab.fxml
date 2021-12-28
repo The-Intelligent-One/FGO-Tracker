@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.VBox?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="com.github.theintelligentone.fgotracker.ui.controller.PlannerController">
+      fx:controller="com.github.theintelligentone.fgotracker.ui.controller.LTPlannerController">
     <TableView fx:id="sumTable" editable="true">
         <columns>
             <TableColumn fx:id="label"/>

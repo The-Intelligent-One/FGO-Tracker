@@ -18,6 +18,6 @@ public class BasicEvent {
 
     @Override
     public String toString() {
-        return name;
+        return name + "\n" + startedAt.toString() + " - " + endedAt.toString();
     }
 }

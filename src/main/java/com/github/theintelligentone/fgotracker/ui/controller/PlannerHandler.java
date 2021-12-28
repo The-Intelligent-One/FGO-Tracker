@@ -4,6 +4,7 @@ import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
+import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import com.github.theintelligentone.fgotracker.domain.view.UpgradeMaterialCostView;
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
@@ -381,7 +382,7 @@ public class PlannerHandler {
     }
 
     public void loadLTData() {
-//        plannerElements.getPlannerTable().setItems(createLTPlannerServantList());
+        plannerElements.getPlannerTable().setItems(createLTPlannerServantList());
     }
 
     private void initCurrentInfoColumns() {
@@ -477,7 +478,7 @@ public class PlannerHandler {
         loadingAlert.show();
     }
 
-//    private ObservableList<UserServant> createLTPlannerServantList() {
-//        return new PlannerServantViewFactory().createForLTPlanner(dataManagementServiceFacade.getUserServantList());
-//    }
+    private ObservableList<UserServant> createLTPlannerServantList() {
+        return new UserServantFactory().createForLTPlanner(dataManagementServiceFacade.getUserServantList());
+    }
 }

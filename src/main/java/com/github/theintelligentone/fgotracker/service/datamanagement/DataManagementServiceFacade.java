@@ -6,6 +6,7 @@ import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
+import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
 import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import com.github.theintelligentone.fgotracker.service.datamanagement.cache.CacheManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.datamanagement.user.UserDataManagementServiceFacade;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -25,8 +27,8 @@ public class DataManagementServiceFacade {
     public static final int MIN_TABLE_SIZE = 25;
     public static final String NAME_FORMAT = "%s [%d* %s]";
 
-    //    @Autowired
-//    private ImportManagementService importManagementService;
+        @Autowired
+    private ImportManagementService importManagementService;
     @Autowired
     private CacheManagementServiceFacade cacheManagementService;
     @Autowired
@@ -79,21 +81,19 @@ public class DataManagementServiceFacade {
     }
 
     public List<String> importInventoryFromCsv(File sourceFile) {
-//        return importManagementService.createInventoryFromCsvLines(sourceFile,
-//                cacheManagementService.getMaterials(),
-//                userDataManagementServiceFacade.getInventory());
-        return null;
+        return importManagementService.createInventoryFromCsvLines(sourceFile,
+                cacheManagementService.getMaterials(),
+                userDataManagementServiceFacade.getInventory());
     }
 
     public List<String> importPlannerServantsFromCsv(File sourceFile, PlannerType plannerType) {
-//        List<UserServantView> importedServants = new ArrayList<>();
-//        List<String> notFoundNames = importManagementService.createPlannerServantListFromCsvLines(
-//                userDataManagementServiceFacade.getPaddedUserServantList(), cacheManagementService.getServantList(),
-//                importedServants,
-//                sourceFile);
-//        userDataManagementServiceFacade.saveImportedPlannerServants(plannerType, importedServants);
-//        return notFoundNames;
-        return null;
+        List<UserServant> importedServants = new ArrayList<>();
+        List<String> notFoundNames = importManagementService.createPlannerServantListFromCsvLines(
+                userDataManagementServiceFacade.getPaddedUserServantList(),
+                importedServants, cacheManagementService.getBasicServantList(),
+                sourceFile);
+        userDataManagementServiceFacade.saveImportedPlannerServants(plannerType, importedServants);
+        return notFoundNames;
     }
 
 
@@ -106,12 +106,16 @@ public class DataManagementServiceFacade {
     }
 
     public List<String> importUserServantsFromCsv(File sourceFile) {
-//        List<UserServantView> importedServants = new ArrayList<>();
-//        List<String> notFoundNames = importManagementService.importUserServantsFromCsv(sourceFile, importedServants,
-//                cacheManagementService.getServantList());
-//        userDataManagementServiceFacade.saveImportedUserServants(importedServants);
-//        return notFoundNames;
-        return null;
+        List<UserServant> importedServants = new ArrayList<>();
+        List<String> notFoundNames = importManagementService.importUserServantsFromCsv(sourceFile, importedServants,
+                cacheManagementService.getBasicServantList());
+        importedServants.forEach(userServant -> {
+            if (userServant.getSvtId() != 0){
+                UserServantFactory.updateBaseServant(userServant, cacheManagementService.getServantById(userServant.getSvtId()));
+            }
+        });
+        userDataManagementServiceFacade.saveImportedUserServants(importedServants);
+        return notFoundNames;
     }
 
     public void saveUserState() {

@@ -70,6 +70,17 @@ public class ServantManagementService {
                 .getId();
     }
 
+    public Servant getServantById(long id, String gameRegion) {
+        Optional<Servant> searchResult = servantDataList.stream()
+                .filter(svt -> svt.getId() == id)
+                .findFirst();
+        return searchResult.orElseGet(() -> {
+            Servant downloadedServant = requestService.getServantDataById(gameRegion, id);
+            servantDataList.add(downloadedServant);
+            return downloadedServant;
+        });
+    }
+
     public void loadServantDataFromCache(String gameRegion) {
         servantDataList = fileServiceFacade.loadFullServantData(gameRegion);
         fileServiceFacade.loadRoster().stream().filter(userServant -> userServant.getSvtId() != 0).forEach(userServant -> {

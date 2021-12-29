@@ -73,9 +73,9 @@ public class UserDataManagementServiceFacade {
         userServantManagementService.saveImportedUserServants(importedServants);
     }
 
-//    public void saveImportedPlannerServants(PlannerType plannerType, List<PlannerServantView> importedServants) {
-//        plannerManagementService.saveImportedPlannerServants(plannerType, importedServants);
-//    }
+    public void saveImportedPlannerServants(PlannerType plannerType, List<UserServant> importedServants) {
+        userServantManagementService.saveImportedPlannerServants(plannerType, importedServants);
+    }
 
     public void savePlannerServant(UserServant servant, PlannerType plannerType) {
         userServantManagementService.savePlannerServant(servant, plannerType);

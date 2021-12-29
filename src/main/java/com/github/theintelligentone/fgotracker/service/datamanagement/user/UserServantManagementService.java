@@ -55,19 +55,20 @@ public class UserServantManagementService {
     }
 
     public ObservableList<UserServant> getPaddedUserServantList() {
-        if (rosterServantList.size() < MIN_TABLE_SIZE) {
-            IntStream.range(0, MIN_TABLE_SIZE - rosterServantList.size())
-                    .forEach(i -> saveUserServant(new UserServant()));
-        }
+        padUserServantList(rosterServantList);
         return rosterServantList;
     }
 
     public ObservableList<UserServant> getPaddedPlannerServantList(PlannerType plannerType) {
         ObservableList<UserServant> sourceList = getPlannerServantList(plannerType);
+        padUserServantList(sourceList);
+        return sourceList;
+    }
+
+    private void padUserServantList(ObservableList<UserServant> sourceList) {
         if (sourceList.size() < MIN_TABLE_SIZE) {
             IntStream.range(0, MIN_TABLE_SIZE - sourceList.size()).forEach(i -> sourceList.add(new UserServant()));
         }
-        return sourceList;
     }
 
     public void removeUserServant(int index) {
@@ -76,6 +77,7 @@ public class UserServantManagementService {
 
     public void saveImportedUserServants(List<UserServant> importedServants) {
         rosterServantList.setAll(clearUnnecessaryEmptyUserRows(importedServants));
+        padUserServantList(rosterServantList);
     }
 
     public void refreshUserServants(List<UserServant> userServants, List<Servant> servantList) {
@@ -108,7 +110,7 @@ public class UserServantManagementService {
                     UserServant oldSvt = optionalUserServant.get();
                     copyNewValuesIfApplicable(oldSvt, svt);
                 }
-                result.add(optionalUserServant.orElseGet(() -> UserServantFactory.updateBaseServant(svt, findServantById(svt.getSvtId(), servantList))));
+                result.add(optionalUserServant.orElseGet(() -> UserServantFactory.copyWithNewBaseServant(svt, findServantById(svt.getSvtId(), servantList))));
             } else {
                 result.add(svt);
             }
@@ -245,9 +247,9 @@ public class UserServantManagementService {
         }
         return newList;
     }
-//
-//    public void saveImportedPlannerServants(PlannerType plannerType,
-//                                            List<PlannerServantView> importedServants) {
-//        getPlannerServantList(plannerType).setAll(clearUnnecessaryEmptyPlannerRows(importedServants));
-//    }
+
+    public void saveImportedPlannerServants(PlannerType plannerType,
+                                            List<UserServant> importedServants) {
+        getPlannerServantList(plannerType).setAll(clearUnnecessaryEmptyPlannerRows(importedServants));
+    }
 }

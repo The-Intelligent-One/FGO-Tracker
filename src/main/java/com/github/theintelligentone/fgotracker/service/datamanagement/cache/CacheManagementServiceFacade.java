@@ -2,6 +2,7 @@ package com.github.theintelligentone.fgotracker.service.datamanagement.cache;
 
 import com.github.theintelligentone.fgotracker.domain.event.BasicEvent;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
+import com.github.theintelligentone.fgotracker.domain.servant.BasicServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import javafx.collections.ObservableList;
 import lombok.Getter;
@@ -98,5 +99,13 @@ public class CacheManagementServiceFacade {
 
     public Servant findServantByFormattedName(String name) {
         return servantManagementService.findServantByFormattedName(name, versionManagementService.getGameRegion());
+    }
+
+    public Servant getServantById(long id) {
+        return servantManagementService.getServantById(id, versionManagementService.getGameRegion());
+    }
+
+    public List<BasicServant> getBasicServantList() {
+        return servantManagementService.getBasicServantDataList();
     }
 }

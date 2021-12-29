@@ -15,6 +15,20 @@ import java.util.stream.Collectors;
 public class UserServantFactory {
     private static final int MAX_SKILL_LEVEL = 10;
 
+    public static UserServant createBlankUserServant() {
+        return UserServant.builder()
+                .level(1)
+                .desLevel(1)
+                .skillLevel1(1)
+                .skillLevel2(1)
+                .skillLevel3(1)
+                .desSkill1(1)
+                .desSkill2(1)
+                .desSkill3(1)
+                .npLevel(1)
+                .build();
+    }
+
     public static UserServant createUserServantFromBaseServant(Servant baseServant) {
         return UserServant.builder()
                 .svtId(baseServant.getId())
@@ -36,7 +50,7 @@ public class UserServantFactory {
                 .build();
     }
 
-    public static UserServant updateBaseServant(UserServant userServant, Servant baseServant) {
+    public static UserServant copyWithNewBaseServant(UserServant userServant, Servant baseServant) {
         return userServant.toBuilder()
                 .baseServant(baseServant)
                 .svtId(baseServant.getId())
@@ -47,6 +61,15 @@ public class UserServantFactory {
                 .build();
     }
 
+    public static void updateBaseServant(UserServant userServant, Servant baseServant) {
+        userServant.setBaseServant(baseServant);
+        userServant.setSvtId(baseServant.getId());
+        userServant.setSvtClass(baseServant.getClassName());
+        userServant.setRarity(baseServant.getRarity());
+        userServant.setAscensionMaterials(convertMaterialMapToList(baseServant.getAscensionMaterials()));
+        userServant.setSkillMaterials(convertMaterialMapToList(baseServant.getSkillMaterials()));
+    }
+
     private static List<UpgradeCost> convertMaterialMapToList(Map<Integer, UpgradeCost> materials) {
         return materials.entrySet()
                 .stream()
@@ -55,20 +78,22 @@ public class UserServantFactory {
                 .collect(Collectors.toList());
     }
 
-    public ObservableList<UserServant> createForLTPlanner(ObservableList<UserServant> servants) {
+    public static ObservableList<UserServant> createForLTPlanner(ObservableList<UserServant> servants) {
         ObservableList<UserServant> result = FXCollections.observableArrayList();
-        result.addAll(servants.stream().map(this::createFromUserServantForLTPlanner).collect(Collectors.toList()));
+        result.addAll(servants.stream()
+                .map(UserServantFactory::createFromUserServantForLTPlanner)
+                .collect(Collectors.toList()));
         servants.addListener((ListChangeListener<? super UserServant>) c -> {
             result.clear();
             result.addAll(c.getList()
                     .stream()
-                    .map(this::createFromUserServantForLTPlanner)
+                    .map(UserServantFactory::createFromUserServantForLTPlanner)
                     .collect(Collectors.toList()));
         });
         return result;
     }
 
-    private UserServant createFromUserServantForLTPlanner(UserServant servant) {
+    private static UserServant createFromUserServantForLTPlanner(UserServant servant) {
         UserServant result = new UserServant();
         if (servant.getSvtId() != 0) {
             result = servant.toBuilder()

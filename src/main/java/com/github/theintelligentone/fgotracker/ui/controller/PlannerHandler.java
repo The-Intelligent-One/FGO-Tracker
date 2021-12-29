@@ -479,6 +479,6 @@ public class PlannerHandler {
     }
 
     private ObservableList<UserServant> createLTPlannerServantList() {
-        return new UserServantFactory().createForLTPlanner(dataManagementServiceFacade.getUserServantList());
+        return UserServantFactory.createForLTPlanner(dataManagementServiceFacade.getUserServantList());
     }
 }

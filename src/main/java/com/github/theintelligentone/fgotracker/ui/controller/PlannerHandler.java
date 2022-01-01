@@ -357,10 +357,10 @@ public class PlannerHandler {
 
     @SuppressWarnings("unchecked")
     private void initDesiredInfoColumns() {
-        initDesiredInfoColumn(0, "getDesLevel", 120);
-        initDesiredInfoColumn(1, "getDesSkill1", 10);
-        initDesiredInfoColumn(2, "getDesSkill2", 10);
-        initDesiredInfoColumn(3, "getDesSkill3", 10);
+        initDesiredInfoColumn(0, "setDesLevel", 120);
+        initDesiredInfoColumn(1, "setDesSkill1", 10);
+        initDesiredInfoColumn(2, "setDesSkill2", 10);
+        initDesiredInfoColumn(3, "setDesSkill3", 10);
         plannerElements.getDesired().getColumns().forEach(col1 -> col1.setPrefWidth(MainController.SHORT_CELL_WIDTH));
         plannerElements.getDesired().getColumns().forEach(col -> {
             TableColumn<UserServant, Integer> actualCol = (TableColumn<UserServant, Integer>) col;

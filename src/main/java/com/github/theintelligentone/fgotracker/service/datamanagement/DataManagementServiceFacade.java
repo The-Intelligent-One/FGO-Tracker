@@ -21,7 +21,7 @@ import java.util.List;
 
 @Component
 public class DataManagementServiceFacade {
-    public static final String VERSION = "v0.3.3-beta";
+    public static final String VERSION = "v0.3.3-hotfix";
     public static final int[] MAX_LEVELS = {65, 60, 65, 70, 80, 90};
 
     public static final int MIN_TABLE_SIZE = 25;

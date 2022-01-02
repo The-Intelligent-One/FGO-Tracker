@@ -1,8 +1,8 @@
 package com.github.theintelligentone.fgotracker.ui.controller;
 
+import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
-import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
@@ -20,16 +20,16 @@ public class PriorityPlannerController {
     private PlannerHandler plannerHandler;
 
     @FXML
-    private TableView<InventoryView> sumTable;
+    private TableView<Inventory> sumTable;
 
     @FXML
-    private TableColumn<InventoryView, String> label;
+    private TableColumn<Inventory, String> label;
 
     @FXML
-    private TableColumn<InventoryView, String> sumCurrent;
+    private TableColumn<Inventory, String> sumCurrent;
 
     @FXML
-    private TableColumn<InventoryView, String> sumDesired;
+    private TableColumn<Inventory, String> sumDesired;
 
     @FXML
     private TableView<UserServant> plannerTable;

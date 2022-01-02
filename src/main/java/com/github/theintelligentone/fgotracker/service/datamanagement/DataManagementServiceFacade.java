@@ -7,7 +7,6 @@ import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
-import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import com.github.theintelligentone.fgotracker.service.datamanagement.cache.CacheManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.service.datamanagement.user.UserDataManagementServiceFacade;
 import javafx.beans.property.BooleanProperty;
@@ -27,7 +26,7 @@ public class DataManagementServiceFacade {
     public static final int MIN_TABLE_SIZE = 25;
     public static final String NAME_FORMAT = "%s [%d* %s]";
 
-        @Autowired
+    @Autowired
     private ImportManagementService importManagementService;
     @Autowired
     private CacheManagementServiceFacade cacheManagementService;
@@ -64,7 +63,7 @@ public class DataManagementServiceFacade {
         return cacheManagementService.getBasicEvents();
     }
 
-    public InventoryView getInventory() {
+    public Inventory getInventory() {
         return userDataManagementServiceFacade.getInventory();
     }
 
@@ -110,7 +109,7 @@ public class DataManagementServiceFacade {
         List<String> notFoundNames = importManagementService.importUserServantsFromCsv(sourceFile, importedServants,
                 cacheManagementService.getBasicServantList());
         importedServants.forEach(userServant -> {
-            if (userServant.getSvtId() != 0){
+            if (userServant.getSvtId() != 0) {
                 UserServantFactory.updateBaseServant(userServant, cacheManagementService.getServantById(userServant.getSvtId()));
             }
         });

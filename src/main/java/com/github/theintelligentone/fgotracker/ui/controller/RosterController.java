@@ -5,6 +5,7 @@ import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AscensionCheckBoxTableCell;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
+import com.github.theintelligentone.fgotracker.ui.valuefactory.roster.UserServantNpDamageValueFactory;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;

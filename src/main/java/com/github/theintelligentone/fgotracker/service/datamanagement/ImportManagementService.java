@@ -1,13 +1,13 @@
 package com.github.theintelligentone.fgotracker.service.datamanagement;
 
+import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
+import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import com.github.theintelligentone.fgotracker.domain.servant.BasicServant;
 import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
-import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
-import com.github.theintelligentone.fgotracker.domain.view.UpgradeMaterialCostView;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -57,7 +57,7 @@ public class ImportManagementService {
         MAT_NAME_TRANSLATE_MAP.put("Thread", "虹の糸玉");
     }
 
-    public List<String> createInventoryFromCsvLines(File sourceFile, List<UpgradeMaterial> materials, InventoryView inventory) {
+    public List<String> createInventoryFromCsvLines(File sourceFile, List<UpgradeMaterial> materials, Inventory inventory) {
         Map<String, Integer> importedData = fileServiceFacade.importInventoryCsv(sourceFile);
         List<String> notFoundNames = convertMaterialNamesToOnesFromDb(importedData, materials);
         setCurrentAmountForMaterialsInInventory(importedData, inventory);
@@ -82,11 +82,11 @@ public class ImportManagementService {
         return notFoundNames;
     }
 
-    private void setCurrentAmountForMaterialsInInventory(Map<String, Integer> importedData, InventoryView inventory) {
-        for (UpgradeMaterialCostView mat : inventory.getInventory()) {
-            Integer amount = importedData.get(mat.itemProperty().getValue().getName());
+    private void setCurrentAmountForMaterialsInInventory(Map<String, Integer> importedData, Inventory inventory) {
+        for (UpgradeMaterialCost mat : inventory.getInventory()) {
+            Integer amount = importedData.get(mat.getItem().getName());
             if (amount != null) {
-                mat.amountProperty().set(amount);
+                mat.setAmount(amount);
             }
         }
     }

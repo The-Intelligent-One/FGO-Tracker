@@ -3,10 +3,7 @@ package com.github.theintelligentone.fgotracker.service.datamanagement.user;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
-import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
-import com.github.theintelligentone.fgotracker.service.transformer.InventoryToViewTransformer;
 import lombok.Getter;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -15,17 +12,16 @@ import java.util.Optional;
 
 @Component
 public class InventoryManagementService {
-    @Autowired
-    private InventoryToViewTransformer inventoryToViewTransformer;
     @Getter
-    private InventoryView inventory;
+    private Inventory inventory;
 
-    private InventoryView createInventoryWithAssociatedMatList(Inventory inventory, List<UpgradeMaterial> materials) {
+    private Inventory createInventoryWithAssociatedMatList(Inventory inventory, List<UpgradeMaterial> materials) {
+        Inventory inventoryToSave = inventory;
         if (inventory.getInventory().size() == 0) {
-            inventory = createEmptyInventory(materials);
+            inventoryToSave = createEmptyInventory(materials);
         } else {
             for (UpgradeMaterial mat : materials) {
-                Optional<UpgradeMaterialCost> optionalMat = inventory.getInventory().stream()
+                Optional<UpgradeMaterialCost> optionalMat = inventoryToSave.getInventory().stream()
                         .filter(upgradeMaterialCost -> upgradeMaterialCost.getId() == mat.getId())
                         .findAny();
                 if (optionalMat.isPresent()) {
@@ -35,18 +31,18 @@ public class InventoryManagementService {
                     newMat.setId(mat.getId());
                     newMat.setItem(mat);
                     newMat.setAmount(0);
-                    inventory.getInventory().add(newMat);
+                    inventoryToSave.getInventory().add(newMat);
                 }
             }
 
-            for (UpgradeMaterialCost mat : inventory.getInventory()) {
+            for (UpgradeMaterialCost mat : inventoryToSave.getInventory()) {
                 mat.setItem(materials.stream()
                         .filter(material -> material.getId() == mat.getId())
                         .findFirst().get());
             }
         }
-        inventory.setLabel("Inventory");
-        return inventoryToViewTransformer.transform(inventory);
+        inventoryToSave.setLabel("Inventory");
+        return inventoryToSave;
     }
 
     public Inventory createEmptyInventory(List<UpgradeMaterial> materials) {
@@ -68,6 +64,6 @@ public class InventoryManagementService {
     }
 
     public Inventory getExportInventory() {
-        return inventoryToViewTransformer.transform(inventory);
+        return inventory;
     }
 }

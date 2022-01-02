@@ -5,7 +5,6 @@ import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
-import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -40,7 +39,7 @@ public class UserDataManagementServiceFacade {
         return userServantManagementService.getPaddedUserServantList();
     }
 
-    public InventoryView getInventory() {
+    public Inventory getInventory() {
         return inventoryManagementService.getInventory();
     }
 

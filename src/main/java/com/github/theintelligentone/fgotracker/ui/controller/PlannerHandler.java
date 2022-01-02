@@ -2,27 +2,20 @@ package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
+import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
-import com.github.theintelligentone.fgotracker.domain.view.InventoryView;
-import com.github.theintelligentone.fgotracker.domain.view.UpgradeMaterialCostView;
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
-import com.github.theintelligentone.fgotracker.service.transformer.InventoryToViewTransformer;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.InventoryValueFactory;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.UserServantGrailValueFactory;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.UserServantMaterialValueFactory;
-import javafx.beans.Observable;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
-import javafx.beans.binding.NumberBinding;
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
@@ -148,7 +141,7 @@ public class PlannerHandler {
         disableSumTableHeader();
         plannerElements.getSumTable().setMaxHeight(MainController.CELL_HEIGHT * 3);
         plannerElements.getSumTable().setRowFactory(param -> {
-            TableRow<InventoryView> row = new TableRow<>() {
+            TableRow<Inventory> row = new TableRow<>() {
                 @Override
                 public void updateIndex(int index) {
                     super.updateIndex(index);
@@ -162,90 +155,84 @@ public class PlannerHandler {
     }
 
     private void setupSumTableData() {
-        InventoryToViewTransformer transformer = new InventoryToViewTransformer();
         plannerElements.getSumTable().getColumns().addAll(createColumnsForAllMatsForSum());
         plannerElements.getSumTable().getStyleClass().add("sum-table");
-        InventoryView inventory = dataManagementServiceFacade.getInventory();
+        Inventory inventory = dataManagementServiceFacade.getInventory();
         plannerElements.getSumTable().getItems().add(inventory);
-        Inventory plannedBase = dataManagementServiceFacade.createEmptyInventory();
-        plannedBase.setLabel("Plan");
-        InventoryView planned = transformer.transform(plannedBase);
+        Inventory planned = dataManagementServiceFacade.createEmptyInventory();
+        planned.setLabel("Plan");
         planned.setInventory(getSumOfNeededMats());
         plannerElements.getSumTable().getItems().add(planned);
-        Inventory sumBase = dataManagementServiceFacade.createEmptyInventory();
-        sumBase.setLabel("Sum");
-        InventoryView sum = transformer.transform(sumBase);
+        plannerElements.setPlanned(planned);
+        Inventory sum = dataManagementServiceFacade.createEmptyInventory();
+        sum.setLabel("Sum");
         sum.setInventory(createListOfRemainingMats(inventory, planned));
         plannerElements.getSumTable().getItems().add(sum);
     }
 
-    private List<TableColumn<InventoryView, Integer>> createColumnsForAllMatsForSum() {
-        List<TableColumn<InventoryView, Integer>> columns = new ArrayList<>();
+    private List<TableColumn<Inventory, Integer>> createColumnsForAllMatsForSum() {
+        List<TableColumn<Inventory, Integer>> columns = new ArrayList<>();
         dataManagementServiceFacade.getMaterials().forEach(mat -> addSumColumnForMaterial(columns, mat));
         return columns;
     }
 
-    private void addSumColumnForMaterial(List<TableColumn<InventoryView, Integer>> columns, UpgradeMaterial mat) {
-        TableColumn<InventoryView, Integer> newCol = new TableColumn<>();
+    private void addSumColumnForMaterial(List<TableColumn<Inventory, Integer>> columns, UpgradeMaterial mat) {
+        TableColumn<Inventory, Integer> newCol = new TableColumn<>();
         newCol.setEditable(true);
         newCol.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         newCol.setCellValueFactory(new InventoryValueFactory(mat.getId()));
         newCol.setOnEditCommit(event -> {
             if ("Inventory".equalsIgnoreCase(event.getRowValue().getLabel())) {
-                long matId = ((InventoryValueFactory) event.getTableColumn().getCellValueFactory()).getMatId();
                 event.getRowValue()
                         .getInventory()
                         .stream()
-                        .filter(material -> matId == material.idProperty().longValue())
+                        .filter(material -> mat.getId() == material.getId())
                         .findFirst()
                         .get()
-                        .amountProperty()
-                        .set(ServantUtils.getDefaultValueIfInvalid(event.getNewValue(), 0, 99_999, event.getOldValue()));
+                        .setAmount(ServantUtils.getDefaultValueIfInvalid(event.getNewValue(), 0, 99_999, event.getOldValue()));
                 event.getTableView().refresh();
             }
         });
         columns.add(newCol);
     }
 
-    private ObservableList<UpgradeMaterialCostView> createListOfRemainingMats(InventoryView inventory, InventoryView planned) {
-        ObservableList<UpgradeMaterialCostView> result = FXCollections.observableArrayList(param -> new Observable[]{param.amountProperty()});
+    private ObservableList<UpgradeMaterialCost> createListOfRemainingMats(Inventory inventory, Inventory planned) {
+        ObservableList<UpgradeMaterialCost> result = FXCollections.observableArrayList();
         for (int index = 0; index < inventory.getInventory().size(); index++) {
-            UpgradeMaterialCostView matAmount = inventory.getInventory().get(index);
-            UpgradeMaterialCostView matPlan = planned.getInventory().get(index);
-            UpgradeMaterialCostView mat = new UpgradeMaterialCostView();
-            mat.setId(matAmount.idProperty());
-            mat.setItem(matAmount.itemProperty());
-            NumberBinding sumBinding = Bindings.createIntegerBinding(() -> 0, matAmount.amountProperty(), matPlan.amountProperty());
-            sumBinding = sumBinding.add(matAmount.amountProperty());
-            sumBinding = sumBinding.subtract(matPlan.amountProperty());
-            mat.amountProperty().bind(sumBinding);
+            UpgradeMaterialCost matAmount = inventory.getInventory().get(index);
+            UpgradeMaterialCost matPlan = planned.getInventory().get(index);
+            UpgradeMaterialCost mat = new UpgradeMaterialCost();
+            mat.setId(matAmount.getId());
+            mat.setItem(matAmount.getItem());
+            mat.setAmount(matAmount.getAmount() - matPlan.getAmount());
             result.add(mat);
         }
         return result;
     }
 
-    @SuppressWarnings("unchecked")
-    private ObservableList<UpgradeMaterialCostView> getSumOfNeededMats() {
-        ObservableList<UpgradeMaterialCostView> result = FXCollections.observableArrayList(param -> new Observable[]{param.amountProperty()});
-        for (UpgradeMaterialCostView mat : dataManagementServiceFacade.getInventory().getInventory()) {
-            UpgradeMaterialCostView matCost = new UpgradeMaterialCostView();
-            matCost.setId(mat.idProperty());
-            matCost.setItem(mat.itemProperty());
+    private ObservableList<UpgradeMaterialCost> getSumOfNeededMats() {
+        ObservableList<UpgradeMaterialCost> result = FXCollections.observableArrayList();
+        for (UpgradeMaterialCost mat : dataManagementServiceFacade.getInventory().getInventory()) {
+            UpgradeMaterialCost matCost = new UpgradeMaterialCost();
+            matCost.setId(mat.getId());
+            matCost.setItem(mat.getItem());
             int sumValue = getPlannedMatUseSum(plannerElements.getPlannerTable().getItems(), mat);
-            IntegerProperty sum = new SimpleIntegerProperty(sumValue);
-            plannerElements.getPlannerTable()
-                    .getItems()
-                    .addListener((ListChangeListener<? super UserServant>) c -> sum.set(getPlannedMatUseSum((List<UserServant>) c.getList(), mat)));
-            matCost.amountProperty().bind(sum);
+            matCost.setAmount(sumValue);
             result.add(matCost);
         }
         return result;
     }
 
-    private int getPlannedMatUseSum(List<UserServant> servants, UpgradeMaterialCostView mat) {
+    private void refreshPlannedInventory() {
+        for (UpgradeMaterialCost mat : plannerElements.getPlanned().getInventory()) {
+            mat.setAmount(getPlannedMatUseSum(plannerElements.getPlannerTable().getItems(), mat));
+        }
+    }
+
+    private int getPlannedMatUseSum(List<UserServant> servants, UpgradeMaterialCost mat) {
         return servants.stream()
                 .filter(servant -> servant.getSvtId() != 0)
-                .mapToInt(servant -> ServantUtils.getPlannedMatUse(servant, mat.idProperty().longValue()))
+                .mapToInt(servant -> ServantUtils.getPlannedMatUse(servant, mat.getId()))
                 .reduce(Integer::sum)
                 .orElse(0);
     }
@@ -278,7 +265,7 @@ public class PlannerHandler {
         return result;
     }
 
-    private void createContextMenuForInventoryTableRow(TableRow<InventoryView> row) {
+    private void createContextMenuForInventoryTableRow(TableRow<Inventory> row) {
         ContextMenu menu = createBasicPlannerContextMenu();
         row.contextMenuProperty().bind(Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(menu));
     }
@@ -361,8 +348,8 @@ public class PlannerHandler {
         initDesiredInfoColumn(1, "setDesSkill1", 10);
         initDesiredInfoColumn(2, "setDesSkill2", 10);
         initDesiredInfoColumn(3, "setDesSkill3", 10);
-        plannerElements.getDesired().getColumns().forEach(col1 -> col1.setPrefWidth(MainController.SHORT_CELL_WIDTH));
         plannerElements.getDesired().getColumns().forEach(col -> {
+            col.setPrefWidth(MainController.SHORT_CELL_WIDTH);
             TableColumn<UserServant, Integer> actualCol = (TableColumn<UserServant, Integer>) col;
             actualCol.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         });
@@ -373,9 +360,11 @@ public class PlannerHandler {
             if (event.getRowValue().getSvtId() != 0) {
                 try {
                     new Statement(event.getRowValue(), propertyName, new Object[]{ServantUtils.getDefaultValueIfInvalid((int) event.getNewValue(), 1, max, (int) event.getOldValue())}).execute();
+                    refreshPlannedInventory();
                 } catch (Exception e) {
                     log.error("Set property error: ", e);
                 }
+                plannerElements.getSumTable().refresh();
                 plannerElements.getPlannerTable().refresh();
             }
         });
@@ -395,6 +384,8 @@ public class PlannerHandler {
                         .getRow(), event.getRowValue(), event.getNewValue(), plannerElements.getPlannerType());
                 event.getTableView().refresh();
             }
+            refreshPlannedInventory();
+            plannerElements.getSumTable().refresh();
         });
         setEditEventForCurrentInfoColumn(plannerElements.getLevel(), "setLevel", 120);
         setEditEventForCurrentInfoColumn(plannerElements.getSkill1(), "setSkillLevel1", 10);
@@ -408,9 +399,11 @@ public class PlannerHandler {
             if (event.getRowValue().getSvtId() != 0) {
                 try {
                     new Statement(event.getRowValue(), propertyName, new Object[]{ServantUtils.getDefaultValueIfInvalid(event.getNewValue(), 1, max, event.getOldValue())}).execute();
+                    refreshPlannedInventory();
                 } catch (Exception e) {
                     log.error("Set property error: ", e);
                 }
+                plannerElements.getSumTable().refresh();
                 plannerElements.getPlannerTable().refresh();
             }
         });

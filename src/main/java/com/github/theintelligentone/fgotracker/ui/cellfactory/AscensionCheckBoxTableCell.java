@@ -1,7 +1,6 @@
 package com.github.theintelligentone.fgotracker.ui.cellfactory;
 
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
-import com.github.theintelligentone.fgotracker.domain.view.UserServantView;
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import javafx.scene.control.cell.CheckBoxTableCell;
 

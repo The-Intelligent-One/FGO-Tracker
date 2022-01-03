@@ -5,6 +5,7 @@ import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import javafx.fxml.FXML;
+import javafx.scene.control.Tab;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import lombok.extern.slf4j.Slf4j;
@@ -57,8 +58,8 @@ public class LTPlannerController {
     @Autowired
     private DataManagementServiceFacade dataManagementServiceFacade;
 
-    public void setup() {
-        plannerHandler.setup();
+    public void setup(Tab tab) {
+        plannerHandler.setup(tab);
     }
 
     public void initialize() {

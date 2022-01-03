@@ -91,12 +91,20 @@ public class PlannerHandler {
         }
     }
 
-    public void setup() {
+    public void setup(Tab tab) {
+        plannerElements.setTab(tab);
         setupTables();
         if (dataManagementServiceFacade.isIconsNotResized()) {
             dataManagementServiceFacade.saveMaterialData();
         }
         syncScrollbars();
+        plannerElements.getTab().selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                refreshPlannedInventory();
+                plannerElements.getSumTable().refresh();
+                plannerElements.getPlannerTable().refresh();
+            }
+        });
     }
 
     private void setupTables() {

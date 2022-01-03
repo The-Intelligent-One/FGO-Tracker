@@ -5,6 +5,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Tab;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -37,6 +38,10 @@ public class MainController {
     public static final int CELL_HEIGHT = 30;
 
     private final FxWeaver fxWeaver;
+    public Tab rosterTab;
+    public Tab ltPlannerTab;
+    public Tab plannerTab;
+    public Tab prioPlannerTab;
 
     @Autowired
     private RosterController rosterTabController;
@@ -47,8 +52,8 @@ public class MainController {
     @Autowired
     private LTPlannerController ltPlannerController;
 
-    @Autowired
-    private EventsController eventsTabController;
+//    @Autowired
+//    private EventsController eventsTabController;
 
     @Autowired
     private DataManagementServiceFacade dataManagementServiceFacade;
@@ -63,11 +68,11 @@ public class MainController {
     }
 
     public void setup() {
-        rosterTabController.setup();
-        plannerController.setup();
-        priorityPlannerController.setup();
-        ltPlannerController.setup();
-        eventsTabController.setup();
+        rosterTabController.setup(rosterTab);
+        plannerController.setup(plannerTab);
+        priorityPlannerController.setup(prioPlannerTab);
+        ltPlannerController.setup(ltPlannerTab);
+//        eventsTabController.setup();
     }
 
     public void tearDown() {

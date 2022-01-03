@@ -5,7 +5,6 @@ import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AscensionCheckBoxTableCell;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
-import com.github.theintelligentone.fgotracker.ui.valuefactory.roster.UserServantNpDamageValueFactory;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -340,12 +339,17 @@ public class RosterController {
         });
     }
 
-    public void setup() {
+    public void setup(Tab tab) {
         rosterTable.setItems(dataManagementServiceFacade.getUserServantList());
         if (rosterTable.getItems().size() == 0) {
             IntStream.range(0, 10).forEach(i -> dataManagementServiceFacade.saveUserServant(new UserServant()));
         }
         nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementServiceFacade.getServantNameList()));
+        tab.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                rosterTable.refresh();
+            }
+        });
     }
 
     private EventHandler<TableColumn.CellEditEvent<UserServant, Integer>> propertyCommitWithLimits(int min, int max, String propertyName) {

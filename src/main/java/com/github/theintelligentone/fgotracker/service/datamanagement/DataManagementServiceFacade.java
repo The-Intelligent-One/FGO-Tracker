@@ -80,17 +80,12 @@ public class DataManagementServiceFacade {
     }
 
     public List<String> importInventoryFromCsv(File sourceFile) {
-        return importManagementService.createInventoryFromCsvLines(sourceFile,
-                cacheManagementService.getMaterials(),
-                userDataManagementServiceFacade.getInventory());
+        return importManagementService.createInventoryFromCsvLines(sourceFile, cacheManagementService.getMaterials(), userDataManagementServiceFacade.getInventory());
     }
 
     public List<String> importPlannerServantsFromCsv(File sourceFile, PlannerType plannerType) {
         List<UserServant> importedServants = new ArrayList<>();
-        List<String> notFoundNames = importManagementService.createPlannerServantListFromCsvLines(
-                userDataManagementServiceFacade.getPaddedUserServantList(),
-                importedServants, cacheManagementService.getBasicServantList(),
-                sourceFile);
+        List<String> notFoundNames = importManagementService.createPlannerServantListFromCsvLines(userDataManagementServiceFacade.getPaddedUserServantList(), importedServants, cacheManagementService.getBasicServantList(), sourceFile);
         userDataManagementServiceFacade.saveImportedPlannerServants(plannerType, importedServants);
         return notFoundNames;
     }
@@ -106,8 +101,7 @@ public class DataManagementServiceFacade {
 
     public List<String> importUserServantsFromCsv(File sourceFile) {
         List<UserServant> importedServants = new ArrayList<>();
-        List<String> notFoundNames = importManagementService.importUserServantsFromCsv(sourceFile, importedServants,
-                cacheManagementService.getBasicServantList());
+        List<String> notFoundNames = importManagementService.importUserServantsFromCsv(sourceFile, importedServants, cacheManagementService.getBasicServantList());
         importedServants.forEach(userServant -> {
             if (userServant.getSvtId() != 0) {
                 UserServantFactory.updateBaseServant(userServant, cacheManagementService.getServantById(userServant.getSvtId()));

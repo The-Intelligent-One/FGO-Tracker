@@ -25,4 +25,5 @@ public class PlannerElements {
     private TableColumn<UserServant, Integer> skill3;
     private PlannerType plannerType;
     private Inventory planned;
+    private Inventory sum;
 }

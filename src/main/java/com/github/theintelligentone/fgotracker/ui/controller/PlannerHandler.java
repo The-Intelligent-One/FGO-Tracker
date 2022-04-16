@@ -176,6 +176,7 @@ public class PlannerHandler {
         sum.setLabel("Sum");
         sum.setInventory(createListOfRemainingMats(inventory, planned));
         plannerElements.getSumTable().getItems().add(sum);
+        plannerElements.setSum(sum);
     }
 
     private List<TableColumn<Inventory, Integer>> createColumnsForAllMatsForSum() {
@@ -233,8 +234,16 @@ public class PlannerHandler {
 
     private void refreshPlannedInventory() {
         for (UpgradeMaterialCost mat : plannerElements.getPlanned().getInventory()) {
+            UpgradeMaterialCost inv = dataManagementServiceFacade.getInventory().getInventory().stream()
+                    .filter(upgradeMaterialCost -> mat.getId() == upgradeMaterialCost.getId())
+                    .findFirst().get();
+            UpgradeMaterialCost sum = plannerElements.getSum().getInventory().stream()
+                    .filter(upgradeMaterialCost -> mat.getId() == upgradeMaterialCost.getId())
+                    .findFirst().get();
             mat.setAmount(getPlannedMatUseSum(plannerElements.getPlannerTable().getItems(), mat));
+            sum.setAmount(inv.getAmount() - mat.getAmount());
         }
+        plannerElements.getSumTable().refresh();
     }
 
     private int getPlannedMatUseSum(List<UserServant> servants, UpgradeMaterialCost mat) {

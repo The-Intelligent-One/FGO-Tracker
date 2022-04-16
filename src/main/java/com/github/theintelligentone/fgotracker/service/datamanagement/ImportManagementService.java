@@ -32,6 +32,12 @@ public class ImportManagementService {
             "fouAtk", 20,
             "bond", 21,
             "notes", 23);
+    private static final Map<String, Integer> PLANNER_IMPORT_INDEX_MAP = Map.of(
+            "name", 4,
+            "desLevel", 9,
+            "desSkill1", 10,
+            "desSkill2", 11,
+            "desSkill3", 12);
     private static Map<String, String> MAT_NAME_TRANSLATE_MAP;
 
     @Autowired
@@ -64,21 +70,19 @@ public class ImportManagementService {
         return notFoundNames;
     }
 
-    public List<String> createPlannerServantListFromCsvLines(List<UserServant> userServants, List<UserServant> importedServants, List<BasicServant> basicServants, File sourceFile) {
+    public List<String> createPlannerServantListFromCsvLines(List<UserServant> importedServants, List<BasicServant> basicServants, File sourceFile) {
         List<ManagerServant> managerLookup = fileServiceFacade.loadManagerLookupTable();
         List<String[]> lines = fileServiceFacade.importPlannerCsv(sourceFile);
-        importedServants.addAll(lines.stream()
-                .map(csvLine -> buildPlannerServantFromStringArray(csvLine, managerLookup, userServants, basicServants))
-                .collect(Collectors.toList()));
-        List<String> notFoundNames = importedServants.stream()
-                .filter(svt -> svt.getBaseServant() != null && svt.getSvtId() == 0)
+        List<UserServant> unprocessedServants = lines.stream()
+                .map(csvLine -> buildPlannerServantFromStringArray(csvLine, managerLookup, basicServants))
+                .collect(Collectors.toList());
+        List<String> notFoundNames = unprocessedServants.stream()
+                .filter(svt -> svt.getSvtId() == 0 && svt.getBaseServant() != null)
                 .map(svt -> svt.getBaseServant().getName())
                 .collect(Collectors.toList());
-        List<UserServant> validServantList = importedServants.stream()
+        importedServants.addAll(unprocessedServants.stream()
                 .filter(svt -> svt.getBaseServant() == null || svt.getSvtId() != 0)
-                .collect(Collectors.toList());
-        importedServants.clear();
-        importedServants.addAll(validServantList);
+                .collect(Collectors.toList()));
         return notFoundNames;
     }
 
@@ -107,62 +111,44 @@ public class ImportManagementService {
         return notFoundNames;
     }
 
-    private UserServant buildPlannerServantFromStringArray(String[] importedData, List<ManagerServant> managerLookup,
-                                                           List<UserServant> userServants, List<BasicServant> basicServants) {
-        String servantName = importedData[4];
+    private UserServant buildPlannerServantFromStringArray(String[] importedData, List<ManagerServant> managerLookup, List<BasicServant> basicServants) {
+        String servantName = importedData[PLANNER_IMPORT_INDEX_MAP.get("name")];
         UserServant servant = UserServantFactory.createBlankUserServant();
         if (!servantName.isEmpty()) {
-            servant = loadDataForPotentialPlannerServant(importedData, managerLookup, userServants, basicServants, servantName);
+            Servant baseServant = findServantFromManager(servantName, managerLookup, basicServants);
+            if (baseServant.getId() == 0) {
+                servant.setBaseServant(baseServant);
+            } else {
+                servant = createValidPlannerServant(importedData, baseServant);
+            }
         }
         return servant;
     }
 
-    private UserServant loadDataForPotentialPlannerServant(String[] importedData, List<ManagerServant> managerLookup,
-                                                           List<UserServant> userServants,
-                                                           List<BasicServant> basicServants, String servantName) {
-        UserServant servant;
-        Servant baseServant = findServantFromManager(servantName, managerLookup, basicServants);
-        UserServant baseUserServant = findUserServantForPlannerImport(userServants,
-                baseServant);
-        servant = createPlannerServantWithFoundData(importedData, servantName, baseUserServant);
-        return servant;
-    }
-
-    private UserServant createPlannerServantWithFoundData(String[] importedData, String servantName,
-                                                          UserServant baseUserServant) {
-        UserServant servant;
-        if (baseUserServant == null) {
-            servant = createBlankPlannerServantWithName(servantName);
-        } else {
-            servant = setupImportedPlannerServant(importedData, baseUserServant);
-        }
-        return servant;
-    }
-
-    private UserServant findUserServantForPlannerImport(List<UserServant> userServants, Servant baseServant) {
-        UserServant baseUserServant = null;
-        if (baseServant.getName() != null && !baseServant.getName().isEmpty()) {
-            baseUserServant = null;
-        }
-        return baseUserServant;
-    }
-
-    private UserServant setupImportedPlannerServant(String[] importedData, UserServant baseUserServant) {
+    private UserServant createValidPlannerServant(String[] importedData, Servant baseServant) {
         UserServant servant;
         servant = UserServantFactory.createBlankUserServant();
-        servant.setDesLevel(Math.max(Math.min(convertToInt(importedData[9]), 120), 1));
-        servant.setDesSkill1(Math.max(Math.min(convertToInt(importedData[10]), 10), 1));
-        servant.setDesSkill2(Math.max(Math.min(convertToInt(importedData[11]), 10), 1));
-        servant.setDesSkill3(Math.max(Math.min(convertToInt(importedData[12]), 10), 1));
+        servant.setSvtId(baseServant.getId());
+        servant.setDesLevel(Math.max(Math.min(convertToInt(importedData[PLANNER_IMPORT_INDEX_MAP.get("desLevel")]), 120), 1));
+        servant.setDesSkill1(Math.max(Math.min(convertToInt(importedData[PLANNER_IMPORT_INDEX_MAP.get("desSkill1")]), 10), 1));
+        servant.setDesSkill2(Math.max(Math.min(convertToInt(importedData[PLANNER_IMPORT_INDEX_MAP.get("desSkill2")]), 10), 1));
+        servant.setDesSkill3(Math.max(Math.min(convertToInt(importedData[PLANNER_IMPORT_INDEX_MAP.get("desSkill3")]), 10), 1));
         return servant;
-    }
 
-    private UserServant createBlankPlannerServantWithName(String servantName) {
-        Servant baseServant;
-        UserServant servant = null;
-        baseServant = new Servant();
-        baseServant.setName(servantName);
-        return servant;
+
+//        UserServant servant;
+//        servant = UserServantFactory.createBlankUserServant();
+//        servant.setSvtId(baseServant.getId());
+//        servant.setNpLevel(getValueFromImportedRosterData(importedData, "npLevel", 1, 5));
+//        servant.setLevel(getValueFromImportedRosterData(importedData, "level", 1, 120));
+//        servant.setSkillLevel1(getValueFromImportedRosterData(importedData, "skill1", 1, 10));
+//        servant.setSkillLevel2(getValueFromImportedRosterData(importedData, "skill2", 1, 10));
+//        servant.setSkillLevel3(getValueFromImportedRosterData(importedData, "skill3", 1, 10));
+//        servant.setFouHp(getValueFromImportedRosterData(importedData, "fouHp", 0, 2000));
+//        servant.setFouAtk(getValueFromImportedRosterData(importedData, "fouAtk", 0, 2000));
+//        servant.setBondLevel(getValueFromImportedRosterData(importedData, "bond", 0, 15));
+//        servant.setNotes(importedData[ROSTER_IMPORT_INDEX_MAP.get("notes")]);
+//        return servant;
     }
 
     private int convertToInt(String data) {
@@ -233,23 +219,13 @@ public class ImportManagementService {
             if (baseServant.getId() == 0) {
                 servant.setBaseServant(baseServant);
             } else {
-                servant = createValidUserServant(importedData, baseServant);
+                servant = createValidRosterServant(importedData, baseServant);
             }
         }
         return servant;
     }
 
-    private UserServant createBlankUserServantEntry(String servantName) {
-        Servant baseServant;
-        UserServant servant;
-        baseServant = new Servant();
-        baseServant.setName(servantName);
-        servant = new UserServant();
-        servant.setBaseServant(baseServant);
-        return servant;
-    }
-
-    private UserServant createValidUserServant(String[] importedData, Servant baseServant) {
+    private UserServant createValidRosterServant(String[] importedData, Servant baseServant) {
         UserServant servant;
         servant = UserServantFactory.createBlankUserServant();
         servant.setSvtId(baseServant.getId());

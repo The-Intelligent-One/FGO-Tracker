@@ -85,11 +85,15 @@ public class DataManagementServiceFacade {
 
     public List<String> importPlannerServantsFromCsv(File sourceFile, PlannerType plannerType) {
         List<UserServant> importedServants = new ArrayList<>();
-        List<String> notFoundNames = importManagementService.createPlannerServantListFromCsvLines(userDataManagementServiceFacade.getPaddedUserServantList(), importedServants, cacheManagementService.getBasicServantList(), sourceFile);
+        List<String> notFoundNames = importManagementService.createPlannerServantListFromCsvLines(importedServants, cacheManagementService.getBasicServantList(), sourceFile);
+        importedServants.forEach(userServant -> {
+            if (userServant.getSvtId() != 0) {
+                UserServantFactory.updateBaseServant(userServant, cacheManagementService.getServantById(userServant.getSvtId()));
+            }
+        });
         userDataManagementServiceFacade.saveImportedPlannerServants(plannerType, importedServants);
         return notFoundNames;
     }
-
 
     public void saveMaterialData() {
         cacheManagementService.saveMaterialData();

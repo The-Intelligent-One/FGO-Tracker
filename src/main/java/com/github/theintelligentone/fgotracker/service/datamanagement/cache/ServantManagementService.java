@@ -54,8 +54,7 @@ public class ServantManagementService {
 
     public Servant findServantByFormattedName(String name, String gameRegion) {
         Optional<Servant> searchResult = servantDataList.stream()
-                .filter(svt -> name.equalsIgnoreCase(
-                        String.format(NAME_FORMAT, svt.getName(), svt.getRarity(), svt.getClassName())))
+                .filter(svt -> name.equalsIgnoreCase(String.format(NAME_FORMAT, svt.getName(), svt.getRarity(), svt.getClassName())))
                 .findFirst();
         return searchResult.orElseGet(() -> {
             Servant downloadedServant = requestService.getServantDataById(gameRegion, findServantIdByFormattedName(name));
@@ -66,16 +65,13 @@ public class ServantManagementService {
 
     private long findServantIdByFormattedName(String name) {
         return Objects.requireNonNull(basicServantDataList.stream()
-                        .filter(svt -> name.equalsIgnoreCase(
-                                String.format(NAME_FORMAT, svt.getName(), svt.getRarity(), svt.getClassName())))
-                        .findFirst().orElse(null))
-                .getId();
+                .filter(svt -> name.equalsIgnoreCase(String.format(NAME_FORMAT, svt.getName(), svt.getRarity(), svt.getClassName())))
+                .findFirst()
+                .orElse(null)).getId();
     }
 
     public Servant getServantById(long id, String gameRegion) {
-        Optional<Servant> searchResult = servantDataList.stream()
-                .filter(svt -> svt.getId() == id)
-                .findFirst();
+        Optional<Servant> searchResult = servantDataList.stream().filter(svt -> svt.getId() == id).findFirst();
         return searchResult.orElseGet(() -> {
             Servant downloadedServant = requestService.getServantDataById(gameRegion, id);
             servantDataList.add(downloadedServant);

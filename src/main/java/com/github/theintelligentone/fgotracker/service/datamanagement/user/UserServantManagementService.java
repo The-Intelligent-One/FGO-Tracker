@@ -76,25 +76,29 @@ public class UserServantManagementService {
     }
 
     public void saveImportedUserServants(List<UserServant> importedServants) {
+        List<UserServant> newRoster = createNewListWithUserServants(importedServants);
+        rosterServantList.setAll(clearUnnecessaryEmptyUserRows(newRoster));
+        padUserServantList(rosterServantList);
+    }
+
+    public void saveImportedPlannerServants(PlannerType plannerType,
+                                            List<UserServant> importedServants) {
+        List<UserServant> newRoster = createNewListWithUserServants(importedServants);
+        getPlannerServantList(plannerType).setAll(clearUnnecessaryEmptyPlannerRows(newRoster));
+        padUserServantList(getPlannerServantList(plannerType));
+    }
+
+    private List<UserServant> createNewListWithUserServants(List<UserServant> importedServants) {
         List<UserServant> newRoster = new ArrayList<>();
         importedServants.forEach(userServant -> {
                     Optional<UserServant> existingUserServant = userServantList.stream().filter(existingServant -> existingServant.getSvtId() == userServant.getSvtId()).findFirst();
                     existingUserServant.ifPresentOrElse(oldServant -> {
-                        oldServant.setBondLevel(userServant.getBondLevel());
-                        oldServant.setNpLevel(userServant.getNpLevel());
-                        oldServant.setLevel(userServant.getLevel());
-                        oldServant.setNotes(userServant.getNotes());
-                        oldServant.setFouHp(userServant.getFouHp());
-                        oldServant.setFouAtk(userServant.getFouAtk());
-                        oldServant.setSkillLevel1(userServant.getSkillLevel1());
-                        oldServant.setSkillLevel2(userServant.getSkillLevel2());
-                        oldServant.setSkillLevel3(userServant.getSkillLevel3());
+                        copyNewValuesIfApplicable(oldServant, userServant);
                         newRoster.add(oldServant);
                     }, () -> newRoster.add(userServant));
                 }
         );
-        rosterServantList.setAll(clearUnnecessaryEmptyUserRows(newRoster));
-        padUserServantList(rosterServantList);
+        return newRoster;
     }
 
     public void refreshUserServants(List<UserServant> userServants, List<Servant> servantList) {
@@ -263,10 +267,5 @@ public class UserServantManagementService {
             newList.remove(index--);
         }
         return newList;
-    }
-
-    public void saveImportedPlannerServants(PlannerType plannerType,
-                                            List<UserServant> importedServants) {
-        getPlannerServantList(plannerType).setAll(clearUnnecessaryEmptyPlannerRows(importedServants));
     }
 }

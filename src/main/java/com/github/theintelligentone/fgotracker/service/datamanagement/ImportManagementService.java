@@ -21,23 +21,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class ImportManagementService {
-    private static final Map<String, Integer> ROSTER_IMPORT_INDEX_MAP = Map.of(
-            "name", 0,
-            "npLevel", 14,
-            "level", 15,
-            "skill1", 16,
-            "skill2", 17,
-            "skill3", 18,
-            "fouHp", 19,
-            "fouAtk", 20,
-            "bond", 21,
-            "notes", 23);
-    private static final Map<String, Integer> PLANNER_IMPORT_INDEX_MAP = Map.of(
-            "name", 4,
-            "desLevel", 9,
-            "desSkill1", 10,
-            "desSkill2", 11,
-            "desSkill3", 12);
+    private static final Map<String, Integer> ROSTER_IMPORT_INDEX_MAP = Map.of("name", 0, "npLevel", 14, "level", 15, "skill1", 16, "skill2", 17, "skill3", 18, "fouHp", 19, "fouAtk", 20, "bond", 21, "notes", 23);
+    private static final Map<String, Integer> PLANNER_IMPORT_INDEX_MAP = Map.of("name", 4, "desLevel", 9, "desSkill1", 10, "desSkill2", 11, "desSkill3", 12);
     private static Map<String, String> MAT_NAME_TRANSLATE_MAP;
 
     @Autowired
@@ -56,11 +41,11 @@ public class ImportManagementService {
         MAT_NAME_TRANSLATE_MAP.put("Permafrost", "ice");
         MAT_NAME_TRANSLATE_MAP.put("Seashell", "shell");
         MAT_NAME_TRANSLATE_MAP.put("Stinger", "needle");
-        MAT_NAME_TRANSLATE_MAP.put("Crown", "光銀の冠");
-        MAT_NAME_TRANSLATE_MAP.put("Shard", "煌星のカケラ");
-        MAT_NAME_TRANSLATE_MAP.put("Vein", "神脈霊子");
-        MAT_NAME_TRANSLATE_MAP.put("Fruit", "悠久の実");
+        MAT_NAME_TRANSLATE_MAP.put("Shard", "twinkling");
+        MAT_NAME_TRANSLATE_MAP.put("Vein", "leyline");
+        MAT_NAME_TRANSLATE_MAP.put("Tiny Bell", "small bell");
         MAT_NAME_TRANSLATE_MAP.put("Thread", "虹の糸玉");
+        MAT_NAME_TRANSLATE_MAP.put("Flame", "虹の糸玉");
     }
 
     public List<String> createInventoryFromCsvLines(File sourceFile, List<UpgradeMaterial> materials, Inventory inventory) {
@@ -134,21 +119,6 @@ public class ImportManagementService {
         servant.setDesSkill2(Math.max(Math.min(convertToInt(importedData[PLANNER_IMPORT_INDEX_MAP.get("desSkill2")]), 10), 1));
         servant.setDesSkill3(Math.max(Math.min(convertToInt(importedData[PLANNER_IMPORT_INDEX_MAP.get("desSkill3")]), 10), 1));
         return servant;
-
-
-//        UserServant servant;
-//        servant = UserServantFactory.createBlankUserServant();
-//        servant.setSvtId(baseServant.getId());
-//        servant.setNpLevel(getValueFromImportedRosterData(importedData, "npLevel", 1, 5));
-//        servant.setLevel(getValueFromImportedRosterData(importedData, "level", 1, 120));
-//        servant.setSkillLevel1(getValueFromImportedRosterData(importedData, "skill1", 1, 10));
-//        servant.setSkillLevel2(getValueFromImportedRosterData(importedData, "skill2", 1, 10));
-//        servant.setSkillLevel3(getValueFromImportedRosterData(importedData, "skill3", 1, 10));
-//        servant.setFouHp(getValueFromImportedRosterData(importedData, "fouHp", 0, 2000));
-//        servant.setFouAtk(getValueFromImportedRosterData(importedData, "fouAtk", 0, 2000));
-//        servant.setBondLevel(getValueFromImportedRosterData(importedData, "bond", 0, 15));
-//        servant.setNotes(importedData[ROSTER_IMPORT_INDEX_MAP.get("notes")]);
-//        return servant;
     }
 
     private int convertToInt(String data) {
@@ -156,11 +126,12 @@ public class ImportManagementService {
     }
 
     private Servant findServantFromManager(String name, List<ManagerServant> managerLookup, List<BasicServant> servantDataList) {
-        ManagerServant managerServant = managerLookup.stream().filter(
-                svt -> name.equalsIgnoreCase(svt.getName())).findFirst().get();
+        ManagerServant managerServant = managerLookup.stream()
+                .filter(svt -> name.equalsIgnoreCase(svt.getName()))
+                .findFirst()
+                .get();
         BasicServant basicServant = servantDataList.stream()
-                .filter(
-                        svt -> svt.getCollectionNo() == managerServant.getCollectionNo())
+                .filter(svt -> svt.getCollectionNo() == managerServant.getCollectionNo())
                 .findFirst()
                 .orElseGet(BasicServant::new);
         Servant tempServant = new Servant();
@@ -191,27 +162,31 @@ public class ImportManagementService {
         return materials.stream()
                 .map(UpgradeMaterial::getName)
                 .filter(name -> containsAll(normalizedMatName, name))
-                .findFirst().orElse("");
+                .findFirst()
+                .orElse(materials.stream()
+                        .map(UpgradeMaterial::getName)
+                        .filter(name -> name.contains(matName))
+                        .findFirst()
+                        .orElse(""));
     }
 
-    public List<String> importUserServantsFromCsv(File sourceFile, List<UserServant> importedServants,
-                                                  List<BasicServant> servantDataList) {
+    public List<String> importUserServantsFromCsv(File sourceFile, List<UserServant> importedServants, List<BasicServant> servantDataList) {
         List<ManagerServant> managerLookup = fileServiceFacade.loadManagerLookupTable();
         List<String[]> importedData = fileServiceFacade.importRosterCsv(sourceFile);
-        List<UserServant> unprocessedServants = importedData.stream().map(
-                csvLine -> buildUserServantFromStringArray(csvLine, managerLookup, servantDataList)).collect(
-                Collectors.toList());
+        List<UserServant> unprocessedServants = importedData.stream()
+                .map(csvLine -> buildUserServantFromStringArray(csvLine, managerLookup, servantDataList))
+                .collect(Collectors.toList());
         List<String> notFoundNames = unprocessedServants.stream()
                 .filter(svt -> svt.getSvtId() == 0 && svt.getBaseServant() != null)
                 .map(svt -> svt.getBaseServant().getName())
                 .collect(Collectors.toList());
-        importedServants.addAll(unprocessedServants.stream().filter(
-                svt -> svt.getBaseServant() == null || svt.getSvtId() != 0).collect(Collectors.toList()));
+        importedServants.addAll(unprocessedServants.stream()
+                .filter(svt -> svt.getBaseServant() == null || svt.getSvtId() != 0)
+                .collect(Collectors.toList()));
         return notFoundNames;
     }
 
-    private UserServant buildUserServantFromStringArray(String[] importedData, List<ManagerServant> managerLookup,
-                                                        List<BasicServant> servantDataList) {
+    private UserServant buildUserServantFromStringArray(String[] importedData, List<ManagerServant> managerLookup, List<BasicServant> servantDataList) {
         UserServant servant = UserServantFactory.createBlankUserServant();
         String servantName = importedData[ROSTER_IMPORT_INDEX_MAP.get("name")];
         if (!servantName.isEmpty()) {

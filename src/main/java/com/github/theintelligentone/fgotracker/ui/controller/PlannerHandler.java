@@ -452,6 +452,7 @@ public class PlannerHandler {
         if (notFoundNames != null && !notFoundNames.isEmpty()) {
             displayNotFoundAlert(notFoundNames);
         }
+        refreshPlannedInventory();
     }
 
     private void loadPlannerDataFromCsv(File csvFile) {

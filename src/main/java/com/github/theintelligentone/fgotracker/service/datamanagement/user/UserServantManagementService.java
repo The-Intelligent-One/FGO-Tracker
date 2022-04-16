@@ -76,7 +76,24 @@ public class UserServantManagementService {
     }
 
     public void saveImportedUserServants(List<UserServant> importedServants) {
-        rosterServantList.setAll(clearUnnecessaryEmptyUserRows(importedServants));
+        List<UserServant> newRoster = new ArrayList<>();
+        importedServants.forEach(userServant -> {
+                    Optional<UserServant> existingUserServant = userServantList.stream().filter(existingServant -> existingServant.getSvtId() == userServant.getSvtId()).findFirst();
+                    existingUserServant.ifPresentOrElse(oldServant -> {
+                        oldServant.setBondLevel(userServant.getBondLevel());
+                        oldServant.setNpLevel(userServant.getNpLevel());
+                        oldServant.setLevel(userServant.getLevel());
+                        oldServant.setNotes(userServant.getNotes());
+                        oldServant.setFouHp(userServant.getFouHp());
+                        oldServant.setFouAtk(userServant.getFouAtk());
+                        oldServant.setSkillLevel1(userServant.getSkillLevel1());
+                        oldServant.setSkillLevel2(userServant.getSkillLevel2());
+                        oldServant.setSkillLevel3(userServant.getSkillLevel3());
+                        newRoster.add(oldServant);
+                    }, () -> newRoster.add(userServant));
+                }
+        );
+        rosterServantList.setAll(clearUnnecessaryEmptyUserRows(newRoster));
         padUserServantList(rosterServantList);
     }
 

@@ -114,20 +114,14 @@ public class PlannerHandler {
     }
 
     private void setupTableData() {
-        if (PlannerType.LT == plannerElements.getPlannerType()) {
-            loadLTData();
-        } else {
-            plannerElements.getPlannerTable()
-                    .setItems(dataManagementServiceFacade.getPaddedPlannerServantList(plannerElements.getPlannerType()));
-        }
+        plannerElements.getPlannerTable()
+                .setItems(dataManagementServiceFacade.getPaddedPlannerServantList(plannerElements.getPlannerType()));
     }
 
     private void setupPlannerTable() {
-        if (PlannerType.LT != plannerElements.getPlannerType()) {
-            plannerElements.getPlannerTable().setEditable(true);
-            plannerElements.getNameColumn()
-                    .setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementServiceFacade.getServantNameList()));
-        }
+        plannerElements.getPlannerTable().setEditable(true);
+        plannerElements.getNameColumn()
+                .setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementServiceFacade.getServantNameList()));
         plannerElements.getPlannerTable().getColumns().addAll(createColumnsForAllMats());
         plannerElements.getPlannerTable().setRowFactory(param -> {
             PseudoClass lastRow = PseudoClass.getPseudoClass("last-row");
@@ -289,10 +283,8 @@ public class PlannerHandler {
 
     private void createContextMenuForPlannerTableRow(TableRow<UserServant> row) {
         ContextMenu menu = createBasicPlannerContextMenu();
-        if (PlannerType.LT != plannerElements.getPlannerType()) {
-            List<MenuItem> editableMenuItems = createEditablePlannerTableMenuItems(row);
-            menu.getItems().addAll(editableMenuItems);
-        }
+        List<MenuItem> editableMenuItems = createEditablePlannerTableMenuItems(row);
+        menu.getItems().addAll(editableMenuItems);
         row.contextMenuProperty().bind(Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(menu));
     }
 

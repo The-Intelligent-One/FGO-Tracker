@@ -20,6 +20,7 @@ public class UserServantManagementService {
     private ObservableList<UserServant> rosterServantList;
     private ObservableList<UserServant> plannerServantList;
     private ObservableList<UserServant> priorityPlannerServantList;
+    private ObservableList<UserServant> longTermPlannerServantList;
 
 
     public void initDataLists() {
@@ -27,6 +28,7 @@ public class UserServantManagementService {
         rosterServantList = FXCollections.observableArrayList();
         plannerServantList = FXCollections.observableArrayList();
         priorityPlannerServantList = FXCollections.observableArrayList();
+        longTermPlannerServantList = FXCollections.observableArrayList();
     }
 
     private List<UserServant> clearUnnecessaryEmptyUserRows(List<UserServant> servantList) {
@@ -91,7 +93,9 @@ public class UserServantManagementService {
     private List<UserServant> createNewListWithUserServants(List<UserServant> importedServants) {
         List<UserServant> newRoster = new ArrayList<>();
         importedServants.forEach(userServant -> {
-                    Optional<UserServant> existingUserServant = userServantList.stream().filter(existingServant -> existingServant.getSvtId() == userServant.getSvtId()).findFirst();
+                    Optional<UserServant> existingUserServant = userServantList.stream()
+                            .filter(existingServant -> existingServant.getSvtId() == userServant.getSvtId())
+                            .findFirst();
                     existingUserServant.ifPresentOrElse(oldServant -> {
                         copyNewValuesIfApplicable(oldServant, userServant);
                         newRoster.add(oldServant);
@@ -197,6 +201,9 @@ public class UserServantManagementService {
                 break;
             case PRIORITY:
                 chosenPlannerList = priorityPlannerServantList;
+                break;
+            case LT:
+                chosenPlannerList = longTermPlannerServantList;
                 break;
             default:
                 chosenPlannerList = FXCollections.observableArrayList();

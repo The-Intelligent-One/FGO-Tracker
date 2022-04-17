@@ -53,6 +53,7 @@ public class UserDataManagementServiceFacade {
         inventoryManagementService.refreshInventory(fileServiceFacade.loadInventory(), materials);
         userServantManagementService.refreshPlannerServants(PlannerType.REGULAR, fileServiceFacade.loadPlannedServantData(), servantList);
         userServantManagementService.refreshPlannerServants(PlannerType.PRIORITY, fileServiceFacade.loadPriorityServantData(), servantList);
+        userServantManagementService.refreshPlannerServants(PlannerType.LT, fileServiceFacade.loadLongTermPlannedServantData(), servantList);
     }
 
     public void saveUserState(String gameRegion) {
@@ -60,6 +61,7 @@ public class UserDataManagementServiceFacade {
         fileServiceFacade.saveInventory(inventoryManagementService.getExportInventory());
         fileServiceFacade.savePlannerServants(userServantManagementService.getClearedPlannerServantList(PlannerType.REGULAR));
         fileServiceFacade.savePriorityServants(userServantManagementService.getClearedPlannerServantList(PlannerType.PRIORITY));
+        fileServiceFacade.saveLongTermServants(userServantManagementService.getClearedPlannerServantList(PlannerType.LT));
         fileServiceFacade.saveDarkMode(darkMode.getValue());
         fileServiceFacade.saveGameRegion(gameRegion);
     }

@@ -34,6 +34,10 @@ public class UserFileServiceFacade {
         plannerFileService.savePriorityPlannerServants(servants);
     }
 
+    public void saveLongTermPlannerServants(List<UserServant> servants) {
+        plannerFileService.saveLongTermPlannerServants(servants);
+    }
+
     public void saveInventory(Inventory inventory) {
         inventoryFileService.saveInventory(inventory);
     }
@@ -52,6 +56,10 @@ public class UserFileServiceFacade {
 
     public List<UserServant> loadPriorityPlanner() {
         return plannerFileService.loadPriorityPlanner();
+    }
+
+    public List<UserServant> loadLongTermPlanner() {
+        return plannerFileService.loadLongTermPlanner();
     }
 
     public Inventory loadInventory() {

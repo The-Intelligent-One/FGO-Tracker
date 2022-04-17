@@ -14,6 +14,7 @@ import java.util.List;
 public class PlannerFileService {
     private static final String PLANNER_SERVANT_FILE = "planned.json";
     private static final String PRIORITY_SERVANT_FILE = "priority.json";
+    private static final String LT_SERVANT_FILE = "priority.json";
 
     @Autowired
     private FileService fileService;
@@ -24,6 +25,10 @@ public class PlannerFileService {
 
     public void savePriorityPlannerServants(List<UserServant> servants) {
         save(servants, fileService, PRIORITY_SERVANT_FILE);
+    }
+
+    public void saveLongTermPlannerServants(List<UserServant> servants) {
+        save(servants, fileService, LT_SERVANT_FILE);
     }
 
     private void save(List<UserServant> servants, FileService fileService, String file) {
@@ -38,6 +43,10 @@ public class PlannerFileService {
 
     public List<UserServant> loadPriorityPlanner() {
         return load(PRIORITY_SERVANT_FILE);
+    }
+
+    public List<UserServant> loadLongTermPlanner() {
+        return load(LT_SERVANT_FILE);
     }
 
     private List<UserServant> load(String file) {

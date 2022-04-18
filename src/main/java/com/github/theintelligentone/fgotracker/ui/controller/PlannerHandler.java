@@ -3,9 +3,7 @@ package com.github.theintelligentone.fgotracker.ui.controller;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
-import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
-import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
@@ -91,20 +89,12 @@ public class PlannerHandler {
         }
     }
 
-    public void setup(Tab tab) {
-        plannerElements.setTab(tab);
+    public void setup() {
         setupTables();
         if (dataManagementServiceFacade.isIconsNotResized()) {
             dataManagementServiceFacade.saveMaterialData();
         }
         syncScrollbars();
-        plannerElements.getTab().selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                refreshPlannedInventory();
-                plannerElements.getSumTable().refresh();
-                plannerElements.getPlannerTable().refresh();
-            }
-        });
     }
 
     private void setupTables() {
@@ -238,6 +228,7 @@ public class PlannerHandler {
             sum.setAmount(inv.getAmount() - mat.getAmount());
         }
         plannerElements.getSumTable().refresh();
+        plannerElements.getPlannerTable().refresh();
     }
 
     private int getPlannedMatUseSum(List<UserServant> servants, UpgradeMaterialCost mat) {
@@ -373,14 +364,8 @@ public class PlannerHandler {
                 } catch (Exception e) {
                     log.error("Set property error: ", e);
                 }
-                plannerElements.getSumTable().refresh();
-                plannerElements.getPlannerTable().refresh();
             }
         });
-    }
-
-    public void loadLTData() {
-        plannerElements.getPlannerTable().setItems(createLTPlannerServantList());
     }
 
     private void initCurrentInfoColumns() {
@@ -394,7 +379,6 @@ public class PlannerHandler {
                 event.getTableView().refresh();
             }
             refreshPlannedInventory();
-            plannerElements.getSumTable().refresh();
         });
         setEditEventForCurrentInfoColumn(plannerElements.getLevel(), "setLevel", 120);
         setEditEventForCurrentInfoColumn(plannerElements.getSkill1(), "setSkillLevel1", 10);
@@ -479,9 +463,5 @@ public class PlannerHandler {
         Alert loadingAlert = new Alert(Alert.AlertType.WARNING);
         loadingAlert.setContentText("Servant data still loading.");
         loadingAlert.show();
-    }
-
-    private ObservableList<UserServant> createLTPlannerServantList() {
-        return UserServantFactory.createForLTPlanner(dataManagementServiceFacade.getUserServantList());
     }
 }

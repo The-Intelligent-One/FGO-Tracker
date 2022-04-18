@@ -37,6 +37,9 @@ public class RosterController {
     private DataManagementServiceFacade dataManagementServiceFacade;
 
     @FXML
+    private Tab rosterTab;
+
+    @FXML
     private TableView<UserServant> rosterTable;
 
     @FXML
@@ -339,13 +342,13 @@ public class RosterController {
         });
     }
 
-    public void setup(Tab tab) {
+    public void setup() {
         rosterTable.setItems(dataManagementServiceFacade.getUserServantList());
         if (rosterTable.getItems().size() == 0) {
             IntStream.range(0, 10).forEach(i -> dataManagementServiceFacade.saveUserServant(new UserServant()));
         }
         nameColumn.setCellFactory(AutoCompleteTextFieldTableCell.forTableColumn(dataManagementServiceFacade.getServantNameList()));
-        tab.selectedProperty().addListener((observable, oldValue, newValue) -> {
+        rosterTab.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 rosterTable.refresh();
             }

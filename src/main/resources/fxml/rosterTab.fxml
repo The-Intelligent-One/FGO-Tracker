@@ -3,126 +3,129 @@
 <?import com.github.theintelligentone.fgotracker.ui.valuefactory.roster.*?>
 <?import javafx.scene.control.cell.TextFieldTableCell?>
 <?import javafx.scene.control.*?>
-<TableView fx:id="rosterTable" editable="true" xmlns="http://javafx.com/javafx"
-           xmlns:fx="http://javafx.com/fxml"
-           fx:controller="com.github.theintelligentone.fgotracker.ui.controller.RosterController">
-    <columns>
-        <TableColumn text="General Info">
-            <columns>
-                <TableColumn text="Name" fx:id="nameColumn">
-                    <cellValueFactory>
-                        <UserServantNameValueFactory/>
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn fx:id="rarityColumn" text="R">
-                    <cellValueFactory>
-                        <UserServantValueFactory property="rarity"/>
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn fx:id="classColumn" text="Class"/>
-                <TableColumn fx:id="attributeColumn" text="Attr."/>
-            </columns>
-        </TableColumn>
-        <TableColumn fx:id="deckColumn" text="Deck" sortable="false">
-            <columns>
-                <TableColumn text="C1">
-                    <cellValueFactory>
-                        <DeckColumnValueFactory cardNo="1"/>
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn text="C2">
-                    <cellValueFactory>
-                        <DeckColumnValueFactory cardNo="2"/>
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn text="C3">
-                    <cellValueFactory>
-                        <DeckColumnValueFactory cardNo="3"/>
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn text="C4">
-                    <cellValueFactory>
-                        <DeckColumnValueFactory cardNo="4"/>
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn text="C5">
-                    <cellValueFactory>
-                        <DeckColumnValueFactory cardNo="5"/>
-                    </cellValueFactory>
-                </TableColumn>
-            </columns>
-        </TableColumn>
-        <TableColumn fx:id="npColumn" text="NP">
-            <columns>
-                <TableColumn fx:id="npTypeColumn" text="Type"/>
-                <TableColumn fx:id="npTargetColumn" text="Target"/>
-                <TableColumn fx:id="npDamageColumn" text="Damage">
-                    <cellValueFactory>
-                        <UserServantNpDamageValueFactory/>
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn text="Level" fx:id="npLvlColumn">
-                    <cellValueFactory>
-                        <UserServantValueFactory property="npLevel"/>
-                    </cellValueFactory>
-                </TableColumn>
-            </columns>
-        </TableColumn>
-        <TableColumn text="Levels">
-            <columns>
-                <TableColumn fx:id="levelColumn" text="LvL">
-                    <cellValueFactory>
-                        <UserServantValueFactory property="level"/>
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn fx:id="ascColumn" text="Asc">
-                    <cellValueFactory>
-                        <UserServantValueFactory property="ascension"/>
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn fx:id="bondColumn" text="Bond">
-                    <cellValueFactory>
-                        <UserServantValueFactory property="bondLevel"/>
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn fx:id="skill1Column" text="S1">
-                    <cellValueFactory>
-                        <UserServantValueFactory property="skillLevel1"/>
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn fx:id="skill2Column" text="S2">
-                    <cellValueFactory>
-                        <UserServantValueFactory property="skillLevel2"/>
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn fx:id="skill3Column" text="S3">
-                    <cellValueFactory>
-                        <UserServantValueFactory property="skillLevel3"/>
-                    </cellValueFactory>
-                </TableColumn>
-            </columns>
-        </TableColumn>
-        <TableColumn text="Fou">
-            <columns>
-                <TableColumn fx:id="atkColumn" text="ATK">
-                    <cellValueFactory>
-                        <UserServantValueFactory property="fouAtk"/>
-                    </cellValueFactory>
-                </TableColumn>
-                <TableColumn fx:id="hpColumn" text="HP">
-                    <cellValueFactory>
-                        <UserServantValueFactory property="fouHp"/>
-                    </cellValueFactory>
-                </TableColumn>
-            </columns>
-        </TableColumn>
-        <TableColumn fx:id="notesColumn" text="Notes" sortable="false">
-            <cellValueFactory>
-                <UserServantValueFactory property="notes"/>
-            </cellValueFactory>
-            <cellFactory>
-                <TextFieldTableCell fx:factory="forTableColumn"/>
-            </cellFactory>
-        </TableColumn>
-    </columns>
-</TableView>
+<Tab xmlns="http://javafx.com/javafx"
+     xmlns:fx="http://javafx.com/fxml"
+     fx:controller="com.github.theintelligentone.fgotracker.ui.controller.RosterController" fx:id="rosterTab"
+     text="Roster">
+    <TableView fx:id="rosterTable" editable="true">
+        <columns>
+            <TableColumn text="General Info">
+                <columns>
+                    <TableColumn text="Name" fx:id="nameColumn">
+                        <cellValueFactory>
+                            <UserServantNameValueFactory/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="rarityColumn" text="R">
+                        <cellValueFactory>
+                            <UserServantValueFactory property="rarity"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="classColumn" text="Class"/>
+                    <TableColumn fx:id="attributeColumn" text="Attr."/>
+                </columns>
+            </TableColumn>
+            <TableColumn fx:id="deckColumn" text="Deck" sortable="false">
+                <columns>
+                    <TableColumn text="C1">
+                        <cellValueFactory>
+                            <DeckColumnValueFactory cardNo="1"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="C2">
+                        <cellValueFactory>
+                            <DeckColumnValueFactory cardNo="2"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="C3">
+                        <cellValueFactory>
+                            <DeckColumnValueFactory cardNo="3"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="C4">
+                        <cellValueFactory>
+                            <DeckColumnValueFactory cardNo="4"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="C5">
+                        <cellValueFactory>
+                            <DeckColumnValueFactory cardNo="5"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+            </TableColumn>
+            <TableColumn fx:id="npColumn" text="NP">
+                <columns>
+                    <TableColumn fx:id="npTypeColumn" text="Type"/>
+                    <TableColumn fx:id="npTargetColumn" text="Target"/>
+                    <TableColumn fx:id="npDamageColumn" text="Damage">
+                        <cellValueFactory>
+                            <UserServantNpDamageValueFactory/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="Level" fx:id="npLvlColumn">
+                        <cellValueFactory>
+                            <UserServantValueFactory property="npLevel"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+            </TableColumn>
+            <TableColumn text="Levels">
+                <columns>
+                    <TableColumn fx:id="levelColumn" text="LvL">
+                        <cellValueFactory>
+                            <UserServantValueFactory property="level"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="ascColumn" text="Asc">
+                        <cellValueFactory>
+                            <UserServantValueFactory property="ascension"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="bondColumn" text="Bond">
+                        <cellValueFactory>
+                            <UserServantValueFactory property="bondLevel"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="skill1Column" text="S1">
+                        <cellValueFactory>
+                            <UserServantValueFactory property="skillLevel1"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="skill2Column" text="S2">
+                        <cellValueFactory>
+                            <UserServantValueFactory property="skillLevel2"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="skill3Column" text="S3">
+                        <cellValueFactory>
+                            <UserServantValueFactory property="skillLevel3"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+            </TableColumn>
+            <TableColumn text="Fou">
+                <columns>
+                    <TableColumn fx:id="atkColumn" text="ATK">
+                        <cellValueFactory>
+                            <UserServantValueFactory property="fouAtk"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="hpColumn" text="HP">
+                        <cellValueFactory>
+                            <UserServantValueFactory property="fouHp"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                </columns>
+            </TableColumn>
+            <TableColumn fx:id="notesColumn" text="Notes" sortable="false">
+                <cellValueFactory>
+                    <UserServantValueFactory property="notes"/>
+                </cellValueFactory>
+                <cellFactory>
+                    <TextFieldTableCell fx:factory="forTableColumn"/>
+                </cellFactory>
+            </TableColumn>
+        </columns>
+    </TableView>
+</Tab>

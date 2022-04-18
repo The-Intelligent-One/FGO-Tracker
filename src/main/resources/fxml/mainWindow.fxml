@@ -29,20 +29,12 @@
         </Menu>
     </MenuBar>
     <TabPane tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
-        <Tab fx:id="rosterTab" text="Roster">
-            <fx:include source="rosterTab.fxml"/>
-        </Tab>
-        <Tab fx:id="ltPlannerTab" text="LT Planner">
-            <fx:include source="ltPlannerTab.fxml"/>
-        </Tab>
-        <Tab fx:id="plannerTab" text="Planner">
-            <fx:include source="plannerTab.fxml"/>
-        </Tab>
-        <Tab fx:id="prioPlannerTab" text="Prio Planner">
-            <fx:include source="priorityPlannerTab.fxml"/>
-        </Tab>
-<!--        <Tab fx:id="eventTab" text="Events">-->
-<!--            <fx:include source="eventsTab.fxml"/>-->
-<!--        </Tab>-->
+        <fx:include source="rosterTab.fxml"/>
+        <fx:include source="ltPlannerTab.fxml"/>
+        <fx:include source="plannerTab.fxml"/>
+        <fx:include source="priorityPlannerTab.fxml"/>
+        <!--        <Tab fx:id="eventTab" text="Events">-->
+        <!--            <fx:include source="eventsTab.fxml"/>-->
+        <!--        </Tab>-->
     </TabPane>
 </VBox>

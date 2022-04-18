@@ -14,7 +14,7 @@ import java.util.List;
 public class PlannerFileService {
     private static final String PLANNER_SERVANT_FILE = "planned.json";
     private static final String PRIORITY_SERVANT_FILE = "priority.json";
-    private static final String LT_SERVANT_FILE = "priority.json";
+    private static final String LT_SERVANT_FILE = "longterm.json";
 
     @Autowired
     private FileService fileService;

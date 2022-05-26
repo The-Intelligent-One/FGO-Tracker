@@ -28,4 +28,20 @@ public class PlannerServant {
     private int desSkill3;
     private List<UpgradeCost> ascensionMaterials;
     private List<UpgradeCost> skillMaterials;
+
+    public int getLevel() {
+        return baseServant.getLevel();
+    }
+
+    public int getSkillLevel1() {
+        return baseServant.getSkillLevel1();
+    }
+
+    public int getSkillLevel2() {
+        return baseServant.getSkillLevel2();
+    }
+
+    public int getSkillLevel3() {
+        return baseServant.getSkillLevel3();
+    }
 }

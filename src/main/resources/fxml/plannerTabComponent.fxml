@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.github.theintelligentone.fgotracker.ui.valuefactory.roster.*?>
+<?import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.*?>
 <?import javafx.scene.control.cell.PropertyValueFactory?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.VBox?>
@@ -22,29 +22,29 @@
         <columns>
             <TableColumn fx:id="nameColumn" text="Name">
                 <cellValueFactory>
-                    <UserServantNameValueFactory/>
+                    <PlannerServantNameValueFactory/>
                 </cellValueFactory>
             </TableColumn>
             <TableColumn text="Current" fx:id="current">
                 <columns>
                     <TableColumn fx:id="level" text="LvL">
                         <cellValueFactory>
-                            <UserServantValueFactory property="level"/>
+                            <PlannerServantValueFactory property="level"/>
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn fx:id="skill1" text="S1">
                         <cellValueFactory>
-                            <UserServantValueFactory property="skillLevel1"/>
+                            <PlannerServantValueFactory property="skillLevel1"/>
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn fx:id="skill2" text="S2">
                         <cellValueFactory>
-                            <UserServantValueFactory property="skillLevel2"/>
+                            <PlannerServantValueFactory property="skillLevel2"/>
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn fx:id="skill3" text="S3">
                         <cellValueFactory>
-                            <UserServantValueFactory property="skillLevel3"/>
+                            <PlannerServantValueFactory property="skillLevel3"/>
                         </cellValueFactory>
                     </TableColumn>
                 </columns>
@@ -53,22 +53,22 @@
                 <columns>
                     <TableColumn text="LvL">
                         <cellValueFactory>
-                            <UserServantValueFactory property="desLevel"/>
+                            <PlannerServantValueFactory property="desLevel"/>
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn text="S1">
                         <cellValueFactory>
-                            <UserServantValueFactory property="desSkill1"/>
+                            <PlannerServantValueFactory property="desSkill1"/>
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn text="S2">
                         <cellValueFactory>
-                            <UserServantValueFactory property="desSkill2"/>
+                            <PlannerServantValueFactory property="desSkill2"/>
                         </cellValueFactory>
                     </TableColumn>
                     <TableColumn text="S3">
                         <cellValueFactory>
-                            <UserServantValueFactory property="desSkill3"/>
+                            <PlannerServantValueFactory property="desSkill3"/>
                         </cellValueFactory>
                     </TableColumn>
                 </columns>

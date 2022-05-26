@@ -199,11 +199,7 @@ public class UserServantManagementService {
                 Optional<UserServant> optionalUserServant = userServantList.stream()
                         .filter(userServant -> userServant.getSvtId() == svt.getSvtId())
                         .findFirst();
-                if (optionalUserServant.isPresent()) {
-                    UserServant oldSvt = optionalUserServant.get();
-                    copyNewValuesIfApplicable(oldSvt, svt.getBaseServant());
-                }
-                UserServant newUserServant = optionalUserServant.orElseGet(() -> UserServantFactory.copyWithNewBaseServant(svt.getBaseServant(), findServantById(svt.getSvtId(), servantList)));
+                UserServant newUserServant = optionalUserServant.orElseGet(() -> UserServantFactory.createUserServantFromBaseServant(findServantById(svt.getSvtId(), servantList)));
                 result.add(newUserServant);
                 userServants.set(userServants.indexOf(svt), PlannerServantFactory.copyWithNewBaseServant(svt, newUserServant));
             } else {

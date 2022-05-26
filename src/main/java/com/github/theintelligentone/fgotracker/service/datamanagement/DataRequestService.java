@@ -13,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -121,8 +122,10 @@ public class DataRequestService {
     }
 
     private <T> T getDataFromEitherRegion(String gameRegion, long id, Map<String, String> urlMap, TypeReference<T> typeRef) {
-        T dataFromUrl = getDataFromUrl(String.format(SERVANT_ID_SEARCH_URL.get(gameRegion), id), typeRef);
-        return dataFromUrl != null ? dataFromUrl : getDataFromUrl(String.format(urlMap.get(JP_REGION), id), typeRef);
+        String url = id == 0 ? urlMap.get(gameRegion) : String.format(urlMap.get(gameRegion), id);
+        String jpUrl = id == 0 ? urlMap.get(JP_REGION) : String.format(urlMap.get(JP_REGION), id);
+        T dataFromUrl = getDataFromUrl(url, typeRef);
+        return dataFromUrl != null ? dataFromUrl : getDataFromUrl(jpUrl, typeRef);
     }
 
     private <T> T getDataFromUrl(String url, TypeReference<T> typeRef) {
@@ -131,6 +134,8 @@ public class DataRequestService {
             returnedData = objectMapper.readValue(new URL(url), typeRef);
         } catch (UnknownHostException e) {
             log.warn("Couldn't reach host: " + e.getLocalizedMessage(), e);
+        } catch (FileNotFoundException e) {
+            log.warn("Couldn't find servant for region.\n" + e.getLocalizedMessage(), e);
         } catch (IOException e) {
             log.error(e.getLocalizedMessage(), e);
         }

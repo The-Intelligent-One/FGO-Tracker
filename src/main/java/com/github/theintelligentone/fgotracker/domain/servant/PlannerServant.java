@@ -11,7 +11,7 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties(value = {"baseServant", "ascensionMaterials", "skillMaterials"}, ignoreUnknown = true)
+@JsonIgnoreProperties(value = {"baseServant", "ascensionMaterials", "skillMaterials", "appendSkillMaterials"}, ignoreUnknown = true)
 public class PlannerServant {
     @EqualsAndHashCode.Include
     private long svtId;

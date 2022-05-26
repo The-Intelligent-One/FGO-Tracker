@@ -1,6 +1,7 @@
 package com.github.theintelligentone.fgotracker.service;
 
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
+import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.servant.propertyobjects.FgoFunction;
@@ -38,19 +39,20 @@ public class ServantUtils {
 
     public static int getAscensionFromRarityAndLevel(int level, int rarity) {
         List<Integer> listOfAscensionLevels = createListOfAscensionLevels(rarity);
-        int nextAscLvl = listOfAscensionLevels.stream().dropWhile(lvl -> lvl < level).findFirst().get();
+        int nextAscLvl = listOfAscensionLevels.stream().dropWhile(lvl -> lvl < level).findFirst().orElseThrow();
         return listOfAscensionLevels.indexOf(nextAscLvl);
     }
 
-    public static int getPlannedMatUse(UserServant servant, long matId) {
+    public static int getPlannedMatUse(PlannerServant servant, long matId) {
         return sumNeededAscensionMats(servant, matId) + sumAllNeededSkillMats(servant, matId);
     }
 
-    private static int sumAllNeededSkillMats(UserServant servant, long matId) {
-        return calculateSkillMat(servant, servant.getSkillLevel1(), servant.getDesSkill1(), matId) + calculateSkillMat(servant, servant.getSkillLevel2(), servant.getDesSkill2(), matId) + calculateSkillMat(servant, servant.getSkillLevel3(), servant.getDesSkill3(), matId);
+    private static int sumAllNeededSkillMats(PlannerServant servant, long matId) {
+        UserServant baseServant = servant.getBaseServant();
+        return calculateSkillMat(servant, baseServant.getSkillLevel1(), baseServant.getDesSkill1(), matId) + calculateSkillMat(servant, baseServant.getSkillLevel2(), servant.getDesSkill2(), matId) + calculateSkillMat(servant, baseServant.getSkillLevel3(), servant.getDesSkill3(), matId);
     }
 
-    private static int calculateSkillMat(UserServant servant, int currentLevel, int desiredLevel, long matId) {
+    private static int calculateSkillMat(PlannerServant servant, int currentLevel, int desiredLevel, long matId) {
         return servant.getSkillMaterials()
                 .stream()
                 .skip(Math.max(currentLevel - 1, 0))
@@ -62,15 +64,16 @@ public class ServantUtils {
                 .orElse(0);
     }
 
-    private static int sumNeededAscensionMats(UserServant servant, long matId) {
-        int currentAscensionLevel = getAscensionFromRarityAndLevel(servant.getLevel(), servant.getBaseServant()
+    private static int sumNeededAscensionMats(PlannerServant servant, long matId) {
+        int currentAscensionLevel = getAscensionFromRarityAndLevel(servant.getBaseServant()
+                .getLevel(), servant.getBaseServant().getBaseServant()
                 .getRarity());
         int desiredAscensionLevel = getAscensionFromRarityAndLevel(servant.getDesLevel(), servant.getBaseServant()
                 .getRarity());
         return calculateAscMats(servant, matId, currentAscensionLevel, desiredAscensionLevel);
     }
 
-    private static int calculateAscMats(UserServant servant, long matId, int currentAscLevel, int desiredAscLevel) {
+    private static int calculateAscMats(PlannerServant servant, long matId, int currentAscLevel, int desiredAscLevel) {
         return servant.getAscensionMaterials()
                 .stream()
                 .skip(currentAscLevel)
@@ -82,14 +85,14 @@ public class ServantUtils {
                 .orElse(0);
     }
 
-    public static int sumNeededAscensionGrails(UserServant servant) {
-        return calculateNeededGrails(servant, servant.getLevel(), servant.getDesLevel());
+    public static int sumNeededAscensionGrails(PlannerServant servant) {
+        return calculateNeededGrails(servant, servant.getBaseServant().getLevel(), servant.getDesLevel());
     }
 
-    private static int calculateNeededGrails(UserServant servant, int currentLevel, int desiredLevel) {
+    private static int calculateNeededGrails(PlannerServant servant, int currentLevel, int desiredLevel) {
         int currentAscLevel = Math.max(getAscensionFromRarityAndLevel(currentLevel, servant.getBaseServant()
                 .getRarity()) - 4, 0);
-        if (servant.isAscension()) {
+        if (servant.getBaseServant().isAscension()) {
             currentAscLevel++;
         }
         int desiredAscLevel = Math.max(getAscensionFromRarityAndLevel(desiredLevel, servant.getBaseServant()

@@ -1,8 +1,10 @@
 package com.github.theintelligentone.fgotracker.service.datamanagement.user;
 
 import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
+import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
+import com.github.theintelligentone.fgotracker.domain.servant.factory.PlannerServantFactory;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -18,9 +20,9 @@ import static com.github.theintelligentone.fgotracker.service.datamanagement.Dat
 public class UserServantManagementService {
     private Set<UserServant> userServantList;
     private ObservableList<UserServant> rosterServantList;
-    private ObservableList<UserServant> plannerServantList;
-    private ObservableList<UserServant> priorityPlannerServantList;
-    private ObservableList<UserServant> longTermPlannerServantList;
+    private ObservableList<PlannerServant> plannerServantList;
+    private ObservableList<PlannerServant> priorityPlannerServantList;
+    private ObservableList<PlannerServant> longTermPlannerServantList;
 
 
     public void initDataLists() {
@@ -49,7 +51,33 @@ public class UserServantManagementService {
     }
 
     public void replaceBaseServantInRosterRow(int index, UserServant servant, Servant newBaseServant) {
-        replaceBaseServantInRow(index, servant, newBaseServant, rosterServantList);
+        if (newBaseServant != null) {
+            Optional<UserServant> optionalUserServant = userServantList.stream()
+                    .filter(userServant -> userServant.getSvtId() == newBaseServant.getId())
+                    .findFirst();
+            if (servant.getSvtId() == 0) {
+                UserServant newServant = optionalUserServant.orElseGet(() -> {
+                    UserServant userServantFromBaseServant = UserServantFactory.createUserServantFromBaseServant(newBaseServant);
+                    userServantList.add(userServantFromBaseServant);
+                    return userServantFromBaseServant;
+                });
+                rosterServantList.set(index, newServant);
+            } else {
+                UserServant newServant;
+                if (optionalUserServant.isEmpty()) {
+                    newServant = servant.toBuilder()
+                            .svtId(newBaseServant.getId())
+                            .rarity(newBaseServant.getRarity())
+                            .svtClass(newBaseServant.getClassName())
+                            .baseServant(newBaseServant)
+                            .build();
+                    userServantList.add(newServant);
+                } else {
+                    newServant = optionalUserServant.get();
+                }
+                rosterServantList.set(index, newServant);
+            }
+        }
     }
 
     public void eraseUserServant(int index) {
@@ -61,10 +89,16 @@ public class UserServantManagementService {
         return rosterServantList;
     }
 
-    public ObservableList<UserServant> getPaddedPlannerServantList(PlannerType plannerType) {
-        ObservableList<UserServant> sourceList = getPlannerServantList(plannerType);
-        padUserServantList(sourceList);
+    public ObservableList<PlannerServant> getPaddedPlannerServantList(PlannerType plannerType) {
+        ObservableList<PlannerServant> sourceList = getPlannerServantList(plannerType);
+        padPlannerServantList(sourceList);
         return sourceList;
+    }
+
+    private void padPlannerServantList(ObservableList<PlannerServant> sourceList) {
+        if (sourceList.size() < MIN_TABLE_SIZE) {
+            IntStream.range(0, MIN_TABLE_SIZE - sourceList.size()).forEach(i -> sourceList.add(new PlannerServant()));
+        }
     }
 
     private void padUserServantList(ObservableList<UserServant> sourceList) {
@@ -84,10 +118,10 @@ public class UserServantManagementService {
     }
 
     public void saveImportedPlannerServants(PlannerType plannerType,
-                                            List<UserServant> importedServants) {
-        List<UserServant> newRoster = createNewListWithUserServants(importedServants);
-        getPlannerServantList(plannerType).setAll(clearUnnecessaryEmptyPlannerRows(newRoster));
-        padUserServantList(getPlannerServantList(plannerType));
+                                            List<PlannerServant> importedServants) {
+        List<PlannerServant> newPlanner = createNewListWithPlannerServants(importedServants);
+        getPlannerServantList(plannerType).setAll(clearUnnecessaryEmptyPlannerRows(newPlanner));
+        padPlannerServantList(getPlannerServantList(plannerType));
     }
 
     private List<UserServant> createNewListWithUserServants(List<UserServant> importedServants) {
@@ -105,6 +139,21 @@ public class UserServantManagementService {
         return newRoster;
     }
 
+    private List<PlannerServant> createNewListWithPlannerServants(List<PlannerServant> importedServants) {
+        List<PlannerServant> newPlanner = new ArrayList<>();
+        importedServants.forEach(userServant -> {
+                    Optional<UserServant> existingUserServant = userServantList.stream()
+                            .filter(existingServant -> existingServant.getSvtId() == userServant.getSvtId())
+                            .findFirst();
+                    existingUserServant.ifPresentOrElse(oldServant -> {
+                        copyNewValuesIfApplicable(oldServant, userServant.getBaseServant());
+                        newPlanner.add(userServant);
+                    }, () -> newPlanner.add(userServant));
+                }
+        );
+        return newPlanner;
+    }
+
     public void refreshUserServants(List<UserServant> userServants, List<Servant> servantList) {
         rosterServantList = FXCollections.observableArrayList();
         List<UserServant> associatedUserServantList = createAssociatedUserServantList(userServants, servantList);
@@ -114,14 +163,14 @@ public class UserServantManagementService {
         rosterServantList.addAll(associatedUserServantList);
     }
 
-    public void refreshPlannerServants(PlannerType plannerType, List<UserServant> plannerServants, List<Servant> servantList) {
-        ObservableList<UserServant> plannerServantList = getPlannerServantList(plannerType);
+    public void refreshPlannerServants(PlannerType plannerType, List<PlannerServant> plannerServants, List<Servant> servantList) {
+        ObservableList<PlannerServant> plannerServantList = getPlannerServantList(plannerType);
         plannerServantList.clear();
-        List<UserServant> associatedUserServantList = createAssociatedUserServantList(plannerServants, servantList);
+        List<UserServant> associatedUserServantList = createAssociatedUserServantListForPlannerRefresh(plannerServants, servantList);
         userServantList.addAll(associatedUserServantList.stream()
                 .filter(userServant -> userServant.getSvtId() != 0)
                 .collect(Collectors.toList()));
-        plannerServantList.setAll(associatedUserServantList);
+        plannerServantList.setAll(plannerServants);
     }
 
     private List<UserServant> createAssociatedUserServantList(List<UserServant> userServants, List<Servant> servantList) {
@@ -137,7 +186,28 @@ public class UserServantManagementService {
                 }
                 result.add(optionalUserServant.orElseGet(() -> UserServantFactory.copyWithNewBaseServant(svt, findServantById(svt.getSvtId(), servantList))));
             } else {
-                result.add(svt);
+                result.add(UserServantFactory.createBlankUserServant());
+            }
+        });
+        return result;
+    }
+
+    private List<UserServant> createAssociatedUserServantListForPlannerRefresh(List<PlannerServant> userServants, List<Servant> servantList) {
+        List<UserServant> result = new ArrayList<>();
+        userServants.forEach(svt -> {
+            if (svt.getSvtId() != 0) {
+                Optional<UserServant> optionalUserServant = userServantList.stream()
+                        .filter(userServant -> userServant.getSvtId() == svt.getSvtId())
+                        .findFirst();
+                if (optionalUserServant.isPresent()) {
+                    UserServant oldSvt = optionalUserServant.get();
+                    copyNewValuesIfApplicable(oldSvt, svt.getBaseServant());
+                }
+                UserServant newUserServant = optionalUserServant.orElseGet(() -> UserServantFactory.copyWithNewBaseServant(svt.getBaseServant(), findServantById(svt.getSvtId(), servantList)));
+                result.add(newUserServant);
+                userServants.set(userServants.indexOf(svt), PlannerServantFactory.copyWithNewBaseServant(svt, newUserServant));
+            } else {
+                result.add(UserServantFactory.createBlankUserServant());
             }
         });
         return result;
@@ -186,15 +256,15 @@ public class UserServantManagementService {
     }
 
     private Servant findServantById(long svtId, List<Servant> servantList) {
-        return servantList.stream().filter(svt -> svtId == svt.getId()).findFirst().get();
+        return servantList.stream().filter(svt -> svtId == svt.getId()).findFirst().orElseThrow();
     }
 
     public List<UserServant> getClearedUserServantList() {
         return clearUnnecessaryEmptyUserRows(rosterServantList);
     }
 
-    private ObservableList<UserServant> getPlannerServantList(PlannerType plannerType) {
-        ObservableList<UserServant> chosenPlannerList;
+    private ObservableList<PlannerServant> getPlannerServantList(PlannerType plannerType) {
+        ObservableList<PlannerServant> chosenPlannerList;
         switch (plannerType) {
             case REGULAR:
                 chosenPlannerList = plannerServantList;
@@ -211,64 +281,60 @@ public class UserServantManagementService {
         return chosenPlannerList;
     }
 
-    public void erasePlannerServant(UserServant servant, PlannerType plannerType) {
-        ObservableList<UserServant> plannerList = getPlannerServantList(plannerType);
-        plannerList.set(plannerList.indexOf(servant), new UserServant());
+    public void erasePlannerServant(PlannerServant servant, PlannerType plannerType) {
+        ObservableList<PlannerServant> plannerList = getPlannerServantList(plannerType);
+        plannerList.set(plannerList.indexOf(servant), new PlannerServant());
     }
 
-    public void removePlannerServant(UserServant servant, PlannerType plannerType) {
+    public void removePlannerServant(PlannerServant servant, PlannerType plannerType) {
         getPlannerServantList(plannerType).remove(servant);
     }
 
-    public void savePlannerServant(UserServant plannerServantView, PlannerType plannerType) {
-        getPlannerServantList(plannerType).add(plannerServantView);
+    public void savePlannerServant(PlannerServant plannerServant, PlannerType plannerType) {
+        getPlannerServantList(plannerType).add(plannerServant);
     }
 
-    public void savePlannerServant(int index, UserServant plannerServantView, PlannerType plannerType) {
-        getPlannerServantList(plannerType).add(index, plannerServantView);
+    public void savePlannerServant(int index, PlannerServant plannerServant, PlannerType plannerType) {
+        getPlannerServantList(plannerType).add(index, plannerServant);
     }
 
-    public void replaceBaseServantInPlannerRow(int index, UserServant servant, Servant newBaseServant, PlannerType plannerType) {
-        ObservableList<UserServant> listToUpdate = getPlannerServantList(plannerType);
-        replaceBaseServantInRow(index, servant, newBaseServant, listToUpdate);
-    }
-
-    private void replaceBaseServantInRow(int index, UserServant servant, Servant newBaseServant, ObservableList<UserServant> listToUpdate) {
+    public void replaceBaseServantInPlannerRow(int index, PlannerServant servant, Servant newBaseServant, PlannerType plannerType) {
+        ObservableList<PlannerServant> listToUpdate = getPlannerServantList(plannerType);
         if (newBaseServant != null) {
             Optional<UserServant> optionalUserServant = userServantList.stream()
                     .filter(userServant -> userServant.getSvtId() == newBaseServant.getId())
                     .findFirst();
             if (servant.getSvtId() == 0) {
-                UserServant newServant = optionalUserServant.orElseGet(() -> {
+                UserServant actualBaseServant = optionalUserServant.orElseGet(() -> {
                     UserServant userServantFromBaseServant = UserServantFactory.createUserServantFromBaseServant(newBaseServant);
                     userServantList.add(userServantFromBaseServant);
                     return userServantFromBaseServant;
                 });
+                PlannerServant newServant = PlannerServantFactory.createPlannerServantFromBaseServant(actualBaseServant);
                 listToUpdate.set(index, newServant);
             } else {
-                UserServant newServant;
+                PlannerServant newServant;
                 if (optionalUserServant.isEmpty()) {
+                    UserServant actualBaseServant = UserServantFactory.createUserServantFromBaseServant(newBaseServant);
+                    userServantList.add(actualBaseServant);
                     newServant = servant.toBuilder()
                             .svtId(newBaseServant.getId())
-                            .rarity(newBaseServant.getRarity())
-                            .svtClass(newBaseServant.getClassName())
-                            .baseServant(newBaseServant)
+                            .baseServant(actualBaseServant)
                             .build();
-                    userServantList.add(newServant);
                 } else {
-                    newServant = optionalUserServant.get();
+                    newServant = PlannerServantFactory.createPlannerServantFromBaseServant(optionalUserServant.get());
                 }
                 listToUpdate.set(index, newServant);
             }
         }
     }
 
-    public List<UserServant> getClearedPlannerServantList(PlannerType plannerType) {
+    public List<PlannerServant> getClearedPlannerServantList(PlannerType plannerType) {
         return clearUnnecessaryEmptyPlannerRows(getPlannerServantList(plannerType));
     }
 
-    private List<UserServant> clearUnnecessaryEmptyPlannerRows(List<UserServant> servantList) {
-        List<UserServant> newList = new ArrayList<>(servantList);
+    private List<PlannerServant> clearUnnecessaryEmptyPlannerRows(List<PlannerServant> servantList) {
+        List<PlannerServant> newList = new ArrayList<>(servantList);
         int index = newList.size() - 1;
         while (!newList.isEmpty() && newList.get(index).getSvtId() == 0) {
             newList.remove(index--);

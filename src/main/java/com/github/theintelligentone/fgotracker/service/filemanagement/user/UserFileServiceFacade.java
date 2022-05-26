@@ -1,6 +1,7 @@
 package com.github.theintelligentone.fgotracker.service.filemanagement.user;
 
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
+import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -26,15 +27,15 @@ public class UserFileServiceFacade {
         return rosterFileService.loadRoster();
     }
 
-    public void savePlannerServants(List<UserServant> servants) {
+    public void savePlannerServants(List<PlannerServant> servants) {
         plannerFileService.savePlannerServants(servants);
     }
 
-    public void savePriorityPlannerServants(List<UserServant> servants) {
+    public void savePriorityPlannerServants(List<PlannerServant> servants) {
         plannerFileService.savePriorityPlannerServants(servants);
     }
 
-    public void saveLongTermPlannerServants(List<UserServant> servants) {
+    public void saveLongTermPlannerServants(List<PlannerServant> servants) {
         plannerFileService.saveLongTermPlannerServants(servants);
     }
 
@@ -50,15 +51,15 @@ public class UserFileServiceFacade {
         optionsFileService.saveGameRegion(gameRegion);
     }
 
-    public List<UserServant> loadPlanner() {
+    public List<PlannerServant> loadPlanner() {
         return plannerFileService.loadPlanner();
     }
 
-    public List<UserServant> loadPriorityPlanner() {
+    public List<PlannerServant> loadPriorityPlanner() {
         return plannerFileService.loadPriorityPlanner();
     }
 
-    public List<UserServant> loadLongTermPlanner() {
+    public List<PlannerServant> loadLongTermPlanner() {
         return plannerFileService.loadLongTermPlanner();
     }
 

@@ -4,6 +4,7 @@ import com.github.theintelligentone.fgotracker.domain.event.BasicEvent;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
+import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
@@ -67,7 +68,7 @@ public class DataManagementServiceFacade {
         return userDataManagementServiceFacade.getInventory();
     }
 
-    public ObservableList<UserServant> getPaddedPlannerServantList(PlannerType plannerType) {
+    public ObservableList<PlannerServant> getPaddedPlannerServantList(PlannerType plannerType) {
         return userDataManagementServiceFacade.getPaddedPlannerServantList(plannerType);
     }
 
@@ -84,11 +85,11 @@ public class DataManagementServiceFacade {
     }
 
     public List<String> importPlannerServantsFromCsv(File sourceFile, PlannerType plannerType) {
-        List<UserServant> importedServants = new ArrayList<>();
+        List<PlannerServant> importedServants = new ArrayList<>();
         List<String> notFoundNames = importManagementService.createPlannerServantListFromCsvLines(importedServants, cacheManagementService.getBasicServantList(), sourceFile);
         importedServants.forEach(userServant -> {
             if (userServant.getSvtId() != 0) {
-                UserServantFactory.updateBaseServant(userServant, cacheManagementService.getServantById(userServant.getSvtId()));
+                UserServantFactory.updateBaseServant(userServant.getBaseServant(), cacheManagementService.getServantById(userServant.getSvtId()));
             }
         });
         userDataManagementServiceFacade.saveImportedPlannerServants(plannerType, importedServants);
@@ -128,7 +129,7 @@ public class DataManagementServiceFacade {
         userDataManagementServiceFacade.eraseUserServant(index);
     }
 
-    public void erasePlannerServant(UserServant servant, PlannerType plannerType) {
+    public void erasePlannerServant(PlannerServant servant, PlannerType plannerType) {
         userDataManagementServiceFacade.erasePlannerServant(servant, plannerType);
     }
 
@@ -136,15 +137,15 @@ public class DataManagementServiceFacade {
         userDataManagementServiceFacade.removeUserServant(index);
     }
 
-    public void removePlannerServant(UserServant servant, PlannerType plannerType) {
+    public void removePlannerServant(PlannerServant servant, PlannerType plannerType) {
         userDataManagementServiceFacade.removePlannerServant(servant, plannerType);
     }
 
-    public void savePlannerServant(UserServant servant, PlannerType plannerType) {
+    public void savePlannerServant(PlannerServant servant, PlannerType plannerType) {
         userDataManagementServiceFacade.savePlannerServant(servant, plannerType);
     }
 
-    public void savePlannerServant(int index, UserServant servant, PlannerType plannerType) {
+    public void savePlannerServant(int index, PlannerServant servant, PlannerType plannerType) {
         userDataManagementServiceFacade.savePlannerServant(index, servant, plannerType);
     }
 
@@ -161,7 +162,7 @@ public class DataManagementServiceFacade {
         userDataManagementServiceFacade.replaceBaseServantInRow(index, servant, newBaseServant);
     }
 
-    public void replaceBaseServantInPlannerRow(int index, UserServant servant, String newServantName, PlannerType plannerType) {
+    public void replaceBaseServantInPlannerRow(int index, PlannerServant servant, String newServantName, PlannerType plannerType) {
         Servant newBaseServant = cacheManagementService.findServantByFormattedName(newServantName);
         userDataManagementServiceFacade.replaceBaseServantInPlannerRow(index, servant, newBaseServant, plannerType);
     }

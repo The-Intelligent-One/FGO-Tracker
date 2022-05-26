@@ -3,13 +3,13 @@ package com.github.theintelligentone.fgotracker.ui.controller;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
-import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
+import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
 import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.InventoryValueFactory;
-import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.UserServantGrailValueFactory;
-import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.UserServantMaterialValueFactory;
+import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerServantGrailValueFactory;
+import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerServantMaterialValueFactory;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ObservableValue;
@@ -48,14 +48,14 @@ public class PlannerHandler {
         this.dataManagementServiceFacade = dataManagementServiceFacade;
     }
 
-    private List<TableColumn<UserServant, Number>> createColumnsForAllMats() {
-        List<TableColumn<UserServant, Number>> columns = new ArrayList<>();
+    private List<TableColumn<PlannerServant, Number>> createColumnsForAllMats() {
+        List<TableColumn<PlannerServant, Number>> columns = new ArrayList<>();
         dataManagementServiceFacade.getMaterials().forEach(mat -> addColumnForMaterial(columns, mat));
         return columns;
     }
 
-    private void addColumnForMaterial(List<TableColumn<UserServant, Number>> columns, UpgradeMaterial mat) {
-        TableColumn<UserServant, Number> newCol = new TableColumn<>();
+    private void addColumnForMaterial(List<TableColumn<PlannerServant, Number>> columns, UpgradeMaterial mat) {
+        TableColumn<PlannerServant, Number> newCol = new TableColumn<>();
         ImageView imageView = new ImageView(mat.getIconImage());
         newCol.setId(String.valueOf(mat.getId()));
         newCol.setPrefWidth(MainController.SHORT_CELL_WIDTH);
@@ -72,14 +72,14 @@ public class PlannerHandler {
                 }
             }
         });
-        newCol.setCellValueFactory(new UserServantMaterialValueFactory(mat.getId()));
+        newCol.setCellValueFactory(new PlannerServantMaterialValueFactory(mat.getId()));
         if (mat.getId() == HOLY_GRAIL_ID) {
-            newCol.setCellValueFactory(new UserServantGrailValueFactory());
+            newCol.setCellValueFactory(new PlannerServantGrailValueFactory());
         }
         columns.add(newCol);
     }
 
-    private void resizeIconIfNeeded(UpgradeMaterial mat, TableColumn<UserServant, Number> newCol, ImageView imageView) {
+    private void resizeIconIfNeeded(UpgradeMaterial mat, TableColumn<PlannerServant, Number> newCol, ImageView imageView) {
         if (dataManagementServiceFacade.isIconsNotResized()) {
             imageView.setPreserveRatio(true);
             imageView.setFitWidth(newCol.getWidth());
@@ -115,7 +115,7 @@ public class PlannerHandler {
         plannerElements.getPlannerTable().getColumns().addAll(createColumnsForAllMats());
         plannerElements.getPlannerTable().setRowFactory(param -> {
             PseudoClass lastRow = PseudoClass.getPseudoClass("last-row");
-            TableRow<UserServant> row = new TableRow<>() {
+            TableRow<PlannerServant> row = new TableRow<>() {
                 @Override
                 public void updateIndex(int index) {
                     super.updateIndex(index);
@@ -181,7 +181,7 @@ public class PlannerHandler {
                         .stream()
                         .filter(material -> mat.getId() == material.getId())
                         .findFirst()
-                        .get()
+                        .orElseThrow()
                         .setAmount(ServantUtils.getDefaultValueIfInvalid(event.getNewValue(), 0, 99_999, event.getOldValue()));
                 event.getTableView().refresh();
             }
@@ -220,10 +220,10 @@ public class PlannerHandler {
         for (UpgradeMaterialCost mat : plannerElements.getPlanned().getInventory()) {
             UpgradeMaterialCost inv = dataManagementServiceFacade.getInventory().getInventory().stream()
                     .filter(upgradeMaterialCost -> mat.getId() == upgradeMaterialCost.getId())
-                    .findFirst().get();
+                    .findFirst().orElseThrow();
             UpgradeMaterialCost sum = plannerElements.getSum().getInventory().stream()
                     .filter(upgradeMaterialCost -> mat.getId() == upgradeMaterialCost.getId())
-                    .findFirst().get();
+                    .findFirst().orElseThrow();
             mat.setAmount(getPlannedMatUseSum(plannerElements.getPlannerTable().getItems(), mat));
             sum.setAmount(inv.getAmount() - mat.getAmount());
         }
@@ -231,7 +231,7 @@ public class PlannerHandler {
         plannerElements.getPlannerTable().refresh();
     }
 
-    private int getPlannedMatUseSum(List<UserServant> servants, UpgradeMaterialCost mat) {
+    private int getPlannedMatUseSum(List<PlannerServant> servants, UpgradeMaterialCost mat) {
         return servants.stream()
                 .filter(servant -> servant.getSvtId() != 0)
                 .mapToInt(servant -> ServantUtils.getPlannedMatUse(servant, mat.getId()))
@@ -259,9 +259,9 @@ public class PlannerHandler {
         });
     }
 
-    private ObservableValue<? extends Number> getTotalWidthOfParentColumn(TableColumn<UserServant, ?> column) {
+    private ObservableValue<? extends Number> getTotalWidthOfParentColumn(TableColumn<PlannerServant, ?> column) {
         DoubleBinding result = Bindings.createDoubleBinding(() -> (double) 0);
-        for (TableColumn<UserServant, ?> col : column.getColumns()) {
+        for (TableColumn<PlannerServant, ?> col : column.getColumns()) {
             result = result.add(col.widthProperty());
         }
         return result;
@@ -272,7 +272,7 @@ public class PlannerHandler {
         row.contextMenuProperty().bind(Bindings.when(row.emptyProperty()).then((ContextMenu) null).otherwise(menu));
     }
 
-    private void createContextMenuForPlannerTableRow(TableRow<UserServant> row) {
+    private void createContextMenuForPlannerTableRow(TableRow<PlannerServant> row) {
         ContextMenu menu = createBasicPlannerContextMenu();
         List<MenuItem> editableMenuItems = createEditablePlannerTableMenuItems(row);
         menu.getItems().addAll(editableMenuItems);
@@ -285,17 +285,17 @@ public class PlannerHandler {
         return new ContextMenu(importInventoryButton);
     }
 
-    private List<MenuItem> createEditablePlannerTableMenuItems(TableRow<UserServant> row) {
+    private List<MenuItem> createEditablePlannerTableMenuItems(TableRow<PlannerServant> row) {
         List<MenuItem> editableMenuItems = new ArrayList<>();
         addNewMenuItem(editableMenuItems, "Import servants for planner from CSV", event -> importPlannerServantsFromCsv());
         addNewMenuItem(editableMenuItems, "Delete row", event -> dataManagementServiceFacade.removePlannerServant(row.getItem(), plannerElements.getPlannerType()));
         addNewMenuItem(editableMenuItems, "Clear row", event -> dataManagementServiceFacade.erasePlannerServant(row.getItem(), plannerElements.getPlannerType()));
         addNewMenuItem(editableMenuItems, "Insert row above", event -> dataManagementServiceFacade.savePlannerServant(row.getTableView()
                 .getItems()
-                .indexOf(row.getItem()), new UserServant(), plannerElements.getPlannerType()));
+                .indexOf(row.getItem()), new PlannerServant(), plannerElements.getPlannerType()));
         addNewMenuItem(editableMenuItems, "Insert row below", event -> dataManagementServiceFacade.savePlannerServant(row.getTableView()
                 .getItems()
-                .indexOf(row.getItem()) + 1, new UserServant(), plannerElements.getPlannerType()));
+                .indexOf(row.getItem()) + 1, new PlannerServant(), plannerElements.getPlannerType()));
         addNewMenuItem(editableMenuItems, "Add X new rows", event -> {
             TextInputDialog prompt = new TextInputDialog("10");
             prompt.setContentText("How many new rows to add?");
@@ -303,7 +303,7 @@ public class PlannerHandler {
             prompt.setHeaderText("");
             prompt.showAndWait()
                     .ifPresent(s -> IntStream.range(0, Integer.parseInt(s))
-                            .forEach(i -> dataManagementServiceFacade.savePlannerServant(new UserServant(), plannerElements.getPlannerType())));
+                            .forEach(i -> dataManagementServiceFacade.savePlannerServant(new PlannerServant(), plannerElements.getPlannerType())));
         });
         return editableMenuItems;
     }
@@ -326,7 +326,7 @@ public class PlannerHandler {
                 .map(node -> (ScrollBar) node)
                 .filter(scrollBar -> scrollBar.getOrientation() == Orientation.HORIZONTAL)
                 .findFirst()
-                .get();
+                .orElseThrow();
     }
 
     public void tableInit() {
@@ -350,7 +350,7 @@ public class PlannerHandler {
         initDesiredInfoColumn(3, "setDesSkill3", 10);
         plannerElements.getDesired().getColumns().forEach(col -> {
             col.setPrefWidth(MainController.SHORT_CELL_WIDTH);
-            TableColumn<UserServant, Integer> actualCol = (TableColumn<UserServant, Integer>) col;
+            TableColumn<PlannerServant, Integer> actualCol = (TableColumn<PlannerServant, Integer>) col;
             actualCol.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
         });
     }
@@ -387,7 +387,7 @@ public class PlannerHandler {
         plannerElements.getCurrent().getColumns().forEach(col -> col.setPrefWidth(MainController.SHORT_CELL_WIDTH));
     }
 
-    private void setEditEventForCurrentInfoColumn(TableColumn<UserServant, Integer> column, String propertyName, int max) {
+    private void setEditEventForCurrentInfoColumn(TableColumn<PlannerServant, Integer> column, String propertyName, int max) {
         column.setOnEditCommit(event -> {
             if (event.getRowValue().getSvtId() != 0) {
                 try {

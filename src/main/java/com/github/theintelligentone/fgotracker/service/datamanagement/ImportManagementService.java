@@ -3,10 +3,8 @@ package com.github.theintelligentone.fgotracker.service.datamanagement;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
-import com.github.theintelligentone.fgotracker.domain.servant.BasicServant;
-import com.github.theintelligentone.fgotracker.domain.servant.ManagerServant;
-import com.github.theintelligentone.fgotracker.domain.servant.Servant;
-import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
+import com.github.theintelligentone.fgotracker.domain.servant.*;
+import com.github.theintelligentone.fgotracker.domain.servant.factory.PlannerServantFactory;
 import com.github.theintelligentone.fgotracker.domain.servant.factory.UserServantFactory;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,10 +53,10 @@ public class ImportManagementService {
         return notFoundNames;
     }
 
-    public List<String> createPlannerServantListFromCsvLines(List<UserServant> importedServants, List<BasicServant> basicServants, File sourceFile) {
+    public List<String> createPlannerServantListFromCsvLines(List<PlannerServant> importedServants, List<BasicServant> basicServants, File sourceFile) {
         List<ManagerServant> managerLookup = fileServiceFacade.loadManagerLookupTable();
         List<String[]> lines = fileServiceFacade.importPlannerCsv(sourceFile);
-        List<UserServant> unprocessedServants = lines.stream()
+        List<PlannerServant> unprocessedServants = lines.stream()
                 .map(csvLine -> buildPlannerServantFromStringArray(csvLine, managerLookup, basicServants))
                 .collect(Collectors.toList());
         List<String> notFoundNames = unprocessedServants.stream()
@@ -96,13 +94,14 @@ public class ImportManagementService {
         return notFoundNames;
     }
 
-    private UserServant buildPlannerServantFromStringArray(String[] importedData, List<ManagerServant> managerLookup, List<BasicServant> basicServants) {
+    private PlannerServant buildPlannerServantFromStringArray(String[] importedData, List<ManagerServant> managerLookup, List<BasicServant> basicServants) {
         String servantName = importedData[PLANNER_IMPORT_INDEX_MAP.get("name")];
-        UserServant servant = UserServantFactory.createBlankUserServant();
+        PlannerServant servant = null;
         if (!servantName.isEmpty()) {
             Servant baseServant = findServantFromManager(servantName, managerLookup, basicServants);
             if (baseServant.getId() == 0) {
-                servant.setBaseServant(baseServant);
+                servant = PlannerServantFactory.createBlankPlannerServant();
+                servant.setBaseServant(UserServantFactory.createUserServantFromBaseServant(baseServant));
             } else {
                 servant = createValidPlannerServant(importedData, baseServant);
             }
@@ -110,9 +109,9 @@ public class ImportManagementService {
         return servant;
     }
 
-    private UserServant createValidPlannerServant(String[] importedData, Servant baseServant) {
-        UserServant servant;
-        servant = UserServantFactory.createBlankUserServant();
+    private PlannerServant createValidPlannerServant(String[] importedData, Servant baseServant) {
+        PlannerServant servant;
+        servant = PlannerServantFactory.createBlankPlannerServant();
         servant.setSvtId(baseServant.getId());
         servant.setDesLevel(Math.max(Math.min(convertToInt(importedData[PLANNER_IMPORT_INDEX_MAP.get("desLevel")]), 120), 1));
         servant.setDesSkill1(Math.max(Math.min(convertToInt(importedData[PLANNER_IMPORT_INDEX_MAP.get("desSkill1")]), 10), 1));
@@ -129,7 +128,7 @@ public class ImportManagementService {
         ManagerServant managerServant = managerLookup.stream()
                 .filter(svt -> name.equalsIgnoreCase(svt.getName()))
                 .findFirst()
-                .get();
+                .orElseThrow();
         BasicServant basicServant = servantDataList.stream()
                 .filter(svt -> svt.getCollectionNo() == managerServant.getCollectionNo())
                 .findFirst()

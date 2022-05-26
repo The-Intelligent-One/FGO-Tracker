@@ -3,6 +3,7 @@ package com.github.theintelligentone.fgotracker.service.datamanagement.user;
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterial;
 import com.github.theintelligentone.fgotracker.domain.other.PlannerType;
+import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileManagementServiceFacade;
@@ -31,7 +32,7 @@ public class UserDataManagementServiceFacade {
         darkMode = new SimpleBooleanProperty(true);
     }
 
-    public ObservableList<UserServant> getPaddedPlannerServantList(PlannerType plannerType) {
+    public ObservableList<PlannerServant> getPaddedPlannerServantList(PlannerType plannerType) {
         return userServantManagementService.getPaddedPlannerServantList(plannerType);
     }
 
@@ -74,15 +75,15 @@ public class UserDataManagementServiceFacade {
         userServantManagementService.saveImportedUserServants(importedServants);
     }
 
-    public void saveImportedPlannerServants(PlannerType plannerType, List<UserServant> importedServants) {
+    public void saveImportedPlannerServants(PlannerType plannerType, List<PlannerServant> importedServants) {
         userServantManagementService.saveImportedPlannerServants(plannerType, importedServants);
     }
 
-    public void savePlannerServant(UserServant servant, PlannerType plannerType) {
+    public void savePlannerServant(PlannerServant servant, PlannerType plannerType) {
         userServantManagementService.savePlannerServant(servant, plannerType);
     }
 
-    public void savePlannerServant(int index, UserServant servant, PlannerType plannerType) {
+    public void savePlannerServant(int index, PlannerServant servant, PlannerType plannerType) {
         userServantManagementService.savePlannerServant(index, servant, plannerType);
     }
 
@@ -98,7 +99,7 @@ public class UserDataManagementServiceFacade {
         userServantManagementService.eraseUserServant(index);
     }
 
-    public void erasePlannerServant(UserServant servant, PlannerType plannerType) {
+    public void erasePlannerServant(PlannerServant servant, PlannerType plannerType) {
         userServantManagementService.erasePlannerServant(servant, plannerType);
     }
 
@@ -106,7 +107,7 @@ public class UserDataManagementServiceFacade {
         userServantManagementService.removeUserServant(index);
     }
 
-    public void removePlannerServant(UserServant servant, PlannerType plannerType) {
+    public void removePlannerServant(PlannerServant servant, PlannerType plannerType) {
         userServantManagementService.removePlannerServant(servant, plannerType);
     }
 
@@ -114,7 +115,7 @@ public class UserDataManagementServiceFacade {
         userServantManagementService.replaceBaseServantInRosterRow(index, servant, newBaseServant);
     }
 
-    public void replaceBaseServantInPlannerRow(int index, UserServant servant, Servant newBaseServant,
+    public void replaceBaseServantInPlannerRow(int index, PlannerServant servant, Servant newBaseServant,
                                                PlannerType plannerType) {
         userServantManagementService.replaceBaseServantInPlannerRow(index, servant, newBaseServant, plannerType);
     }

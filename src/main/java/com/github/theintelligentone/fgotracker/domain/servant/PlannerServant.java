@@ -14,32 +14,18 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonIgnoreProperties(value = {"baseServant"}, ignoreUnknown = true)
-public class UserServant {
+@JsonIgnoreProperties(value = {"baseServant", "ascensionMaterials", "skillMaterials"}, ignoreUnknown = true)
+public class PlannerServant {
     @EqualsAndHashCode.Include
     private long svtId;
     @JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "name")
     @JsonIdentityReference(alwaysAsId = true)
     @JsonIgnoreProperties(allowGetters = true)
-    private Servant baseServant;
-    private int rarity;
-    private String svtClass;
-    private int fouAtk;
-    private int fouHp;
-    private int level;
-    private boolean ascension;
-    private int npLevel;
-    private int bondLevel;
-    private int skillLevel1;
-    private int skillLevel2;
-    private int skillLevel3;
-    private String notes;
+    private UserServant baseServant;
     private int desLevel;
     private int desSkill1;
     private int desSkill2;
     private int desSkill3;
-
-    public String getName() {
-        return baseServant.getName();
-    }
+    private List<UpgradeCost> ascensionMaterials;
+    private List<UpgradeCost> skillMaterials;
 }

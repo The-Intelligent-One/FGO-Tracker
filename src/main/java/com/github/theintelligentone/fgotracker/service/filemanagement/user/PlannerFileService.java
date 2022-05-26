@@ -1,7 +1,7 @@
 package com.github.theintelligentone.fgotracker.service.filemanagement.user;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
+import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.service.filemanagement.FileService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,53 +19,49 @@ public class PlannerFileService {
     @Autowired
     private FileService fileService;
 
-    public void savePlannerServants(List<UserServant> servants) {
+    public void savePlannerServants(List<PlannerServant> servants) {
         save(servants, fileService, PLANNER_SERVANT_FILE);
     }
 
-    public void savePriorityPlannerServants(List<UserServant> servants) {
+    public void savePriorityPlannerServants(List<PlannerServant> servants) {
         save(servants, fileService, PRIORITY_SERVANT_FILE);
     }
 
-    public void saveLongTermPlannerServants(List<UserServant> servants) {
+    public void saveLongTermPlannerServants(List<PlannerServant> servants) {
         save(servants, fileService, LT_SERVANT_FILE);
     }
 
-    private void save(List<UserServant> servants, FileService fileService, String file) {
-        List<UserServant> servantsToSave = new ArrayList<>(servants);
+    private void save(List<PlannerServant> servants, FileService fileService, String file) {
+        List<PlannerServant> servantsToSave = new ArrayList<>(servants);
         servantsToSave.replaceAll(userServant -> userServant.getSvtId() == 0 ? null : userServant);
         fileService.saveUserData(servantsToSave, file);
     }
 
-    public List<UserServant> loadPlanner() {
+    public List<PlannerServant> loadPlanner() {
         return load(PLANNER_SERVANT_FILE);
     }
 
-    public List<UserServant> loadPriorityPlanner() {
+    public List<PlannerServant> loadPriorityPlanner() {
         return load(PRIORITY_SERVANT_FILE);
     }
 
-    public List<UserServant> loadLongTermPlanner() {
+    public List<PlannerServant> loadLongTermPlanner() {
         return load(LT_SERVANT_FILE);
     }
 
-    private List<UserServant> load(String file) {
-        List<UserServant> loadedServants = fileService.loadUserDataList(file, new TypeReference<>() {});
-        loadedServants.forEach(this::makeRosterValuesValid);
-        loadedServants.replaceAll(userServant -> userServant == null ? new UserServant() : userServant);
+    private List<PlannerServant> load(String file) {
+        List<PlannerServant> loadedServants = fileService.loadUserDataList(file, new TypeReference<>() {});
+        loadedServants.forEach(this::makePlannerValuesValid);
+        loadedServants.replaceAll(userServant -> userServant == null ? new PlannerServant() : userServant);
         return loadedServants;
     }
 
-    private void makeRosterValuesValid(UserServant userServant) {
+    private void makePlannerValuesValid(PlannerServant userServant) {
         if (userServant != null) {
-            userServant.setLevel(ServantUtils.getDefaultValueIfInvalid(userServant.getLevel(), 1, 120, 1));
-            userServant.setSkillLevel1(ServantUtils.getDefaultValueIfInvalid(userServant.getSkillLevel1(), 1, 10, 1));
-            userServant.setSkillLevel2(ServantUtils.getDefaultValueIfInvalid(userServant.getSkillLevel2(), 1, 10, 1));
-            userServant.setSkillLevel3(ServantUtils.getDefaultValueIfInvalid(userServant.getSkillLevel3(), 1, 10, 1));
-            userServant.setFouAtk(ServantUtils.getDefaultValueIfInvalid(userServant.getFouAtk(), 0, 2000, 0));
-            userServant.setFouHp(ServantUtils.getDefaultValueIfInvalid(userServant.getFouHp(), 0, 2000, 0));
-            userServant.setNpLevel(ServantUtils.getDefaultValueIfInvalid(userServant.getNpLevel(), 1, 5, 1));
-            userServant.setBondLevel(ServantUtils.getDefaultValueIfInvalid(userServant.getBondLevel(), 0, 15, 0));
+            userServant.setDesLevel(ServantUtils.getDefaultValueIfInvalid(userServant.getDesLevel(), 1, 120, 1));
+            userServant.setDesSkill1(ServantUtils.getDefaultValueIfInvalid(userServant.getDesSkill1(), 1, 10, 1));
+            userServant.setDesSkill2(ServantUtils.getDefaultValueIfInvalid(userServant.getDesSkill2(), 1, 10, 1));
+            userServant.setDesSkill3(ServantUtils.getDefaultValueIfInvalid(userServant.getDesSkill3(), 1, 10, 1));
         }
     }
 }

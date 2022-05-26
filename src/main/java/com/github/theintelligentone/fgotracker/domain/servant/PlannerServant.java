@@ -1,9 +1,6 @@
 package com.github.theintelligentone.fgotracker.domain.servant;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
 import lombok.*;
 
@@ -29,19 +26,36 @@ public class PlannerServant {
     private List<UpgradeCost> ascensionMaterials;
     private List<UpgradeCost> skillMaterials;
 
+    @JsonIgnore
     public int getLevel() {
         return baseServant.getLevel();
     }
-
+    @JsonIgnore
     public int getSkillLevel1() {
         return baseServant.getSkillLevel1();
     }
-
+    @JsonIgnore
     public int getSkillLevel2() {
         return baseServant.getSkillLevel2();
     }
-
+    @JsonIgnore
     public int getSkillLevel3() {
         return baseServant.getSkillLevel3();
+    }
+    @JsonIgnore
+    public void setLevel(int level) {
+        baseServant.setLevel(level);
+    }
+    @JsonIgnore
+    public void setSkillLevel1(int skillLevel) {
+        baseServant.setSkillLevel1(skillLevel);
+    }
+    @JsonIgnore
+    public void setSkillLevel2(int skillLevel) {
+        baseServant.setSkillLevel2(skillLevel);
+    }
+    @JsonIgnore
+    public void setSkillLevel3(int skillLevel) {
+        baseServant.setSkillLevel3(skillLevel);
     }
 }

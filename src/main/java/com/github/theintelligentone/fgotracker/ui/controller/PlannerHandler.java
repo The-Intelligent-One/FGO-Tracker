@@ -288,6 +288,7 @@ public class PlannerHandler {
     private List<MenuItem> createEditablePlannerTableMenuItems(TableRow<PlannerServant> row) {
         List<MenuItem> editableMenuItems = new ArrayList<>();
         addNewMenuItem(editableMenuItems, "Import servants for planner from CSV", event -> importPlannerServantsFromCsv());
+        addNewMenuItem(editableMenuItems, "Refresh", event -> refreshPlannedInventory());
         addNewMenuItem(editableMenuItems, "Delete row", event -> dataManagementServiceFacade.removePlannerServant(row.getItem(), plannerElements.getPlannerType()));
         addNewMenuItem(editableMenuItems, "Clear row", event -> dataManagementServiceFacade.erasePlannerServant(row.getItem(), plannerElements.getPlannerType()));
         addNewMenuItem(editableMenuItems, "Insert row above", event -> dataManagementServiceFacade.savePlannerServant(row.getTableView()
@@ -445,6 +446,7 @@ public class PlannerHandler {
         if (notFoundNames != null && !notFoundNames.isEmpty()) {
             displayNotFoundAlert(notFoundNames);
         }
+        refreshPlannedInventory();
     }
 
     private void displayNotFoundAlert(List<String> notFoundNames) {

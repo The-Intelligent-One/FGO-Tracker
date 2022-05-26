@@ -16,6 +16,9 @@ public class PlannerServantFactory {
                 .desSkill1(1)
                 .desSkill2(1)
                 .desSkill3(1)
+                .desAppendSkill1(1)
+                .desAppendSkill2(1)
+                .desAppendSkill3(1)
                 .build();
     }
 
@@ -27,8 +30,12 @@ public class PlannerServantFactory {
                 .desSkill1(1)
                 .desSkill2(1)
                 .desSkill3(1)
+                .desAppendSkill1(1)
+                .desAppendSkill2(1)
+                .desAppendSkill3(1)
                 .ascensionMaterials(convertMaterialMapToList(baseServant.getBaseServant().getAscensionMaterials()))
                 .skillMaterials(convertMaterialMapToList(baseServant.getBaseServant().getSkillMaterials()))
+                .appendSkillMaterials(convertMaterialMapToList(baseServant.getBaseServant().getAppendSkillMaterials()))
                 .build();
     }
 
@@ -38,6 +45,7 @@ public class PlannerServantFactory {
                 .svtId(baseServant.getSvtId())
                 .ascensionMaterials(convertMaterialMapToList(baseServant.getBaseServant().getAscensionMaterials()))
                 .skillMaterials(convertMaterialMapToList(baseServant.getBaseServant().getSkillMaterials()))
+                .appendSkillMaterials(convertMaterialMapToList(baseServant.getBaseServant().getAppendSkillMaterials()))
                 .build();
     }
 
@@ -46,6 +54,7 @@ public class PlannerServantFactory {
         userServant.setSvtId(baseServant.getSvtId());
         userServant.setAscensionMaterials(convertMaterialMapToList(baseServant.getBaseServant().getAscensionMaterials()));
         userServant.setSkillMaterials(convertMaterialMapToList(baseServant.getBaseServant().getSkillMaterials()));
+        userServant.setAppendSkillMaterials(convertMaterialMapToList(baseServant.getBaseServant().getAppendSkillMaterials()));
     }
 
     private static List<UpgradeCost> convertMaterialMapToList(Map<Integer, UpgradeCost> materials) {

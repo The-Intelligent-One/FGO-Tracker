@@ -219,18 +219,6 @@ public class UserServantManagementService {
         if (svt.getBondLevel() > 0) {
             oldSvt.setBondLevel(svt.getBondLevel());
         }
-        if (svt.getDesLevel() > 1) {
-            oldSvt.setDesLevel(svt.getDesLevel());
-        }
-        if (svt.getDesSkill1() > 1) {
-            oldSvt.setDesSkill1(svt.getDesSkill1());
-        }
-        if (svt.getDesSkill2() > 1) {
-            oldSvt.setDesSkill2(svt.getDesSkill2());
-        }
-        if (svt.getDesSkill3() > 1) {
-            oldSvt.setDesSkill3(svt.getDesSkill3());
-        }
         if (svt.getLevel() > 1) {
             oldSvt.setLevel(svt.getLevel());
         }
@@ -242,6 +230,15 @@ public class UserServantManagementService {
         }
         if (svt.getSkillLevel3() > 1) {
             oldSvt.setSkillLevel3(svt.getSkillLevel3());
+        }
+        if (svt.getAppendSkillLevel1() > 1) {
+            oldSvt.setAppendSkillLevel1(svt.getAppendSkillLevel1());
+        }
+        if (svt.getAppendSkillLevel2() > 1) {
+            oldSvt.setAppendSkillLevel2(svt.getAppendSkillLevel2());
+        }
+        if (svt.getAppendSkillLevel3() > 1) {
+            oldSvt.setAppendSkillLevel3(svt.getAppendSkillLevel3());
         }
         if (!"".equals(svt.getNotes())) {
             oldSvt.setNotes(svt.getNotes());

@@ -33,11 +33,10 @@ public class UserServant {
     private int skillLevel1;
     private int skillLevel2;
     private int skillLevel3;
+    private int appendSkillLevel1;
+    private int appendSkillLevel2;
+    private int appendSkillLevel3;
     private String notes;
-    private int desLevel;
-    private int desSkill1;
-    private int desSkill2;
-    private int desSkill3;
 
     public String getName() {
         return baseServant.getName();

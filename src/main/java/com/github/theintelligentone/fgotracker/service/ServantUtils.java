@@ -1,5 +1,6 @@
 package com.github.theintelligentone.fgotracker.service;
 
+import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeMaterialCost;
 import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import com.github.theintelligentone.fgotracker.domain.servant.Servant;
@@ -44,16 +45,25 @@ public class ServantUtils {
     }
 
     public static int getPlannedMatUse(PlannerServant servant, long matId) {
-        return sumNeededAscensionMats(servant, matId) + sumAllNeededSkillMats(servant, matId);
+        return sumNeededAscensionMats(servant, matId) + sumAllNeededSkillMats(servant, matId) + sumAllNeededAppendSkillMats(servant, matId);
     }
 
     private static int sumAllNeededSkillMats(PlannerServant servant, long matId) {
         UserServant baseServant = servant.getBaseServant();
-        return calculateSkillMat(servant, baseServant.getSkillLevel1(), baseServant.getDesSkill1(), matId) + calculateSkillMat(servant, baseServant.getSkillLevel2(), servant.getDesSkill2(), matId) + calculateSkillMat(servant, baseServant.getSkillLevel3(), servant.getDesSkill3(), matId);
+        return calculateSkillMat(baseServant.getSkillLevel1(), servant.getDesSkill1(), matId, servant.getSkillMaterials())
+                + calculateSkillMat(baseServant.getSkillLevel2(), servant.getDesSkill2(), matId, servant.getSkillMaterials())
+                + calculateSkillMat(baseServant.getSkillLevel3(), servant.getDesSkill3(), matId, servant.getSkillMaterials());
     }
 
-    private static int calculateSkillMat(PlannerServant servant, int currentLevel, int desiredLevel, long matId) {
-        return servant.getSkillMaterials()
+    private static int sumAllNeededAppendSkillMats(PlannerServant servant, long matId) {
+        UserServant baseServant = servant.getBaseServant();
+        return calculateSkillMat(baseServant.getAppendSkillLevel1(), servant.getDesAppendSkill1(), matId, servant.getAppendSkillMaterials())
+                + calculateSkillMat(baseServant.getAppendSkillLevel2(), servant.getDesAppendSkill2(), matId, servant.getAppendSkillMaterials())
+                + calculateSkillMat(baseServant.getAppendSkillLevel3(), servant.getDesAppendSkill3(), matId, servant.getAppendSkillMaterials());
+    }
+
+    private static int calculateSkillMat(int currentLevel, int desiredLevel, long matId, List<UpgradeCost> matList) {
+        return matList
                 .stream()
                 .skip(Math.max(currentLevel - 1, 0))
                 .limit(Math.max(desiredLevel - currentLevel, 0))

@@ -25,4 +25,5 @@ public class Servant {
     private List<Integer> hpGrowth;
     private Map<Integer, UpgradeCost> ascensionMaterials;
     private Map<Integer, UpgradeCost> skillMaterials;
+    private Map<Integer, UpgradeCost> appendSkillMaterials;
 }

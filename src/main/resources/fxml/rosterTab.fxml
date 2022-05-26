@@ -102,6 +102,21 @@
                             <UserServantValueFactory property="skillLevel3"/>
                         </cellValueFactory>
                     </TableColumn>
+                    <TableColumn fx:id="appendSkill1Column" text="AS1">
+                        <cellValueFactory>
+                            <UserServantValueFactory property="appendSkillLevel1"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="appendSkill2Column" text="AS2">
+                        <cellValueFactory>
+                            <UserServantValueFactory property="appendSkillLevel2"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="appendSkill3Column" text="AS3">
+                        <cellValueFactory>
+                            <UserServantValueFactory property="appendSkillLevel3"/>
+                        </cellValueFactory>
+                    </TableColumn>
                 </columns>
             </TableColumn>
             <TableColumn text="Fou">

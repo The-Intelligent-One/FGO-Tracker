@@ -23,8 +23,12 @@ public class PlannerServant {
     private int desSkill1;
     private int desSkill2;
     private int desSkill3;
+    private int desAppendSkill1;
+    private int desAppendSkill2;
+    private int desAppendSkill3;
     private List<UpgradeCost> ascensionMaterials;
     private List<UpgradeCost> skillMaterials;
+    private List<UpgradeCost> appendSkillMaterials;
 
     @JsonIgnore
     public int getLevel() {
@@ -43,19 +47,31 @@ public class PlannerServant {
         return baseServant.getSkillLevel3();
     }
     @JsonIgnore
+    public int getAppendSkillLevel1() {
+        return baseServant.getAppendSkillLevel1();
+    }
+    @JsonIgnore
+    public int getAppendSkillLevel2() {
+        return baseServant.getAppendSkillLevel2();
+    }
+    @JsonIgnore
+    public int getAppendSkillLevel3() {
+        return baseServant.getAppendSkillLevel3();
+    }
+    @JsonIgnore
     public void setLevel(int level) {
         baseServant.setLevel(level);
     }
     @JsonIgnore
-    public void setSkillLevel1(int skillLevel) {
-        baseServant.setSkillLevel1(skillLevel);
+    public void setAppendSkillLevel1(int skillLevel) {
+        baseServant.setAppendSkillLevel1(skillLevel);
     }
     @JsonIgnore
-    public void setSkillLevel2(int skillLevel) {
-        baseServant.setSkillLevel2(skillLevel);
+    public void setAppendSkillLevel2(int skillLevel) {
+        baseServant.setAppendSkillLevel2(skillLevel);
     }
     @JsonIgnore
-    public void setSkillLevel3(int skillLevel) {
-        baseServant.setSkillLevel3(skillLevel);
+    public void setAppendSkillLevel3(int skillLevel) {
+        baseServant.setAppendSkillLevel3(skillLevel);
     }
 }

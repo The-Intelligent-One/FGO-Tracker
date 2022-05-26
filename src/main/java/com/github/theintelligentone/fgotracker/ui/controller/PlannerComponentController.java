@@ -50,4 +50,31 @@ public class PlannerComponentController {
 
     @FXML
     private TableColumn<PlannerServant, Integer> skill3;
+
+    @FXML
+    private TableColumn<PlannerServant, Integer> appendSkill1;
+
+    @FXML
+    private TableColumn<PlannerServant, Integer> appendSkill2;
+
+    @FXML
+    private TableColumn<PlannerServant, Integer> appendSkill3;
+    
+    public void setupController(PlannerElements elements) {
+        elements.setSumTable(getSumTable());
+        elements.setSumLabel(getLabel());
+        elements.setSumCurrent(getSumCurrent());
+        elements.setSumDesired(getSumDesired());
+        elements.setPlannerTable(getPlannerTable());
+        elements.setNameColumn(getNameColumn());
+        elements.setCurrent(getCurrent());
+        elements.setDesired(getDesired());
+        elements.setLevel(getLevel());
+        elements.setSkill1(getSkill1());
+        elements.setSkill2(getSkill2());
+        elements.setSkill3(getSkill3());
+        elements.setAppendSkill1(getAppendSkill1());
+        elements.setAppendSkill2(getAppendSkill2());
+        elements.setAppendSkill3(getAppendSkill3());
+    }
 }

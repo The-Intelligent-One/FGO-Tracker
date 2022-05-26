@@ -47,6 +47,21 @@
                             <PlannerServantValueFactory property="skillLevel3"/>
                         </cellValueFactory>
                     </TableColumn>
+                    <TableColumn fx:id="appendSkill1" text="AS1">
+                        <cellValueFactory>
+                            <PlannerServantValueFactory property="appendSkillLevel1"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="appendSkill2" text="AS2">
+                        <cellValueFactory>
+                            <PlannerServantValueFactory property="appendSkillLevel2"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn fx:id="appendSkill3" text="AS3">
+                        <cellValueFactory>
+                            <PlannerServantValueFactory property="appendSkillLevel3"/>
+                        </cellValueFactory>
+                    </TableColumn>
                 </columns>
             </TableColumn>
             <TableColumn text="Desired" fx:id="desired">
@@ -69,6 +84,21 @@
                     <TableColumn text="S3">
                         <cellValueFactory>
                             <PlannerServantValueFactory property="desSkill3"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="AS1">
+                        <cellValueFactory>
+                            <PlannerServantValueFactory property="desAppendSkill1"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="AS2">
+                        <cellValueFactory>
+                            <PlannerServantValueFactory property="desAppendSkill2"/>
+                        </cellValueFactory>
+                    </TableColumn>
+                    <TableColumn text="AS3">
+                        <cellValueFactory>
+                            <PlannerServantValueFactory property="desAppendSkill3"/>
                         </cellValueFactory>
                     </TableColumn>
                 </columns>

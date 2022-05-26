@@ -25,18 +25,7 @@ public class PlannerController {
 
     public void initialize() {
         PlannerElements elements = new PlannerElements();
-        elements.setSumTable(plannerComponentController.getSumTable());
-        elements.setSumLabel(plannerComponentController.getLabel());
-        elements.setSumCurrent(plannerComponentController.getSumCurrent());
-        elements.setSumDesired(plannerComponentController.getSumDesired());
-        elements.setPlannerTable(plannerComponentController.getPlannerTable());
-        elements.setNameColumn(plannerComponentController.getNameColumn());
-        elements.setCurrent(plannerComponentController.getCurrent());
-        elements.setDesired(plannerComponentController.getDesired());
-        elements.setLevel(plannerComponentController.getLevel());
-        elements.setSkill1(plannerComponentController.getSkill1());
-        elements.setSkill2(plannerComponentController.getSkill2());
-        elements.setSkill3(plannerComponentController.getSkill3());
+        plannerComponentController.setupController(elements);
         elements.setPlannerType(PlannerType.REGULAR);
         plannerHandler = new PlannerHandler(elements, dataManagementServiceFacade);
         plannerHandler.tableInit();

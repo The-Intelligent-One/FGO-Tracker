@@ -97,6 +97,15 @@ public class RosterController {
     private TableColumn<UserServant, Integer> skill3Column;
 
     @FXML
+    private TableColumn<UserServant, Integer> appendSkill1Column;
+
+    @FXML
+    private TableColumn<UserServant, Integer> appendSkill2Column;
+
+    @FXML
+    private TableColumn<UserServant, Integer> appendSkill3Column;
+
+    @FXML
     private TableColumn<UserServant, String> notesColumn;
 
     public void initialize() {
@@ -200,16 +209,23 @@ public class RosterController {
         classColumnSetup();
         attributeColumnSetup();
         nameColumnSetup();
-        levelColumnSetup();
-        atkColumnSetup();
-        hpColumnSetup();
-        skill1ColumnSetup();
-        skill2ColumnSetup();
-        skill3ColumnSetup();
-        bondColumnSetup();
+        intColumnSetup(levelColumn, MainController.SHORT_CELL_WIDTH, 1, 120, "setLevel");
+        intColumnSetup(atkColumn, MainController.MID_CELL_WIDTH, 0, 2000, "setFouAtk");
+        intColumnSetup(hpColumn, MainController.MID_CELL_WIDTH, 0, 2000, "setFouHp");
+        skillColumnsSetup();
+        intColumnSetup(bondColumn, MainController.SHORT_CELL_WIDTH, 0, 15, "setBondLevel");
         ascColumnSetup();
         notesColumn.setStyle("-fx-alignment: center-left");
         notesColumn.setPrefWidth(MainController.LONG_CELL_WIDTH * 3);
+    }
+
+    private void skillColumnsSetup() {
+        intColumnSetup(skill1Column, MainController.SHORT_CELL_WIDTH, 1, 10, "setSkillLevel1");
+        intColumnSetup(skill2Column, MainController.SHORT_CELL_WIDTH, 1, 10, "setSkillLevel2");
+        intColumnSetup(skill3Column, MainController.SHORT_CELL_WIDTH, 1, 10, "setSkillLevel3");
+        intColumnSetup(appendSkill1Column, MainController.SHORT_CELL_WIDTH, 1, 10, "setAppendSkillLevel1");
+        intColumnSetup(appendSkill2Column, MainController.SHORT_CELL_WIDTH, 1, 10, "setAppendSkillLevel2");
+        intColumnSetup(appendSkill3Column, MainController.SHORT_CELL_WIDTH, 1, 10, "setAppendSkillLevel3");
     }
 
     private void npColumnSetup() {
@@ -271,46 +287,10 @@ public class RosterController {
         ascColumn.setCellFactory(param -> new AscensionCheckBoxTableCell());
     }
 
-    private void skill1ColumnSetup() {
-        skill1Column.setPrefWidth(MainController.SHORT_CELL_WIDTH);
+    private void intColumnSetup(TableColumn<UserServant, Integer> skill1Column, double shortCellWidth, int min, int max, String setSkillLevel1) {
+        skill1Column.setPrefWidth(shortCellWidth);
         skill1Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        skill1Column.setOnEditCommit(propertyCommitWithLimits(1, 10, "setSkillLevel1"));
-    }
-
-    private void skill2ColumnSetup() {
-        skill2Column.setPrefWidth(MainController.SHORT_CELL_WIDTH);
-        skill2Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        skill2Column.setOnEditCommit(propertyCommitWithLimits(1, 10, "setSkillLevel2"));
-    }
-
-    private void skill3ColumnSetup() {
-        skill3Column.setPrefWidth(MainController.SHORT_CELL_WIDTH);
-        skill3Column.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        skill3Column.setOnEditCommit(propertyCommitWithLimits(1, 10, "setSkillLevel3"));
-    }
-
-    private void bondColumnSetup() {
-        bondColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
-        bondColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        bondColumn.setOnEditCommit(propertyCommitWithLimits(0, 15, "setBondLevel"));
-    }
-
-    private void levelColumnSetup() {
-        levelColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
-        levelColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        levelColumn.setOnEditCommit(propertyCommitWithLimits(1, 120, "setLevel"));
-    }
-
-    private void atkColumnSetup() {
-        atkColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
-        atkColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        atkColumn.setOnEditCommit(propertyCommitWithLimits(0, 2000, "setFouAtk"));
-    }
-
-    private void hpColumnSetup() {
-        hpColumn.setPrefWidth(MainController.MID_CELL_WIDTH);
-        hpColumn.setCellFactory(TextFieldTableCell.forTableColumn(new IntegerStringConverter()));
-        hpColumn.setOnEditCommit(propertyCommitWithLimits(0, 2000, "setFouHp"));
+        skill1Column.setOnEditCommit(propertyCommitWithLimits(min, max, setSkillLevel1));
     }
 
     private void npLvlColumnSetup() {

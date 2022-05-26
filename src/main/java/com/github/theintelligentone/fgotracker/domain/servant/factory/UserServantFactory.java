@@ -7,13 +7,12 @@ public class UserServantFactory {
     public static UserServant createBlankUserServant() {
         return UserServant.builder()
                 .level(1)
-                .desLevel(1)
                 .skillLevel1(1)
                 .skillLevel2(1)
                 .skillLevel3(1)
-                .desSkill1(1)
-                .desSkill2(1)
-                .desSkill3(1)
+                .appendSkillLevel1(1)
+                .appendSkillLevel2(1)
+                .appendSkillLevel3(1)
                 .npLevel(1)
                 .build();
     }
@@ -29,10 +28,9 @@ public class UserServantFactory {
                 .skillLevel1(1)
                 .skillLevel2(1)
                 .skillLevel3(1)
-                .desLevel(1)
-                .desSkill1(1)
-                .desSkill2(1)
-                .desSkill3(1)
+                .appendSkillLevel1(1)
+                .appendSkillLevel2(1)
+                .appendSkillLevel3(1)
                 .notes("")
                 .build();
     }

@@ -62,6 +62,9 @@ public class PlannerFileService {
             userServant.setDesSkill1(ServantUtils.getDefaultValueIfInvalid(userServant.getDesSkill1(), 1, 10, 1));
             userServant.setDesSkill2(ServantUtils.getDefaultValueIfInvalid(userServant.getDesSkill2(), 1, 10, 1));
             userServant.setDesSkill3(ServantUtils.getDefaultValueIfInvalid(userServant.getDesSkill3(), 1, 10, 1));
+            userServant.setDesAppendSkill1(ServantUtils.getDefaultValueIfInvalid(userServant.getDesAppendSkill1(), 1, 10, 1));
+            userServant.setDesAppendSkill2(ServantUtils.getDefaultValueIfInvalid(userServant.getDesAppendSkill2(), 1, 10, 1));
+            userServant.setDesAppendSkill3(ServantUtils.getDefaultValueIfInvalid(userServant.getDesAppendSkill3(), 1, 10, 1));
         }
     }
 }

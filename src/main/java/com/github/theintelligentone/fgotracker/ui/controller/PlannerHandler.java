@@ -349,6 +349,9 @@ public class PlannerHandler {
         initDesiredInfoColumn(1, "setDesSkill1", 10);
         initDesiredInfoColumn(2, "setDesSkill2", 10);
         initDesiredInfoColumn(3, "setDesSkill3", 10);
+        initDesiredInfoColumn(4, "setDesAppendSkill1", 10);
+        initDesiredInfoColumn(5, "setDesAppendSkill2", 10);
+        initDesiredInfoColumn(6, "setDesAppendSkill3", 10);
         plannerElements.getDesired().getColumns().forEach(col -> {
             col.setPrefWidth(MainController.SHORT_CELL_WIDTH);
             TableColumn<PlannerServant, Integer> actualCol = (TableColumn<PlannerServant, Integer>) col;
@@ -385,6 +388,9 @@ public class PlannerHandler {
         setEditEventForCurrentInfoColumn(plannerElements.getSkill1(), "setSkillLevel1", 10);
         setEditEventForCurrentInfoColumn(plannerElements.getSkill2(), "setSkillLevel2", 10);
         setEditEventForCurrentInfoColumn(plannerElements.getSkill3(), "setSkillLevel3", 10);
+        setEditEventForCurrentInfoColumn(plannerElements.getAppendSkill1(), "setAppendSkillLevel1", 10);
+        setEditEventForCurrentInfoColumn(plannerElements.getAppendSkill2(), "setAppendSkillLevel2", 10);
+        setEditEventForCurrentInfoColumn(plannerElements.getAppendSkill3(), "setAppendSkillLevel3", 10);
         plannerElements.getCurrent().getColumns().forEach(col -> col.setPrefWidth(MainController.SHORT_CELL_WIDTH));
     }
 

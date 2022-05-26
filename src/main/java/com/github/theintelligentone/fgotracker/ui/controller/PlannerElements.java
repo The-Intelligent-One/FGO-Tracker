@@ -21,6 +21,9 @@ public class PlannerElements {
     private TableColumn<PlannerServant, Integer> skill1;
     private TableColumn<PlannerServant, Integer> skill2;
     private TableColumn<PlannerServant, Integer> skill3;
+    private TableColumn<PlannerServant, Integer> appendSkill1;
+    private TableColumn<PlannerServant, Integer> appendSkill2;
+    private TableColumn<PlannerServant, Integer> appendSkill3;
     private PlannerType plannerType;
     private Inventory planned;
     private Inventory sum;

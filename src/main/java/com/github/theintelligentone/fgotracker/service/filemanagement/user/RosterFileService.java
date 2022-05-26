@@ -25,17 +25,20 @@ public class RosterFileService {
 
     public List<UserServant> loadRoster() {
         List<UserServant> loadedServants = fileService.loadUserDataList(USER_SERVANT_FILE, new TypeReference<>() {});
-        loadedServants.forEach(this::makePlannerValuesValid);
+        loadedServants.forEach(this::makeRosterValuesValid);
         loadedServants.replaceAll(userServant -> userServant == null ? new UserServant() : userServant);
         return loadedServants;
     }
 
-    private void makePlannerValuesValid(UserServant userServant) {
+    private void makeRosterValuesValid(UserServant userServant) {
         if (userServant != null) {
-            userServant.setDesLevel(ServantUtils.getDefaultValueIfInvalid(userServant.getDesLevel(), 1, 120, 1));
-            userServant.setDesSkill1(ServantUtils.getDefaultValueIfInvalid(userServant.getDesSkill1(), 1, 10, 1));
-            userServant.setDesSkill2(ServantUtils.getDefaultValueIfInvalid(userServant.getDesSkill2(), 1, 10, 1));
-            userServant.setDesSkill3(ServantUtils.getDefaultValueIfInvalid(userServant.getDesSkill3(), 1, 10, 1));
+            userServant.setLevel(ServantUtils.getDefaultValueIfInvalid(userServant.getLevel(), 1, 120, 1));
+            userServant.setSkillLevel1(ServantUtils.getDefaultValueIfInvalid(userServant.getSkillLevel1(), 1, 10, 1));
+            userServant.setSkillLevel2(ServantUtils.getDefaultValueIfInvalid(userServant.getSkillLevel2(), 1, 10, 1));
+            userServant.setSkillLevel3(ServantUtils.getDefaultValueIfInvalid(userServant.getSkillLevel3(), 1, 10, 1));
+            userServant.setAppendSkillLevel1(ServantUtils.getDefaultValueIfInvalid(userServant.getAppendSkillLevel1(), 1, 10, 1));
+            userServant.setAppendSkillLevel2(ServantUtils.getDefaultValueIfInvalid(userServant.getAppendSkillLevel2(), 1, 10, 1));
+            userServant.setAppendSkillLevel3(ServantUtils.getDefaultValueIfInvalid(userServant.getAppendSkillLevel3(), 1, 10, 1));
         }
     }
 }

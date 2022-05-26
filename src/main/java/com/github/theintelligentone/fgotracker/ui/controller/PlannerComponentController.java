@@ -1,7 +1,7 @@
 package com.github.theintelligentone.fgotracker.ui.controller;
 
 import com.github.theintelligentone.fgotracker.domain.item.Inventory;
-import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
+import com.github.theintelligentone.fgotracker.domain.servant.PlannerServant;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -28,26 +28,26 @@ public class PlannerComponentController {
     private TableColumn<Inventory, String> sumDesired;
 
     @FXML
-    private TableView<UserServant> plannerTable;
+    private TableView<PlannerServant> plannerTable;
 
     @FXML
-    private TableColumn<UserServant, String> nameColumn;
+    private TableColumn<PlannerServant, String> nameColumn;
 
     @FXML
-    private TableColumn<UserServant, ?> current;
+    private TableColumn<PlannerServant, ?> current;
 
     @FXML
-    private TableColumn<UserServant, ?> desired;
+    private TableColumn<PlannerServant, ?> desired;
 
     @FXML
-    private TableColumn<UserServant, Integer> level;
+    private TableColumn<PlannerServant, Integer> level;
 
     @FXML
-    private TableColumn<UserServant, Integer> skill1;
+    private TableColumn<PlannerServant, Integer> skill1;
 
     @FXML
-    private TableColumn<UserServant, Integer> skill2;
+    private TableColumn<PlannerServant, Integer> skill2;
 
     @FXML
-    private TableColumn<UserServant, Integer> skill3;
+    private TableColumn<PlannerServant, Integer> skill3;
 }

@@ -13,8 +13,6 @@ import com.github.theintelligentone.fgotracker.ui.valuefactory.planner.PlannerSe
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.DoubleBinding;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -39,6 +37,7 @@ import java.util.stream.IntStream;
 @Slf4j
 public class PlannerHandler {
     private static final int HOLY_GRAIL_ID = 7999;
+    public static int REFRESH_COUNT = 0;
     private final PlannerElements plannerElements;
 
     private final DataManagementServiceFacade dataManagementServiceFacade;
@@ -105,7 +104,8 @@ public class PlannerHandler {
 
     private void setupTableData() {
         plannerElements.getPlannerTable()
-                .setItems(dataManagementServiceFacade.getPaddedPlannerServantList(plannerElements.getPlannerType()));
+                .getItems()
+                .setAll(dataManagementServiceFacade.getPaddedPlannerServantList(plannerElements.getPlannerType()));
     }
 
     private void setupPlannerTable() {
@@ -189,8 +189,8 @@ public class PlannerHandler {
         columns.add(newCol);
     }
 
-    private ObservableList<UpgradeMaterialCost> createListOfRemainingMats(Inventory inventory, Inventory planned) {
-        ObservableList<UpgradeMaterialCost> result = FXCollections.observableArrayList();
+    private List<UpgradeMaterialCost> createListOfRemainingMats(Inventory inventory, Inventory planned) {
+        List<UpgradeMaterialCost> result = new ArrayList<>();
         for (int index = 0; index < inventory.getInventory().size(); index++) {
             UpgradeMaterialCost matAmount = inventory.getInventory().get(index);
             UpgradeMaterialCost matPlan = planned.getInventory().get(index);
@@ -203,8 +203,8 @@ public class PlannerHandler {
         return result;
     }
 
-    private ObservableList<UpgradeMaterialCost> getSumOfNeededMats() {
-        ObservableList<UpgradeMaterialCost> result = FXCollections.observableArrayList();
+    private List<UpgradeMaterialCost> getSumOfNeededMats() {
+        List<UpgradeMaterialCost> result = new ArrayList<>();
         for (UpgradeMaterialCost mat : dataManagementServiceFacade.getInventory().getInventory()) {
             UpgradeMaterialCost matCost = new UpgradeMaterialCost();
             matCost.setId(mat.getId());
@@ -229,6 +229,10 @@ public class PlannerHandler {
         }
         plannerElements.getSumTable().refresh();
         plannerElements.getPlannerTable().refresh();
+        if (REFRESH_COUNT++ >= 5) {
+            System.gc();
+            REFRESH_COUNT = 0;
+        }
     }
 
     private int getPlannedMatUseSum(List<PlannerServant> servants, UpgradeMaterialCost mat) {

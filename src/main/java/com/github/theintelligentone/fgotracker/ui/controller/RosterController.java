@@ -323,7 +323,7 @@ public class RosterController {
     }
 
     public void setup() {
-        rosterTable.getItems().setAll(dataManagementServiceFacade.getUserServantList());
+        rosterTable.setItems(dataManagementServiceFacade.getUserServantList());
         if (rosterTable.getItems().size() == 0) {
             IntStream.range(0, 10).forEach(i -> dataManagementServiceFacade.saveUserServant(new UserServant()));
         }

@@ -104,8 +104,7 @@ public class PlannerHandler {
 
     private void setupTableData() {
         plannerElements.getPlannerTable()
-                .getItems()
-                .setAll(dataManagementServiceFacade.getPaddedPlannerServantList(plannerElements.getPlannerType()));
+                .setItems(dataManagementServiceFacade.getPaddedPlannerServantList(plannerElements.getPlannerType()));
     }
 
     private void setupPlannerTable() {

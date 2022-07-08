@@ -102,9 +102,6 @@ public class ServantUtils {
     private static int calculateNeededGrails(PlannerServant servant, int currentLevel, int desiredLevel) {
         int currentAscLevel = Math.max(getAscensionFromRarityAndLevel(currentLevel, servant.getBaseServant()
                 .getRarity()) - 4, 0);
-        if (servant.getBaseServant().isAscension()) {
-            currentAscLevel++;
-        }
         int desiredAscLevel = Math.max(getAscensionFromRarityAndLevel(desiredLevel, servant.getBaseServant()
                 .getRarity()) - 4, 0);
         return Math.max(desiredAscLevel - currentAscLevel, 0);

@@ -77,11 +77,6 @@
                             <UserServantValueFactory property="level"/>
                         </cellValueFactory>
                     </TableColumn>
-                    <TableColumn fx:id="ascColumn" text="Asc">
-                        <cellValueFactory>
-                            <UserServantValueFactory property="ascension"/>
-                        </cellValueFactory>
-                    </TableColumn>
                     <TableColumn fx:id="bondColumn" text="Bond">
                         <cellValueFactory>
                             <UserServantValueFactory property="bondLevel"/>

@@ -3,7 +3,6 @@ package com.github.theintelligentone.fgotracker.ui.controller;
 import com.github.theintelligentone.fgotracker.domain.servant.UserServant;
 import com.github.theintelligentone.fgotracker.service.ServantUtils;
 import com.github.theintelligentone.fgotracker.service.datamanagement.DataManagementServiceFacade;
-import com.github.theintelligentone.fgotracker.ui.cellfactory.AscensionCheckBoxTableCell;
 import com.github.theintelligentone.fgotracker.ui.cellfactory.AutoCompleteTextFieldTableCell;
 import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleStringProperty;
@@ -80,9 +79,6 @@ public class RosterController {
 
     @FXML
     private TableColumn<UserServant, Integer> npLvlColumn;
-
-    @FXML
-    private TableColumn<UserServant, Boolean> ascColumn;
 
     @FXML
     private TableColumn<UserServant, Integer> bondColumn;
@@ -214,7 +210,6 @@ public class RosterController {
         intColumnSetup(hpColumn, MainController.MID_CELL_WIDTH, 0, 2000, "setFouHp");
         skillColumnsSetup();
         intColumnSetup(bondColumn, MainController.SHORT_CELL_WIDTH, 0, 15, "setBondLevel");
-        ascColumnSetup();
         notesColumn.setStyle("-fx-alignment: center-left");
         notesColumn.setPrefWidth(MainController.LONG_CELL_WIDTH * 3);
     }
@@ -280,11 +275,6 @@ public class RosterController {
             }
             return name;
         });
-    }
-
-    private void ascColumnSetup() {
-        ascColumn.setPrefWidth(MainController.SHORT_CELL_WIDTH);
-        ascColumn.setCellFactory(param -> new AscensionCheckBoxTableCell());
     }
 
     private void intColumnSetup(TableColumn<UserServant, Integer> skill1Column, double shortCellWidth, int min, int max, String setSkillLevel1) {

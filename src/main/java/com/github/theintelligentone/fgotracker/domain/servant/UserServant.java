@@ -25,7 +25,6 @@ public class UserServant {
     private int fouAtk;
     private int fouHp;
     private int level;
-    private boolean ascension;
     private int npLevel;
     private int bondLevel;
     private int skillLevel1;

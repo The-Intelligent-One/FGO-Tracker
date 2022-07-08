@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 public class DataRequestService {
 
     private static final String[] SERVANT_TYPES = {"normal", "heroine"};
-    private static final String[] MATERIAL_USES = {"skill", "ascension"};
+    private static final String[] MATERIAL_USES = {"skill", "ascension", "appendSkill"};
     private static final String[] EXCLUDED_MATERIAL_TYPES = {"eventItem"};
     private static final String EVENT_QUEST = "eventQuest";
     private static final String NA_REGION = "NA";

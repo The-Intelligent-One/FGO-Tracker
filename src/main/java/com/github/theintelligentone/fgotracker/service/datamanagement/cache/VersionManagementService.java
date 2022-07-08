@@ -36,14 +36,20 @@ public class VersionManagementService {
         currentVersion = fileServiceFacade.loadCurrentVersion();
         Map<String, VersionDTO> onlineVersion = requestService.getOnlineVersion();
         boolean needUpdate = false;
-        if (!onlineVersion.isEmpty() && (onlineVersion.get(gameRegion).getTimestamp() > currentVersion.get(
-                gameRegion).getTimestamp())) {
+        if (!onlineVersion.isEmpty() && checkForNewerVersions(onlineVersion)) {
             needUpdate = true;
-            currentVersion.put(gameRegion, onlineVersion.get(gameRegion));
+            currentVersion = onlineVersion;
         } else if (currentVersion.get(gameRegion).getTimestamp() == 0) {
             currentVersion = fileServiceFacade.loadCurrentVersion();
         }
         return needUpdate;
+    }
+
+    private boolean checkForNewerVersions(Map<String, VersionDTO> onlineVersion) {
+        return onlineVersion.entrySet()
+                .stream()
+                .anyMatch(version -> version.getValue().getTimestamp() > currentVersion.get(version.getKey())
+                        .getTimestamp());
     }
 
     public void invalidateCache() {

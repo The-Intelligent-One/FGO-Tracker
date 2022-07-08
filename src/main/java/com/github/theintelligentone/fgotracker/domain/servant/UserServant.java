@@ -1,9 +1,6 @@
 package com.github.theintelligentone.fgotracker.domain.servant;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIdentityReference;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import com.github.theintelligentone.fgotracker.domain.item.UpgradeCost;
 import lombok.*;
 
@@ -15,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @JsonIgnoreProperties(value = {"baseServant"}, ignoreUnknown = true)
+@JsonPropertyOrder({"svtId", "name"})
 public class UserServant {
     @EqualsAndHashCode.Include
     private long svtId;

@@ -15,7 +15,7 @@ module fgotracker {
     requires com.fasterxml.jackson.annotation;
     requires com.fasterxml.jackson.databind;
     requires com.fasterxml.jackson.datatype.jsr310;
-    requires github.api;
+    requires org.kohsuke.github.api;
     requires com.opencsv;
     requires org.controlsfx.controls;
 

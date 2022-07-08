@@ -63,6 +63,18 @@ public class PlannerServant {
         baseServant.setLevel(level);
     }
     @JsonIgnore
+    public void setSkillLevel1(int skillLevel) {
+        baseServant.setSkillLevel1(skillLevel);
+    }
+    @JsonIgnore
+    public void setSkillLevel2(int skillLevel) {
+        baseServant.setSkillLevel2(skillLevel);
+    }
+    @JsonIgnore
+    public void setSkillLevel3(int skillLevel) {
+        baseServant.setSkillLevel3(skillLevel);
+    }
+    @JsonIgnore
     public void setAppendSkillLevel1(int skillLevel) {
         baseServant.setAppendSkillLevel1(skillLevel);
     }
